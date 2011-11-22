@@ -1,0 +1,87 @@
+#!/bin/bash
+#
+# chkconfig: - 16 84
+# description: Start up Redmine
+#
+# processname: redmine
+# config: /etc/sysconfig/redmine
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+# Get network config
+. /etc/sysconfig/network
+
+#ruby script/server webrick -e production
+#ruby /var/www/redmine/script/server webrick -p 8000 -e production > /var/log/redmine_$(date +%Y%m%d).log 2 >&1
+
+[ "${NETWORKING}" = "no" ] && exit 0
+
+# Defaults
+#DAEMON_HOME=/usr/local/redmine
+DAEMON_HOME=/var/www/redmine
+#DAEMON_ARGS="-p 8000 -e production -d" 
+#DAEMON_ARGS="-p 8000 -e production > /var/log/redmine_$(date +%Y%m%d).log 2 >&1"
+DAEMON_ARGS="-p 8000 -e production -d"
+
+# Daemon
+NAME=redmine
+RUBY=$(which ruby)
+
+APP_PIDFILE=$DAEMON_HOME/tmp/pids/server.pid
+DAEMON_PIDFILE=/var/run/$NAME.pid
+DAEMON_LOCKFILE=/var/lock/subsys/$NAME
+
+start() {
+    echo -n $"Starting ${NAME}: "
+
+    cd $DAEMON_HOME
+    $RUBY script/server webrick $DAEMON_ARGS
+
+    sleep 2
+
+    status -p $APP_PIDFILE &> /dev/null && echo_success || echo_failure
+    RETVAL=$?
+
+    if [ $RETVAL -eq 0 ]; then
+        touch $DAEMON_LOCKFILE
+        cat $APP_PIDFILE > $DAEMON_PIDFILE
+        fi
+
+        echo
+}
+
+stop() {
+    echo -n $"Shutting down ${NAME}: "
+
+    killproc -p $DAEMON_PIDFILE
+    RETVAL=$?
+
+    [ $RETVAL -eq 0 ] && /bin/rm -f $DAEMON_LOCKFILE $DAEMON_PIDFILE
+
+    echo
+}
+
+case "$1" in
+start)
+start
+;;
+stop)
+stop
+;;
+restart)
+stop
+start
+;;
+status)
+status -p $DAEMON_PIDFILE $NAME
+;;
+
+*)
+echo "Usage: $SCRIPTNAME {start|stop|restart|status}" >&2
+exit 3
+;;
+esac
+
+exit $?
+
