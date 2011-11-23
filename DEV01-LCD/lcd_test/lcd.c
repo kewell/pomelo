@@ -246,19 +246,21 @@ void words_2(uchar x,uchar y,uchar type,uchar *p)			//type=1,ascii;type=2,Chines
 {
 	uchar i,k,j,m,font_index,x0;
 
-    U8 index = 0, compare = 0, max = 12; 
-    U8 data[12] = {0};
+    U8 index = 0, compare = 0, font_width = 12, byte_count = 0, byte_half = 0; 
+    U8 data[24] = {0};
     U8 *pc_tmp;
                 
 	x=37+x;
 	x0=0x00|(x&0x0f);
 	x=0x10|((x&0xf0)>>4);
 
-    for(i=0;i<3;i++) //if (i == 0) //write data 3 * (8 * 4 * 3 )times --> 24*24 pixs
+    for(i=0;i<3;i++)// if (i == 0) //write data 3 * (8 * 4 * 3 )times --> 24*24 pixs
 	{
 	    // 每次循环写8行: write data 8 * (4 * 3)times --> 8*24 = 192 pixs
-		for(j=0;j<8;j++)//if (j == 0)
+		for(j=0;j<8;j++)// if (j < 2)
 		{
+		    byte_count = 0;
+            
 		    m=i*8+j;
             /*
              * i = 0   0  1  2  3  4  5  6  7
@@ -271,42 +273,48 @@ void words_2(uchar x,uchar y,uchar type,uchar *p)			//type=1,ascii;type=2,Chines
 			write(0,0x60|((y+m)&0x0f));
 			write(0,0x70|(((y+m)&0xf0)>>4));
 
-            font_index = (j + 8 * i) * type * 2;
+            
 
-            for(k = 0; k < type; k++) //if(k == 0)
+            if (2 == type)
             {
-                for (index = 0; index < max; index++)
-                {
-                    data[index] = 0x00;
+                font_width = 24;
+            }
 
-                    if (8 > index)
+            font_index = (j + 8 * i) * (type+1); //////////////////////
+
+            byte_half = font_width % 8;
+
+            for (index = 0; index < font_width;)
+            {
+                data[index] = 0x00;
+
+                compare = 0x01 << (index - 8 * byte_count);
+                pc_tmp = p + font_index + byte_count;
+
+                if ((compare == ((*pc_tmp) & compare)))
+                {
+                    if(0 == index % 2)
                     {
-                        compare = 0x01 << index;
-                        pc_tmp = p + font_index;
-                    }                    
+                        data[index] = 0x80;
+                    }
                     else
                     {
-                        compare = 0x01 << (index - 8);
-                        pc_tmp = p + font_index + 1;
+                        data[index] = 0x08;
                     }
+                }
 
+                printf("data[%d]:0x%02x  bit:[%02d]=0x%02x\n",font_index + byte_count, *pc_tmp, index, data[index]);
 
-                    if ((compare == ((*pc_tmp) & compare)))
-                    {
-                        if(0 == index % 2)
-                        {
-                            data[index] = 0x80;
-                        }
-                        else
-                        {
-                            data[index] = 0x08;
-                        }
-                    }
+                if (1 == index % 2)
+                {
+                    write(1, data[index - 1] | data[index]);
+                }
 
-                    if (1 == index % 2)
-                    {
-                        write(1, data[index - 1] | data[index]);
-                    }
+                index++;
+                
+                if (0 == (index % 8))
+                {
+                    byte_count++;
                 }
             }
         }
@@ -521,6 +529,7 @@ void character(void)
 	uchar *q;
 	uchar i,j;//,temp[3],table[6];
 
+#if 1
     for(i=0;i<1;i++)
 	{
 		q=hanzi+i*72;
@@ -529,6 +538,12 @@ void character(void)
 
         words_2(0,0,2,q);
     }
+#endif
+
+
+
+#if 0
+
 
     for(i=0;i<1;i++)
 	{
@@ -538,9 +553,7 @@ void character(void)
 
         //usleep(50000);
 	}
-
-
-#if 0
+    
 
     for(i=0;i<1;i++)
 	{
