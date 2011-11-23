@@ -1,0 +1,344 @@
+/*********************************************************************************
+ *      Copyright:  (C) 2011 R&D of San Fran Electronics Co., LTD  
+ *                  All rights reserved.
+ *
+ *       Filename:  lcd.c
+ *    Description:  This file 
+ *                 
+ *        Version:  1.0.0(11/09/2011~)
+ *         Author:  WENJING <WENJIGN0101@GMAIL.COM>
+ *      ChangeLog:  1, Release initial version on "11/09/2011 10:17:29 AM"
+ *                 
+ ********************************************************************************/
+//#define PARTIAL_DISPALY
+//#define LINE_INVERSION
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <memory.h>
+
+#include "version.h"
+#include "at91sam9_smc.h"
+#include "pio_base.h"
+
+#define GUI_LCM_XMAX 160
+#define GUI_LCM_YMAX 160
+
+#define AT91_DIS 0x80000000
+
+#define write_cmd(Byte)     (*(volatile unsigned char*)disp_base = (Byte))
+#define write_data(Byte)    (*(volatile unsigned char*)(disp_base + 4) = (Byte))
+#define LCD_READ_A1()       (*(volatile unsigned char*)(disp_base + 1))
+#define LCD_READ_A0()       (*(volatile unsigned char*)disp_base)
+
+#define COL_ADDR_LSB        0x00    /* CA[3:0] */
+#define COL_ADDR_MSB        0x10    /* CA[6:4] */
+#define TEMP_COMPENS        0x24    /* TC[1:0] */
+#define POWER_CTL           0x28    /*   */
+#define ADV_POW_CTL_CMD     0x30    /* ---USELESS---  */
+#define SCR_LINE_LSB        0x40    /* SL[3:0] */
+#define SCR_LINE_MSB        0x50    /* SL[7:4] */
+#define ROW_ADDR_LSB        0x60    /* RA[3:0] */
+#define ROW_ADDR_MSB        0x70    /* RA[7:4] */
+#define VBIAS_POTENT_CMD    0x81    /* PM[7:0] */
+#define PARTIAL_DISP        0x84    /* LC[8] */
+#define RAM_ADDR_CTL        0x88    /* AC[2:0] */
+#define FIXED_LINE_CMD      0x90    /* FLT, FLB */
+#define LINE_RATE           0xA0    /* LC[4:3] */
+#define ALL_PIXEL_ON        0xA4    /* DC[1] */
+#define INVERSE_DISP        0xA6    /* DC[0] */
+#define DISP_ENABLE         0xA8    /* DC[4:2] */
+#define MAPPING_CTL         0xC0    /* LC[2:0] */
+#define LINE_INVERSE_CMD    0xC8    /* NIV[4:0] */
+#define COLOR_PATTERN       0xD0    /* LC[5] */
+#define COLOR_MODE          0xD4    /* LC[7:6] */
+#define COM_SCAN_FUNC       0xD8    /* CSF[2:0] */
+#define RESET_CMD           0xE2    /*  */
+#define BIAS_RATIO          0xE8    /* BR[1:0] */
+#define COM_END_CMD         0xF1    /* CEN[6:0] */
+#define PARTIAL_START_CMD   0xF2    /* DST[6:0] */
+#define PARTIAL_END_CMD     0xF3    /* DEN[6:0] */
+#define WIN_COL_START_CMD   0xF4    /* WPC0 */
+#define WIN_ROW_START_CMD   0xF5    /* WPP0 */
+#define WIN_COL_END_CMD     0xF6    /* WPC1 */
+#define WIN_ROW_END_CMD     0xF7    /* WPP1 */
+#define WIN_MODE            0xF8    /* AC[3] */
+#define MTP_OPER_CTL_CMD    0xB8    /* MTPC[4:0]*/
+//#define /*  */
+
+LCD_RECT disp_area = {0, 0, GUI_LCM_XMAX - 1, GUI_LCM_YMAX - 1};
+
+INT8U DispRAM[GUI_LCM_YMAX][(GUI_LCM_XMAX + 2) / 2];
+
+void lcdscan2(U8 dat)
+{
+    U8 i, j;
+
+    for(j = 0; j < 160; j++)
+    {
+#if 1
+        for(i = 0; i < 81; i++)
+        {
+            if(80 < j)
+                write_data(dat);
+            else
+                write_data(~dat);
+        }
+#endif
+    }
+}
+
+void lcdscan(U8 dat1, U8 dat2)
+{
+    U8 i, j;
+
+    for(j = 0; j < 160; j++)
+    {
+        
+#ifdef ORIGNAL
+        for(i = 0; i < 27; i++)
+        {
+            if( j % 2 == 0)
+            {
+                write_data(dat1);
+                write_data(dat1);
+                write_data(dat1);
+            }
+            else
+            {
+                write_data(dat2);
+                write_data(dat2);
+                write_data(dat2);
+            }       
+        }
+#else
+        for(i = 0; i < 81; i++)
+        {
+            write_data(dat1);
+        }
+#endif
+    }
+}
+
+void UC1698_init(void)
+{
+	write_cmd(RESET_CMD);
+    sleep(1);
+
+	write_cmd(POWER_CTL | 0x03);    /* PC[1:0] 11b -> internal Vlcd 13nF< LCD < 22nF */
+    write_cmd(LINE_RATE | 0x00);    /* LC[4:3] 00b -> 8.5KIps */
+    write_cmd(BIAS_RATIO | 0x03);   /* BR[1:0] must between V_lcd and V_bias */
+	
+    write_cmd(COM_END_CMD | 0x00);  /* set CEN[6:0] Com end */
+    write_cmd(0x9F);                /* value 159 ->  duty :1/160 */
+
+    write_cmd(VBIAS_POTENT_CMD);
+    write_cmd(0x80);                /* VLCD=(CV0+Cpm*pm)*(1+(T-25)*CT%) */
+    
+    //write_cmd(MAPPING_CTL | 0x07);  /* LC[2:0] 111b */
+    write_cmd(MAPPING_CTL | 0x00);
+	write_cmd(RAM_ADDR_CTL | 0x01); /* AC[2:0] AC[0] -> RA or CA will increment by one step */
+	write_cmd(COLOR_PATTERN | 0x01);
+	write_cmd(COLOR_MODE | 0x01);   /* when DC[2]=1 and LC[7:6]=01b means 4k-color*/
+
+    write_cmd(COM_SCAN_FUNC | 0x02);/* CSF[2:0] PWM:FRC:LRM */
+	write_cmd(DISP_ENABLE | 0x05);  /* DC[4:2]=101b display on, select on/off mode, Green Enhance mode disable */
+
+#ifdef LINE_INVERSION
+    write_cmd(LINE_INVERSE_CMD);
+	write_cmd(0x18);                /* NIV[4:0] 11000 -> Enable NIV / XOR / 11 Lines */ 
+#endif
+
+#ifdef PARTIAL_DISPALY   
+    write_cmd(PARTIAL_START_CMD);
+    write_cmd(0x00); 
+    write_cmd(PARTIAL_END_CMD);
+    write_cmd(0x5f);                /* 0x9f -> 159 */
+    write_cmd(PARTIAL_DISP | 0x01);
+#endif
+}
+
+void Init_Ram_Address(void)
+{
+#if 1
+    write_cmd(ROW_ADDR_MSB | 0x00); /* RA[7:4] */
+	write_cmd(ROW_ADDR_LSB | 0x00); /* RA[3:0] */
+	write_cmd(COL_ADDR_MSB | 0x02); /* CA[6:4] */
+	//write_cmd(COL_ADDR_MSB | 0x00); /* CA[6:4] */
+	write_cmd(COL_ADDR_LSB | 0x05); /* CA[3:0] */
+	//write_cmd(COL_ADDR_LSB | 0x00); /* CA[3:0] */
+
+
+	write_cmd(WIN_COL_START_CMD);
+    //write_cmd(0x00);
+    write_cmd(0x25); // 37D
+    //write_cmd(0x45); // 37D
+
+	write_cmd(WIN_COL_END_CMD);
+	//write_cmd(0x7f);                /* 7F->127 ORGINAL (0x4f+1)*3=240 5aH->90 保证54个RGB */
+	write_cmd(0x5a); // 90D
+
+	write_cmd(WIN_ROW_START_CMD);
+	write_cmd(0x00);
+
+	write_cmd(WIN_ROW_END_CMD);
+	write_cmd(0x9f);                /* 0x9F->159 */
+
+	write_cmd(WIN_MODE | 0x00);
+#endif
+
+    lcdscan2(0xff); // Line 1 only
+    sleep(1);
+    lcdscan2(0x00); // Line 1 only
+    sleep(1);
+    lcdscan2(0xff); // Line 1 only
+    sleep(1);
+
+#if 1 
+    lcdscan(0xff,0x00); // A Row Line
+    sleep(1);
+    lcdscan(0x00,0x00); // Nothing
+    sleep(1);
+    lcdscan(0x0f,0x0f); // A column Line
+    sleep(1);
+    lcdscan(0xf0,0x0f); // snow ?
+    sleep(1);
+    
+#endif
+/**********************************************************************************/
+}
+
+//此函数不完善,要求addr.x0=0; addr.x1=159
+void GUI_CopyRAMToLCD(LCD_RECT addr)
+{
+	INT8U i, j;
+	//for(i = addr.y0; i <= addr.y1; i++)
+    printf("x0=%d x1=%d y0=%d y1=%d\n", addr.x0, addr.x1, addr.y0, addr.y1);
+	for(i = addr.y0; i < addr.y1; i++)
+	//for(i = addr.y0; i <= addr.y1; i++)
+	{
+		for(j = addr.x0; j < (addr.x1 + 3) / 2; j++)	//保证每行写满81个字节
+        {
+            write_data(DispRAM[i][j]);
+            write_data(DispRAM[i][j]);
+            write_data(DispRAM[i][j]);
+        }
+	}
+}
+
+void GUI_FillSCR(U8 dat)
+{
+	U8 i, j;
+	for(i = 0; i < GUI_LCM_YMAX; i++)
+	{
+		//for(j = 0; j < (GUI_LCM_XMAX + 2) / 2; j++)
+		for(j = 0; j < 81; j++)
+        {
+            DispRAM[i][j] = dat;
+        }
+	}
+}
+
+int disp_init(void)
+{
+    int fd = -1;
+
+	if((fd = open("/dev/mem", O_RDWR | O_SYNC)) == -1){
+		return -1;
+	}
+
+	disp_base = mmap(0, 0x0f, PROT_READ | PROT_WRITE, MAP_SHARED, fd, AT91_DIS);
+	sys_base = mmap(0, 0x3fff, PROT_READ | PROT_WRITE, MAP_SHARED, fd, AT91_SYS);
+
+	at91_set_B_periph(PIN_PC12, 0);		/* set NCS7 enable */
+
+	/*
+	 * Static memory controller timing adjustments.
+	 * REVISIT:  these timings are in terms of MCK cycles, so
+	 * when MCK changes (cpufreq etc) so must these values...
+	 */
+#if 1 
+    at91_sys_write(AT91_SMC_SETUP(7),
+				  AT91_SMC_NWESETUP_(1)
+				| AT91_SMC_NCS_WRSETUP_(1)				//tcssa=5ns
+				| AT91_SMC_NRDSETUP_(1)
+				| AT91_SMC_NCS_RDSETUP_(1)
+            );
+	at91_sys_write(AT91_SMC_PULSE(7),
+					  AT91_SMC_NWEPULSE_(7)
+					| AT91_SMC_NCS_WRPULSE_(11)			//tcy=100ns
+					| AT91_SMC_NRDPULSE_(7)
+					| AT91_SMC_NCS_RDPULSE_(11)
+                );
+	at91_sys_write(AT91_SMC_CYCLE(7),
+					  AT91_SMC_NWECYCLE_(12)
+					| AT91_SMC_NRDCYCLE_(12)
+                );
+	at91_sys_write(AT91_SMC_MODE(7),
+					  AT91_SMC_READMODE
+					|  AT91_SMC_EXNWMODE_DISABLE
+					| AT91_SMC_DBW_8
+					| AT91_SMC_WRITEMODE
+					| AT91_SMC_BAT_WRITE
+					| AT91_SMC_TDF_(4)
+                );
+#endif
+
+	UC1698_init();
+    Init_Ram_Address();
+
+	return 0;
+}
+
+void disp_exit (void)
+{
+    at91_set_GPIO_periph(PIN_PC12, 0); /* must disable periph function but useless here */
+	munmap(disp_base, 0x0f);
+	munmap(sys_base, 0x3fff);
+}
+
+int main (void)
+{
+	int ret = 0;
+
+#ifdef MODIFY_TIME
+	//printf("+----------------------------------------+\n");
+	printf("| 	 Modify  time : %s\n", MODIFY_TIME);
+	//printf("+----------------------------------------+\n");
+#endif
+
+	if((ret = disp_init()) != 0)
+		goto error;
+#if 1
+    int i = 0;
+    while(i < 10)
+    {
+        GUI_FillSCR(0x00);
+        GUI_CopyRAMToLCD(disp_area);
+
+        GUI_FillSCR(0xff);
+        disp_area.y0 += 10;
+        disp_area.y1 += 10;
+        if(disp_area.y1 > 159){
+            disp_area.y0 = 0;
+            disp_area.y1 = 10;
+        }
+        GUI_CopyRAMToLCD(disp_area);
+        sleep(1);
+        i++;
+    }
+#endif
+
+	disp_exit();
+    //printf("LINE:%03d FUNC:%s()\n", __LINE__, __func__);
+    return ret;
+
+error:
+	printf ("test error %d\n",ret);
+	return 0;
+}
