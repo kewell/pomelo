@@ -13,6 +13,6 @@ $(APP): %: %.c
 	fi;
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 	'cp' lcd /tftp/
-	sudo 'cp' lcd /home/wenjing/WIN/G/
+	#sudo 'cp' lcd /home/wenjing/WIN/G/
 clean:
 	rm -fr $(APP)   

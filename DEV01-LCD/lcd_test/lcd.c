@@ -242,117 +242,86 @@ void disp_exit (void)
 	munmap(sys_base, 0x3fff);
 }
 
-void words_2(uchar x,uchar y,uchar type,uchar *p)			//type=1,ascii;type=2,Chinese character
+void words_all (U8 x, U8 y, U8 width, U8 hight, U8 *p)
 {
-	uchar i,k,j,m,font_index,x0;
-
-    U8 index = 0, compare = 0, font_width = 12, byte_count = 0, byte_half = 0; 
-    U8 data[24] = {0};
-    U8 *pc_tmp;
+	U8 j, index = 0, compare = 0, byte_count; 
+    unsigned long font_index;
+    U8 data[160] = {0};
+    U8 *font;
                 
-	x=37+x;
-	x0=0x00|(x&0x0f);
-	x=0x10|((x&0xf0)>>4);
+	x = 37 + x;
 
-    for(i=0;i<3;i++)// if (i == 0) //write data 3 * (8 * 4 * 3 )times --> 24*24 pixs
+    for (j = 0; j < hight; j++) // if (j < 2)
 	{
-	    // 每次循环写8行: write data 8 * (4 * 3)times --> 8*24 = 192 pixs
-		for(j=0;j<8;j++)// if (j < 2)
-		{
-		    byte_count = 0;
-            
-		    m=i*8+j;
-            /*
-             * i = 0   0  1  2  3  4  5  6  7
-             * i = 1   8  9 10 11 12 13 14 15
-             * i = 2  16 17 18 19 20 21 22 23
-             */
+	    byte_count = 0;
 
-            write(0,x0);
-			write(0,x);
-			write(0,0x60|((y+m)&0x0f));
-			write(0,0x70|(((y+m)&0xf0)>>4));
+        write(0, 0x00 | (x  & 0x0f));
+        write(0, 0x10 | ((x & 0xf0) >> 4)); /* Why this four command must be together ??? */
 
-            
+        write(0, 0x60 | ((y + j)  & 0x0f));
+		write(0, 0x70 | (((y + j) & 0xf0) >> 4));
 
-            if (2 == type)
+        if (0 == width % 8)
+        {
+            font_index = j * (width / 8); 
+        }
+        else
+        {
+            font_index = j * (width / 8 + 1); 
+        }
+
+        //printf("[%03d] = %d\n", j, font_index);
+
+        for (index = 0; index < width;) /* wirte one row */ 
+        {
+            data[index] = 0x00;
+
+            compare = 0x01 << (index - 8 * byte_count);
+            font = p + font_index + byte_count;
+
+            if ((compare == ((*font) & compare)))
             {
-                font_width = 24;
+                if(0 == index % 2)
+                {
+                    data[index] = 0x80;
+                }
+                else
+                {
+                    data[index] = 0x08;
+                }
             }
 
-            font_index = (j + 8 * i) * (type+1); //////////////////////
-
-            byte_half = font_width % 8;
-
-            for (index = 0; index < font_width;)
+            if (1 == index % 2)
             {
-                data[index] = 0x00;
+                write(1, data[index - 1] | data[index]);
+            }
 
-                compare = 0x01 << (index - 8 * byte_count);
-                pc_tmp = p + font_index + byte_count;
-
-                if ((compare == ((*pc_tmp) & compare)))
-                {
-                    if(0 == index % 2)
-                    {
-                        data[index] = 0x80;
-                    }
-                    else
-                    {
-                        data[index] = 0x08;
-                    }
-                }
-
-                printf("data[%d]:0x%02x  bit:[%02d]=0x%02x\n",font_index + byte_count, *pc_tmp, index, data[index]);
-
-                if (1 == index % 2)
-                {
-                    write(1, data[index - 1] | data[index]);
-                }
-
-                index++;
-                
-                if (0 == (index % 8))
-                {
-                    byte_count++;
-                }
+            index++;
+            if (0 == (index % 8))
+            {
+                byte_count++;
             }
         }
-	}
+    }
 }
 
-/* 24 x 24
-    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x06,
-    0xC0,0x00,0x04,0x60,0x00,0x04,0x28,0x07,
-    0xFF,0xFC,0x04,0x06,0x00,0x04,0x02,0x20,
-    0x07,0xF2,0x60,0x04,0x23,0x40,0x04,0x21,
-    0x80,0x0C,0x21,0x80,0x09,0xE2,0xC4,0x18,
-    0x4C,0x74,0x18,0x30,0x5C,0x27,0xFF,0xE4,
-    0x04,0x46,0x20,0x04,0x46,0x20,0x04,0x46,
-    0x20,0x04,0x46,0x20,0x04,0x46,0x28,0x3F,
-    0xFF,0xFC,0x00,0x00,0x00,0x00,0x00,0x00,
-*/
-//words(4, 10, 2, q[0]);
-void words(uchar x,uchar y,uchar type,uchar *p)			//type=1,ascii;type=2,Chinese character
+void words(U8 x,U8 y,U8 type,U8 *p)			//type=1,ascii;type=2,Chinese character
 {
-	uchar i,k,j,m,n,l,x0,dat0,dat1,dat2,dat3,dat4,dat5,dat6;
+	U8 i,k,j,m,n,l,x0,dat0,dat1,dat2,dat3,dat4,dat5,dat6;
 	x=37+x;
 	x0=0x00|(x&0x0f);
 	x=0x10|((x&0xf0)>>4);
 
-    for(i=0;i<3;i++) //if (i == 0) //write data 3 * (8 * 4 * 3 )times --> 24*24 pixs
+    for(i=0;i<3;i++) //if (i == 0)
 	{
 	    n=i*12*type; // 0 24 48
 		
 		// 每次循环写8行: write data 8 * (4 * 3)times --> 8*24 = 192 pixs
 		for(j=0;j<8;j++)//if (j == 0)
-		{	m=i*8+j;
-            /*
-             * i = 0   0  1  2  3  4  5  6  7
-             * i = 1   8  9 10 11 12 13 14 15
-             * i = 2  16 17 18 19 20 21 22 23
-             */
-			//write(0,0x89);
+		{
+		    m=i*8+j;
+
+            //write(0,0x89);
 			
 			write(0,x0);
 			write(0,x);
@@ -363,27 +332,8 @@ void words(uchar x,uchar y,uchar type,uchar *p)			//type=1,ascii;type=2,Chinese 
 			for(k = 0; k < 2 * type; k++) //if(k == 0)
 			{         
 				l = k*6 + n;
-                /*
-                 * k =     |  0  1  2  3
-                 * -----------------------------------------------------
-                 * n =  0  |  0  6 12 18
-                 * n = 24  | 24 30 36 42
-                 * n = 48  | 48 54 60 66
-                 * -----------------------------------------------------
-                 */
 
-                #if 0
-                int index = 0;
-                for(; index < 6; index ++)
-                {
-                    printf("[%02d]=%02x ",index+l, *(p+index+l));
-                }
-                printf("\n");
-                #endif
-                
-
-                // p [00] --- [71]
-				dat6=0x01<<j; // j = 0-7
+                dat6=0x01<<j; // j = 0-7
                 
 				dat0=(*(p+0+l))&dat6;
 				dat0=dat0>>j;
@@ -412,111 +362,6 @@ void words(uchar x,uchar y,uchar type,uchar *p)			//type=1,ascii;type=2,Chinese 
 				write(1,dat0|dat1);
 				write(1,dat2|dat3);
 				write(1,dat4|dat5);
-
-                //printf("%02x %02x %02x %02x %02x %02x \n", dat0 ,dat1 ,dat2 ,dat3 ,dat4 ,dat5);
-                //printf("\n");
-                    
-
-                //usleep(10000);
-
-			}
-            //write(0,0x88);
-		}
-	}
-	//write(0,0x89);
-}
-
-void words_row_inversion(uchar x,uchar y,uchar type,uchar *p)			//type=1,ascii;type=2,Chinese character
-{
-	uchar i,k,j,m,n,l,x0,dat0,dat1,dat2,dat3,dat4,dat5,dat6,dat7,dat8;
-	x=37+x;
-	x0=0x00|(x&0x0f);
-	x=0x10|((x&0xf0)>>4);
-
-    for(i=0;i<3;i++) if (i == 0) //write data 3 * (8 * 4 * 3 )times --> 24*24 pixs
-	{
-	    n=i*12*type; // 0 24 48
-		
-		// 每次循环写8行: write data 8 * (4 * 3)times --> 8*24 = 192 pixs
-		for(j=0;j<8;j++)if (j == 0)
-		{	m=i*8+j;
-            /*
-             * i = 0   0  1  2  3  4  5  6  7
-             * i = 1   8  9 10 11 12 13 14 15
-             * i = 2  16 17 18 19 20 21 22 23
-             */
-			//write(0,0x89);
-			
-			write(0,x0);
-			write(0,x);
-			write(0,0x60|((y+m)&0x0f));
-			write(0,0x70|(((y+m)&0xf0)>>4));
-
-			// 每次循环写一行: write data 4*3 times --> 24 pixs
-			for(k = 0; k < 2 * type; k++) //if(k == 0)
-            {         
-				l = k*6 + n;
-                /*
-                 * k =     |  0  1  2  3
-                 * -----------------------------------------------------
-                 * n =  0  |  0  6 12 18
-                 * n = 24  | 24 30 36 42
-                 * n = 48  | 48 54 60 66
-                 * -----------------------------------------------------
-                 */
-
-                #if 1
-                int index = 0;
-                for(; index < 6; index ++)
-                {
-                    printf("[%02d]=%02x ",index+l, *(p+index+l));
-                }
-                printf("\n");
-                #endif
-                
-
-                // p [00] --- [71]
-				dat8=0x01<<j; // j = 0-7
-                
-				dat0=(*(p+l))&dat8;
-				dat0=dat0>>j;
-				dat0<<=7;
-				
-				dat1=(*(p+l))&dat8;
-				dat1=dat1>>j;
-				dat1<<=3;
-
-				dat2=*(p+l)&dat8;
-				dat2=dat2>>j;
-				dat2<<=7;
-
-				dat3=(*(p+l))&dat8;
-				dat3=dat3>>j;
-				dat3<<=3;
-
-				dat4=(*(p+l))&dat8;
-				dat4=dat4>>j;
-				dat4<<=7;
-
-				dat5=(*(p+l))&dat8;
-				dat5=dat5>>j;
-				dat5<<=3;
-
-                dat6=(*(p+l))&dat8;
-				dat6=dat5>>j;
-				dat6<<=7;
-
-                dat7=(*(p+l))&dat8;
-				dat7=dat5>>j;
-				dat7<<=3;
-
-				write(1,dat0|dat1);
-				write(1,dat2|dat3);
-				write(1,dat4|dat5);
-                write(1,dat6|dat7);
-
-                //sleep(2);
-
 			}
             //write(0,0x88);
 		}
@@ -526,97 +371,69 @@ void words_row_inversion(uchar x,uchar y,uchar type,uchar *p)			//type=1,ascii;t
 
 void character(void)
 {
-	uchar *q;
-	uchar i,j;//,temp[3],table[6];
+    //U8 i,j,temp[3],table[6],*q;
 
-#if 1
-    for(i=0;i<1;i++)
-	{
-		q=hanzi+i*72;
-		j=9*i+4;
-		//words(j,10,2,q);
-
-        words_2(0,0,2,q);
-    }
-#endif
-
-
-
+    //words_all(0, 0, 48, 96, width_48);sleep(1);
+    words_all(0, 0, 80, 160, half_width);
+    
 #if 0
 
-
-    for(i=0;i<1;i++)
-	{
-		q=zimu+i*36;
-		j=4*i+4;
-		words_2(j,40,1,q);
-
-        //usleep(50000);
-	}
-    
-
     for(i=0;i<1;i++)
 	{
 		q=hanzi+i*72;
-		j=9*i+4;
-		//words(j,10,2,q);
+		j=8*i;
 
-        words(0,0,2,q);
-
-        usleep(50000);
-	}
+        words_all(j,0,24,24,q);
+    }
     
 
 	for(i=0;i<11;i++)
 	{
-		q=zimu+i*36;
-		j=4*i+4;
-		words(j,40,1,q);
-
-        usleep(50000);
-	}
+		q=zimu+i*48;
+		j=4*i;
+		words_all(j,40,12,24,q);
+    }
 	
 	for(i=11;i<18;i++)
 	{
-		q=zimu+i*36;
-		j=4*(i-11)+4;
-		words(j,70,1,q);
-        usleep(50000);
-	}	
+		q=zimu+i*48;
+		j=4*(i-11);
+		words_all(j,70,12,24,q);
+     }	
 
 	for(i=18;i<25;i++)
 	{
-		q=zimu+i*36;
-		j=4*(i-18)+1;
-		words(j,100,1,q);
-        usleep(50000);
-	}
-	
-		temp[0]=read(0);
-		temp[1]=read(0);
-		temp[2]=read(0);
-		table[0]=(temp[0]&0xf0)>>4;
-		table[1]=temp[0]&0x0f;
-		q=ascii+table[0]*36;		
-		words(29,100,1,q);
-		q=ascii+table[1]*36;		
-		words(33,100,1,q);
+		q=zimu+i*48;
+		j=4*(i-18);
+		words_all(j,100,12,24,q);
+     }
 
-		table[2]=(temp[1]&0xf0)>>4;
-		table[3]=temp[1]&0x0f;
-		q=ascii+table[2]*36;		
-		words(37,100,1,q);
-		q=ascii+table[1]*36;		
-		words(41,100,1,q);
+	temp[0]=read(0);
+	temp[1]=read(0);
+	temp[2]=read(0);
+	table[0]=(temp[0]&0xf0)>>4;
+	table[1]=temp[0]&0x0f;
+	q=ascii+table[0]*36;		
+	words(29,100,1,q);
+	q=ascii+table[1]*36;		
+	words(33,100,1,q);
 
-		table[4]=(temp[2]&0xf0)>>4;
-		table[5]=temp[2]&0x0f;
-		q=ascii+table[4]*36;		
-		words(45,100,1,q);
-		q=ascii+table[5]*36;		
-		words(49,100,1,q);
+	table[2]=(temp[1]&0xf0)>>4;
+	table[3]=temp[1]&0x0f;
+	q=ascii+table[2]*36;		
+	words(37,100,1,q);
+	q=ascii+table[1]*36;		
+	words(41,100,1,q);
+
+	table[4]=(temp[2]&0xf0)>>4;
+	table[5]=temp[2]&0x0f;
+	q=ascii+table[4]*36;		
+	words(45,100,1,q);
+	q=ascii+table[5]*36;		
+	words(49,100,1,q);
 #endif
 }
+
 //coord(0x25,i+16*k);
 void coord(U8 col,U8 page)
 {
@@ -680,7 +497,7 @@ void writeHZ(U8 h1, U8 h2, U8 h3) // 8 SW() * 2 = 16 bytes
 }
 
 /*
-uchar code  font[]={
+U8 code  font[]={
 //--  文字:  欢
 //--  宋体12;  此字体下对应的点阵为：宽x高=16x16
 0x00,0x80,0x00,0x80,0xFC,0x80,0x05,0xFE,0x85,0x04,0x4A,0x48,0x28,0x40,0x10,0x40,
