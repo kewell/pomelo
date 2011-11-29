@@ -15,8 +15,10 @@
 
 #ifndef AT91SAM9_SMC_H
 #define AT91SAM9_SMC_H
+#define AT91_SYS_2            (0xffffc000 )
+#define AT91_SMC_2            (0xffffec00 - AT91_SYS_2 )
 
-#define AT91_SMC_SETUP(n)	(AT91_SMC + 0x00 + ((n)*0x10))	/* Setup Register for CS n */
+#define AT91_SMC_SETUP(n)	(AT91_SMC_2 + 0x00 + ((n)*0x10))	/* Setup Register for CS n */
 #define		AT91_SMC_NWESETUP	(0x3f << 0)			/* NWE Setup Length */
 #define			AT91_SMC_NWESETUP_(x)	((x) << 0)
 #define		AT91_SMC_NCS_WRSETUP	(0x3f << 8)			/* NCS Setup Length in Write Access */
@@ -26,7 +28,7 @@
 #define		AT91_SMC_NCS_RDSETUP	(0x3f << 24)			/* NCS Setup Length in Read Access */
 #define			AT91_SMC_NCS_RDSETUP_(x)	((x) << 24)
 
-#define AT91_SMC_PULSE(n)	(AT91_SMC + 0x04 + ((n)*0x10))	/* Pulse Register for CS n */
+#define AT91_SMC_PULSE(n)	(AT91_SMC_2 + 0x04 + ((n)*0x10))	/* Pulse Register for CS n */
 #define		AT91_SMC_NWEPULSE	(0x7f <<  0)			/* NWE Pulse Length */
 #define			AT91_SMC_NWEPULSE_(x)	((x) << 0)
 #define		AT91_SMC_NCS_WRPULSE	(0x7f <<  8)			/* NCS Pulse Length in Write Access */
@@ -36,13 +38,13 @@
 #define		AT91_SMC_NCS_RDPULSE	(0x7f << 24)			/* NCS Pulse Length in Read Access */
 #define			AT91_SMC_NCS_RDPULSE_(x)((x) << 24)
 
-#define AT91_SMC_CYCLE(n)	(AT91_SMC + 0x08 + ((n)*0x10))	/* Cycle Register for CS n */
+#define AT91_SMC_CYCLE(n)	(AT91_SMC_2 + 0x08 + ((n)*0x10))	/* Cycle Register for CS n */
 #define		AT91_SMC_NWECYCLE	(0x1ff << 0 )			/* Total Write Cycle Length */
 #define			AT91_SMC_NWECYCLE_(x)	((x) << 0)
 #define		AT91_SMC_NRDCYCLE	(0x1ff << 16)			/* Total Read Cycle Length */
 #define			AT91_SMC_NRDCYCLE_(x)	((x) << 16)
 
-#define AT91_SMC_MODE(n)	(AT91_SMC + 0x0c + ((n)*0x10))	/* Mode Register for CS n */
+#define AT91_SMC_MODE(n)	(AT91_SMC_2 + 0x0c + ((n)*0x10))	/* Mode Register for CS n */
 #define		AT91_SMC_READMODE	(1 <<  0)			/* Read Mode */
 #define		AT91_SMC_WRITEMODE	(1 <<  1)			/* Write Mode */
 #define		AT91_SMC_EXNWMODE	(3 <<  4)			/* NWAIT Mode */
@@ -66,11 +68,11 @@
 #define			AT91_SMC_PS_16			(2 << 28)
 #define			AT91_SMC_PS_32			(3 << 28)
 
-#if defined(AT91_SMC1)		/* The AT91SAM9263 has 2 Static Memory contollers */
-#define AT91_SMC1_SETUP(n)	(AT91_SMC1 + 0x00 + ((n)*0x10))	/* Setup Register for CS n */
-#define AT91_SMC1_PULSE(n)	(AT91_SMC1 + 0x04 + ((n)*0x10))	/* Pulse Register for CS n */
-#define AT91_SMC1_CYCLE(n)	(AT91_SMC1 + 0x08 + ((n)*0x10))	/* Cycle Register for CS n */
-#define AT91_SMC1_MODE(n)	(AT91_SMC1 + 0x0c + ((n)*0x10))	/* Mode Register for CS n */
+#if defined(AT91_SMC_21)		/* The AT91SAM9263 has 2 Static Memory contollers */
+#define AT91_SMC_21_SETUP(n)	(AT91_SMC_21 + 0x00 + ((n)*0x10))	/* Setup Register for CS n */
+#define AT91_SMC_21_PULSE(n)	(AT91_SMC_21 + 0x04 + ((n)*0x10))	/* Pulse Register for CS n */
+#define AT91_SMC_21_CYCLE(n)	(AT91_SMC_21 + 0x08 + ((n)*0x10))	/* Cycle Register for CS n */
+#define AT91_SMC_21_MODE(n)	(AT91_SMC_21 + 0x0c + ((n)*0x10))	/* Mode Register for CS n */
 #endif
 
 #endif
