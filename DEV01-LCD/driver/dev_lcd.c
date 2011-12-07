@@ -91,8 +91,7 @@ inline void write_cmd(unsigned char cmd)
 {
 	*(unsigned char *)(lcd_base) = cmd;
 }
-
-void display_word (U8 x, U8 y, U8 width, U8 hight, U8 *p)
+void display_word3 (U8 x, U8 y, U8 hight, U8 width,  U8 *p)
 {
     U8 j, index = 0, compare = 0, byte_count; 
     unsigned long font_index;
@@ -112,9 +111,9 @@ void display_word (U8 x, U8 y, U8 width, U8 hight, U8 *p)
         write_cmd(0x60 | ((y + j)  & 0x0f));
 		write_cmd(0x70 | (((y + j) & 0xf0) >> 4));
 
-        if (0 == width % 8)
+        if (0 == (width % 8))
         {
-            font_index = j * (width / 8); 
+            font_index = j * (width / 8); // if width == 7 DIE!!!
         }
         else
         {
@@ -140,7 +139,7 @@ void display_word (U8 x, U8 y, U8 width, U8 hight, U8 *p)
                 }
             }
 
-            if (1 == index % 2)
+            if (1 == index % 2) // if width is odd number , then will lost one number here !!!
             {
                 write_data(data[index - 1] | data[index]);
                 write_count++;
@@ -152,6 +151,156 @@ void display_word (U8 x, U8 y, U8 width, U8 hight, U8 *p)
                 byte_count++;
             }
         }
+        
+        if (2 == write_count % 3)
+        {
+            write_data(0x00);
+        }
+        else if (1 == write_count % 3)
+        {
+            write_data(0x00);
+            write_data(0x00);
+        }
+    }
+}
+
+
+void display_word2 (U8 x, U8 y, U8 width, U8 hight, U8 *p)
+{
+    U8 j, index = 0, compare = 0, byte_count; 
+    unsigned long font_index;
+    U8 data[160] = {0};
+    U8 *font, write_count = 0;
+                
+	x = 37 + x;
+
+    for (j = 0; j < hight; j++)
+	{
+	    write_count = 0;
+        byte_count = 0;
+
+        write_cmd(0x00 | (x  & 0x0f));
+        write_cmd(0x10 | ((x & 0xf0) >> 4)); /* Why this four command must be together ??? */
+
+        write_cmd(0x60 | ((y + j)  & 0x0f));
+		write_cmd(0x70 | (((y + j) & 0xf0) >> 4));
+
+        if (0 == (width % 8))
+        {
+            font_index = j * (width / 8); // if width == 7 DIE!!!
+        }
+        else
+        {
+            font_index = j * (width / 8 + 1); 
+        }
+
+        for (index = 0; index < width;) /* wirte one row */ 
+        {
+            data[index] = 0x00;
+
+            compare = 0x01 << (index - 8 * byte_count);
+            font = p + font_index + byte_count;
+
+            if ((compare == ((*font) & compare)))
+            {
+                if(0 == index % 2)
+                {
+                    data[index] = 0x80;
+                }
+                else
+                {
+                    data[index] = 0x08;
+                }
+            }
+
+            if (1 == index % 2) // if width is odd number , then will lost one number here !!!
+            {
+                write_data(data[index - 1] | data[index]);
+                write_count++;
+            }
+
+            index++;
+            if (0 == (index % 8))
+            {
+                byte_count++;
+            }
+        }
+        
+        if (2 == write_count % 3)
+        {
+            write_data(0x00);
+        }
+        else if (1 == write_count % 3)
+        {
+            write_data(0x00);
+            write_data(0x00);
+        }
+    }
+}
+
+
+void display_word (U8 x, U8 y, U8 width, U8 hight, U8 *p)
+{
+    U8 j, compare = 0; 
+    unsigned long font_count;
+    int index = 0, byte_count = 0;
+    U8 data[160] = {0};
+    U8 *font, write_count = 0;
+
+    U8 width_rest = width % 8;
+
+    x = 37 + x;
+
+    if (0 == width_rest)
+    {
+        font_count = width / 8;
+    }
+    else
+    {
+        font_count = width / 8 + 1;
+    }
+    
+    for (j = 0; j < hight; j++)
+	{
+	    write_count = 0;
+        byte_count = font_count - 1;
+
+        write_cmd(0x00 | (x  & 0x0f));
+        write_cmd(0x10 | ((x & 0xf0) >> 4)); /* Why this four command must be together ??? */
+
+        write_cmd(0x60 | ((y + j)  & 0x0f));
+		write_cmd(0x70 | (((y + j) & 0xf0) >> 4));
+
+        for (index = width - 1; index >= 0; index--) /* wirte one row */ 
+        {
+            data[index] = 0x00;
+
+            compare = 0x80 >> (index - 8 * (byte_count));
+            font = p + j * font_count + byte_count;
+
+            if ((compare == ((*font) & compare)))
+            {
+                if(0 == index % 2)
+                {
+                    data[index] = 0x08;
+                }
+                else
+                {
+                    data[index] = 0x80;
+                }
+            }
+
+            if (0 == index % 2)
+            {
+                write_data(data[index + 1] | data[index]);
+                write_count++;
+            }
+
+            if (0 == (index % 8))
+            {
+                byte_count--;
+            }
+        }
 
         if (2 == write_count % 3)
         {
@@ -161,7 +310,8 @@ void display_word (U8 x, U8 y, U8 width, U8 hight, U8 *p)
         {
             write_data(0x00);
             write_data(0x00);
-        }  
+        }
+        
     }
 }
 
@@ -174,6 +324,10 @@ static void display_string(struct display_format *fmt, U8 *font, int len)
 
     while (pos < len)
     {
+        /* 
+         When column address(WPC) increase by one,three pixel will be displayed .
+         So,segment must be 3 integral multiples in window program
+        */
         xTmp = (fmt->x + (col * (fmt->gapX + fmt->width)));
         xMirror  = xTmp / 3;// + ((0 == xTmp % 3) ? 0 : 1);
 
@@ -331,6 +485,7 @@ void LCD_SetWindowProgram(U8 x1, U8 y1, U8 x2, U8 y2)
 	write_cmd(0x25 + x1 / 3);
 	write_cmd(0xf6 );
 	write_cmd(0x25+ (x2 + 2) / 3);
+    //printk("%d\n", 0x25+ (x2 + 2) / 3);
 	write_cmd(0xf5);
 	write_cmd(y1);
 	write_cmd(0xf7);
@@ -424,8 +579,7 @@ void init_uc1698 (void)
     write_cmd(0x80);                /* VLCD=(CV0+Cpm*pm)*(1+(T-25)*CT%) */
     
     write_cmd(MAPPING_CTL | 0x04);  /* LC[2:0] MY inversion/MX inversion/Fix line display */
-    //write_cmd(MAPPING_CTL | 0x00);
-	
+    
     write_cmd(RAM_ADDR_CTL | 0x01); /* AC[2:0] AC[0] -> RA or CA will increment by one step */
 	write_cmd(COLOR_PATTERN | 0x01);
 	write_cmd(COLOR_MODE | 0x01);   /* when DC[2]=1 and LC[7:6]=01b means 4k-color*/
@@ -515,16 +669,19 @@ static int initialize (void)
 #if 0
     write_cmd(MAPPING_CTL | 0x04);
 
-    GUI_FillSCR(0x00);
+    //GUI_FillSCR(0x00);
+    //Init_Ram_Address();
+
+    //write_cmd(WIN_MODE | 0x00);
 
     for(i = 0; i < 0; i++)
     {
-        display_word(i*16, 16*i, 8, 16, width_8_ENG);
-        //display_word(i * 7, 0, 20, 40, width_20_time + i * 120);
-        //display_word(i * 5, 40, 16, 16, width_16_chinese + i * 32);
+        //display_word(i*16, 16*i, 8, 16, width_8_ENG);
+        display_word(i * 7, 0, 20, 40, width_20_time + i * 120);
+        display_word(i * 5, 40, 16, 16, width_16_chinese + i * 32);
     }
 
-    //return 0;
+    return 0;
 
     struct display_format *format = kmalloc(sizeof(struct display_format), GFP_KERNEL);
     unsigned long len;
@@ -552,36 +709,61 @@ static int initialize (void)
 
     len = format->size * 12;
     display_string(format, width_16_chinese, len);
+    
+
+    write_cmd(ROW_ADDR_MSB | (i & 0xf0)); /* RA[7:4] */
+    write_cmd(ROW_ADDR_LSB | (i & 0x0f)); /* RA[3:0] */
+
+    write_cmd(COL_ADDR_MSB | 0x02); /* CA[6:4] */
+    write_cmd(COL_ADDR_LSB | 0x05); /* CA[3:0] 0100101B --> 37D*/
+        
 #endif    
 #if 1
 
-    write_cmd(MAPPING_CTL | 0x04);
+    GUI_FillSCR(0x00);
+    Init_Ram_Address();
+
+    write_cmd(MAPPING_CTL | 0x00);
     write_cmd(RAM_ADDR_CTL | 0x01); /* AC[2:0] AC[0] -> RA or CA will increment by one step */
 
-    GUI_FillSCR(0x00);
-
-    for(i = 0; i < 26 * 2; i++)
+    for(i = 0; i > 16 * 1; i++)
     {
         write_data(0xff);
         write_data(0xff);
         write_data(0xff);
         write_data(0xff);
+        write_data(0x0);
         write_data(0xff);
         write_data(0xff);
         write_data(0xff);
         write_data(0xff);
+        msleep(100);
         write_data(0xff);
-        msleep(10);
+        write_data(0xff);
+        write_data(0xff);
+        write_data(0xff);
+        write_data(0x0);
+        write_data(0xff);
+        write_data(0xff);
+        write_data(0xff);
+        write_data(0xff);
+        msleep(100);        
     }
 
-    for(i = 0; i < 10; i++)
+    for(i = 0; i < 4; i++)
     {
-        display_word(i, 40 * i, 20, 40, width_20_time + i * 120);
+        //display_word(0, 0, 12, 24, width_12_ENG_R2L + 5 * 48);
+        display_word(i*4, 0, 12, 24, width_12_ENG_R2L + (12 - i )* 48);
+        display_word(i*8, 24, 24, 24, width_24_sft_R2L + i * 72);
+        display_word3(i*10, 48, 16, 32, width_16_ENG_COL + i * 64);
+        //display_word(i, 40 * i, 20, 40, width_20_time + i * 120);
         //display_word(i * 5, 40, 16, 16, width_16_chinese + i * 32);
     }
         
 #endif
 
+    //I_FillSCR(0x00);
+    
     return 0;
 }
 
