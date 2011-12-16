@@ -21,10 +21,5 @@
 int main (int argc, char **argv)
 {
     printf("SVN_REV=%s, SVN_REVDATE=%s\n", SVN_REV, SVN_REVDATE);
-
-
-
     return 0;
 } /* ----- End of main() ----- */
-
-//
