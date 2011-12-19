@@ -1,0 +1,6 @@
+git init
+touch README 
+git commit -m "introduce note"
+git remote add origin git@github.com:kewell/pomelo.git
+git push origin master
+git config --global user.name="harry kewell"
