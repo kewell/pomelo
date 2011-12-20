@@ -1,0 +1,3 @@
+#Wed Mar 24 10:06:17 CST 2010
+eclipse.preferences.version=1
+environment/project/0.920202094=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\r\n<environment append\="true" appendContributed\="true">\r\n<variable delimiter\=";" name\="CYGWIN" operation\="append" value\="nodosfilewarning"/>\r\n<variable delimiter\=";" name\="PATH" operation\="append" value\="C\:\\cygwin\\opt\\toolchain-uclibc\\usr\\bin;C\:\\cygwin\\bin"/>\r\n</environment>\r\n
