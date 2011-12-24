@@ -18,11 +18,6 @@
 #define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
 #define DRV_DESC                  "AT91SAM9XXX Key pad driver"
 
-/*Driver version*/
-#define DRV_MAJOR_VER             1
-#define DRV_MINOR_VER             0
-#define DRV_REVER_VER             0
-
 #define DEV_NAME                  DEV_KEY_NAME
 
 #ifndef DEV_MAJOR
@@ -214,8 +209,8 @@ static int __init keypad_init(void)
     device_create (dev_class, NULL, devno, DEV_NAME);
 #endif  
     
-    printk("%s driver version %d.%d.%d initiliazed\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER,
-               DRV_REVER_VER);
+    printk("AT91 %s driver version %d.%d.%s <%s> initiliazed.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER, __DATE__);
+
 	return 0;
 
 ERROR:

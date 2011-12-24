@@ -18,12 +18,21 @@
 
 #include "sys_include.h"
 #include "plat_ioctl.h"
+#include "svnrev.h"
+    
+#ifndef SVN_REVSTR
+#define SVN_REVSTR
+#endif
 
+/*   Driver version*/
+#define DRV_MAJOR_VER   1
+#define DRV_MINOR_VER   0
+#define DRV_REVER_VER   SVN_REVSTR
+
+#define PLAT_CCTT
 /*Plat dependency head file*/
-#if (defined PLAT_L2)
-#include "plat_l2.h"
-#elif (defined PLAT_L3)
-#include "plat_l3.h"
+#if (defined PLAT_CONCENTRATOR)
+#include "plat_concentrator.h"
 #endif
 
 /*===========================================================================
@@ -141,18 +150,18 @@ enum
 #define SLEEP(x)    {DECLARE_WAIT_QUEUE_HEAD (stSleep); if (10 > x) mdelay ((x * 1000)); \
                     else wait_event_interruptible_timeout (stSleep, 0, (x / 10));}
 
-#define VERSION_CODE(a,b,c)       ( ((a)<<16) + ((b)<<8) + (c))
-#define DRV_VERSION               VERSION_CODE(DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER)
-#define MAJOR_VER(a)              ((a)>>16&0xFF)
-#define MINOR_VER(a)              ((a)>>8&0xFF)
-#define REVER_VER(a)              ((a)&0xFF)
+#define VERSION_CODE(a,b)           (((a)<<16) + ((b)<<8))
+#define DRV_VERSION                 VERSION_CODE(DRV_MAJOR_VER, DRV_MINOR_VER)
+#define MAJOR_VER(a)                ((a)>>16&0xFF)
+#define MINOR_VER(a)                ((a)>>8&0xFF)
+//#define REVER_VER(a)                ((a)&0xFF)
 
 static inline void print_version(int version)
 {
 #ifdef __KERNEL__
-    printk("%d.%d.%d\n", MAJOR_VER(version), MINOR_VER(version), REVER_VER(version));
+    printk("%d.%d.%s\n", MAJOR_VER(version), MINOR_VER(version), DRV_REVER_VER);
 #else
-    printf("%d.%d.%d\n", MAJOR_VER(version), MINOR_VER(version), REVER_VER(version));
+    printf("%d.%d.%s\n", MAJOR_VER(version), MINOR_VER(version), DRV_REVER_VER);
 #endif
 }
 

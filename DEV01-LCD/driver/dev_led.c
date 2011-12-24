@@ -1,5 +1,5 @@
 /*********************************************************************************
- *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
+ *  Copyright(c)  2011, WENJING <wenjing0101@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  dev_led.c
@@ -8,20 +8,15 @@
  *     ChangLog:
  *      1,   Version: 1.0.0
  *              Date: 2011-08-10
- *            Author: Guo Wenxue <guowenxue@gmail.com>
+ *            Author: WENJING <wenjing0101@gmail.com>
  *       Descrtipion: Initial first version
  *
  ********************************************************************************/
 
 #include "include/plat_driver.h"
 
-#define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
+#define DRV_AUTHOR                "WENJING <wenjing0101@gmail.com>"
 #define DRV_DESC                  "AT91SAM9XXX LED driver"
-
-/*Driver version*/
-#define DRV_MAJOR_VER             1
-#define DRV_MINOR_VER             0
-#define DRV_REVER_VER             0
 
 #define DEV_NAME                  DEV_LED_NAME
 
@@ -53,7 +48,7 @@ static unsigned char led_status[LED_COUNT];
 
 #if (defined PLAT_L3)
 const int LED[LED_COUNT] = {LED_D1_RUN, LED_D2_0, LED_D3_1, LED_D4_2, LED_D5_3, LED_D6_4, LED_D7_5, LED_D8_6};
-#elif( defined PLAT_L2 )
+#elif( defined PLAT_CCTT )
 const int LED[LED_COUNT] = {LED_D1_RUN, LED_D2_0, LED_D3_1, LED_D4_2, LED_D5_3};
 #endif
 
@@ -361,8 +356,8 @@ static int __init led_init(void)
     add_timer(&blink_timer);
     turn_led_blink(0); /*Turn RUN LED blink*/
 
-    printk("%s driver version %d.%d.%d initiliazed\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER,
-               DRV_REVER_VER);
+    printk("AT91 %s driver version %d.%d.%s <%s> initiliazed.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER, __DATE__);
+
 	return 0;
 
 ERROR:

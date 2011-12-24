@@ -1,27 +1,21 @@
-/*********************************************************************************
- *  Copyright(c)  2011,Guo Wenxue <guowenxue@gmail.com>
- *  All ringhts reserved.
+/********************************************************************************
+ *      Copyright:  (C) 2011 R&D of San Fran Electronics Co., LTD  
+ *                  All rights reserved.
  *
- *     Filename:  plat_l3.h
- *  Description:  L3(AT91SAM9260 MCU) GPIO port definition
+ *       Filename:  plat_concentrator.h
+ *    Description:  This head file 
  *
- *     ChangLog:
- *      1,   Version: 1.0.0
- *              Date: 2011-08-10
- *            Author: guowenxue <guowenxue@gmail.com>
- *       Descrtipion: Initial first version
- *
- *
+ *        Version:  1.0.0(12/21/2011~)
+ *         Author:  WENJING <WENJIGN0101@GMAIL.COM>
+ *      ChangeLog:  1, Release initial version on "12/21/2011 09:16:07 AM"
+ *                 
  ********************************************************************************/
 
-#ifndef __PLAT_L3_H
-#define __PLAT_L3_H
+#ifndef __PLAT_CCTT_H
+#define __PLAT_CCTT_H
 
 #include "plat_ioctl.h"
 
-/*=========================================================================
- *             For L2(ARM9)
- *=========================================================================*/
 /*Pin definition For GPRS/3G Driver*/
 #define GPRS_VBUS_CTRL_PIN          AT91_PIN_PC9
 #define GPRS_POWER_MON_PIN          AT91_PIN_PB13
@@ -32,11 +26,15 @@
 #define GPRS_DCD_PIN                AT91_PIN_PA28
 #define GPRS_CTS_PIN                AT91_PIN_PB29
 #define GPRS_DSR_PIN                AT91_PIN_PA25
+
 #if (defined HWVER_V22)
 #define GPRS_RI_PIN                 AT91_PIN_PA26
 #elif (defined HWVER_V23)
 #define GPRS_RI_PIN                 AT91_PIN_PB30
+#elif (defined HWVER_V10)
+#define GPRS_RI_PIN                 AT91_PIN_PB30
 #endif
+
 #define GPRS_TXD_PIN                AT91_PIN_PB6
 #define GPRS_RXD_PIN                AT91_PIN_PB7
 #define GPRS_SELECT_SIM_PIN         AT91_PIN_PC1
@@ -45,11 +43,15 @@
 
 /*Pin definition For LED Driver*/
 #define LED_COUNT                   8
+
 #if (defined HWVER_V22)
 #define LED_D1_RUN                  AT91_PIN_PB30
 #elif (defined HWVER_V23)
 #define LED_D1_RUN                  AT91_PIN_PA26
+#elif (defined HWVER_V10)
+#define LED_D1_RUN                  AT91_PIN_PA26
 #endif
+
 #define LED_D2_0                    AT91_PIN_PB0    // Rs232/485 1
 #define LED_D3_1                    AT91_PIN_PB1    // RS232/485 2
 #define LED_D4_2                    AT91_PIN_PB2    // Rs232/485 3
@@ -95,4 +97,4 @@
 #define RESTORE_KEY                 AT91_PIN_PB22
 #define RESTORE_KEY_IRQ             50
 
-#endif                          /*End __PLAT_L3_H */
+#endif                          /*End __PLAT_CCTT_H */
