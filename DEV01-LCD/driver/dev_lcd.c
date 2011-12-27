@@ -40,12 +40,13 @@ module_param(dev_minor, int, S_IRUGO);
 typedef unsigned char     U8;
 
 /**********************************************************/
-/* 定义颜色数据类型(可以是数据结构) */
-#define GUI_LCM_XMAX		160	/* 定义液晶x轴的点数 */
-#define GUI_LCM_YMAX		160	/* 定义液晶y轴的点数 */
-U8  gui_disp_buf[GUI_LCM_YMAX][GUI_LCM_XMAX / 8];	// 声明GUI显示缓冲区
+#define GUI_LCM_XMAX		160
+#define GUI_LCM_YMAX		160
+U8  gui_disp_buf[GUI_LCM_YMAX][GUI_LCM_XMAX / 8];
 
 void __iomem *lcd_base;
+
+void  GUI_FillSCR(U8 dat);
 
 struct display_format 
 {   
@@ -55,7 +56,7 @@ struct display_format
     unsigned char gapY;         /* Blanks between each ROW as pixel */
     unsigned char height;       /* Font Height as pixel */
     unsigned char width;        /* Font Width as pixel */
-    unsigned char size;         /* Each W/H Font taks how many $SIZE inside data arrary */
+    unsigned long size;         /* Each W/H Font taks how many $SIZE inside data arrary */
     unsigned char invs;         /* inverse flags, default is 0 means nerver inverse */
     unsigned char unused;
 };
@@ -91,7 +92,7 @@ inline void write_cmd(unsigned char cmd)
  * 0001,1000,1100 -> Line 7 -> 0x18,0xC0
  *
  */
-void display_word3 (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
+void dis_normal (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
 {
     U8 i, j = 0, compare = 0, byte_count; 
     unsigned long font_index, each_row_byte;
@@ -153,7 +154,7 @@ void display_word3 (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
     }
 }
 
-void display_word2(U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
+void dis_inverse(U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
 {
     U8 i, compare = 0; 
     unsigned long each_row_byte;
@@ -219,7 +220,7 @@ void display_word2(U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
     }
 }
 
-void display_word (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
+void dis_reverse (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
 {
     U8 i, compare = 0; 
     unsigned long each_row_byte;
@@ -230,11 +231,13 @@ void display_word (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
     xMirror = 37 + xMirror;
 
     each_row_byte = width / 8 + ((0 == width % 8) ? 0 : 1);
-    
+
+    write_cmd(0x00 | (xMirror  & 0x0f));
+        write_cmd(0x10 | ((xMirror & 0xf0) >> 4)); /* Why this four command must be together ??? */
     for (i = 0; i < height; i++)
     {
-        write_cmd(0x00 | (xMirror  & 0x0f));
-        write_cmd(0x10 | ((xMirror & 0xf0) >> 4)); /* Why this four command must be together ??? */
+        //write_cmd(0x00 | (xMirror  & 0x0f));
+        //write_cmd(0x10 | ((xMirror & 0xf0) >> 4)); /* Why this four command must be together ??? */
 
         write_cmd(0x60 | ((yMirror + i)  & 0x0f));
         write_cmd(0x70 | (((yMirror + i) & 0xf0) >> 4));
@@ -297,12 +300,14 @@ static void display_string(struct display_format *fmt, U8 *font, int len)
          When column address(WPC) increase by one,three pixel will be displayed .
          So,segment must be 3 integral multiples in window program
         */
-        xTmp = (fmt->x + (col * (fmt->gapX + fmt->width)));
-        xMirror  = xTmp / 3;// + ((0 == xTmp % 3) ? 0 : 1);
+        xTmp = (160 - fmt->width) - (fmt->x + (col * (fmt->gapX + fmt->width)));
+        xMirror  = xTmp / 3;
+        //xMirror  = xTmp / 3 + ((2 == xTmp % 3) ? 1 : 0);
 
         col++;
         xTmp = (fmt->x + (col * (fmt->gapX + fmt->width)));
-        xMirNext = xTmp / 3;// + ((0 == xTmp % 3) ? 0 : 1);
+        xMirNext = xTmp / 3;
+        //xMirNext = xTmp / 3 + ((2 == xTmp % 3) ? 1 : 0);
 
         if (xMirNext >= 53) /* 160 / 3 = 53*/
         {
@@ -319,13 +324,15 @@ static void display_string(struct display_format *fmt, U8 *font, int len)
             printk("ERROR\n");
             break;
         }
+        dis_reverse( xMirror, yMirror, fmt->width, fmt->height, font);
         
-        //void display_word (U8 x, U8 y, U8 width, U8 height, U8 *p)
-        display_word2( xMirror, 
-            yMirror,
-            fmt->width, 
-            fmt->height, 
-            font);
+        #if 0
+        dis_normal( xMirror, yMirror, fmt->width, fmt->height, font);        
+        msleep(500);
+        
+        write_cmd(MAPPING_CTL | 0x04);
+        dis_inverse( xMirror, yMirror, fmt->width, fmt->height, font);
+        #endif
 
         font += fmt->size;
         pos += fmt->size;
@@ -466,13 +473,6 @@ void LCD_SetAddress(U8 x, U8 y)
     write_cmd(0x10 | (x >> 4));	//写列地址高位
 }
 
-//=============================================================================
-//函 数 名: GUI_RefreshSCR()
-//功 能：	刷新全屏，将显示缓冲区全部数据送到模组显示
-//入口参数： 无
-//出口参数： 无
-//返 回 值： 无
-//=============================================================================
 void GUI_RefreshSCR(void)
 {
     U8 i, j, k;
@@ -480,9 +480,9 @@ void GUI_RefreshSCR(void)
     LCD_SetWindowProgram(0, 0, 159, 159);
     LCD_SetAddress(0, 0) ;
 
-    for (i = 0; i < GUI_LCM_YMAX; i++) // 历遍所有列
+    for (i = 0; i < GUI_LCM_YMAX; i++)
     {
-        for (j = 0; j < 20; j++) // 历遍所有行
+        for (j = 0; j < 20; j++)
         {
             for (k = 0; k < 8;)
             {
@@ -502,26 +502,19 @@ void GUI_RefreshSCR(void)
                 k += 2;
             }
         }
-        write_data(0x00); //补全每行末尾的数据，使总点数能被三整除
+        write_data(0x00);
     }
 }
 
-//=============================================================================
-//函 数 名: GUI_FillSCR()
-//功 能：	全屏填充。直接使用数据填充显示缓冲区。
-//入口参数： dat 填充的数据(对于黑白色LCM，为0的点灭，为1的点显示)
-//出口参数： 无
-//返 回 值： 无
-//=============================================================================
 void  GUI_FillSCR(U8 dat)
 {  
     U8 i, j;
 
-    for(i = 0; i < GUI_LCM_YMAX; i++)		// 历遍所有行
+    for(i = 0; i < GUI_LCM_YMAX; i++)
     {  
-        for(j = 0; j < GUI_LCM_XMAX / 8; j++)	// 历遍所有行
+        for(j = 0; j < GUI_LCM_XMAX / 8; j++)
         {  
-            gui_disp_buf[i][j] = dat;		// 填充数据
+            gui_disp_buf[i][j] = dat;
         }
     }
     GUI_RefreshSCR();
@@ -540,18 +533,13 @@ void init_uc1698 (void)
     write_cmd(0x9F);                /* value 159 ->  duty :1/160 */
 
     write_cmd(VBIAS_POTENT_CMD);
-    write_cmd(0x80);                /* VLCD=(CV0+Cpm*pm)*(1+(T-25)*CT%) */
-    
-    write_cmd(MAPPING_CTL | 0x04);  /* LC[2:0] MY inversion/MX inversion/Fix line display */
-    
-    write_cmd(RAM_ADDR_CTL | 0x01); /* AC[2:0] AC[0] -> RA or CA will increment by one step */
+    write_cmd(0x80);                /* VLCD=(CV0+Cpm*pm)*(1+(T-25)*CT%) */ 
+     
 	write_cmd(COLOR_PATTERN | 0x01);
 	write_cmd(COLOR_MODE | 0x01);   /* when DC[2]=1 and LC[7:6]=01b means 4k-color*/
 
     write_cmd(COM_SCAN_FUNC | 0x02);/* CSF[2:0] PWM:FRC:LRM */
-	write_cmd(DISP_ENABLE | 0x05);  /* DC[4:2]=101b display on, select on/off mode, Green Enhance mode disable */
-
-    //write_cmd(INVERSE_DISP | 0x01);
+	write_cmd(DISP_ENABLE | 0x05);  /* DC[4:2]=101b display on, select on/off mode, Green Enhance mode disable */ 
 
 #ifdef LINE_INVERSION
     write_cmd(LINE_INVERSE_CMD);
@@ -576,12 +564,12 @@ void init_uc1698 (void)
 
 void Init_Ram_Address(void)
 {
-    write_cmd(ROW_ADDR_MSB | 0x00); /* RA[7:4] */
-	write_cmd(ROW_ADDR_LSB | 0x00); /* RA[3:0] */
+    //write_cmd(ROW_ADDR_MSB | 0x00); /* RA[7:4] */
+	//write_cmd(ROW_ADDR_LSB | 0x00); /* RA[3:0] */
 
 	write_cmd(COL_ADDR_MSB | 0x02); /* CA[6:4] */
 	write_cmd(COL_ADDR_LSB | 0x05); /* CA[3:0] 0100101B --> 37D*/
-
+#if 0
 	write_cmd(WIN_COL_START_CMD);
     write_cmd(0x25);                /* 37D ---> SEG 112*/
 
@@ -595,6 +583,7 @@ void Init_Ram_Address(void)
 	write_cmd(0x9f);                /* 0x9F->159 */
 
 	write_cmd(WIN_MODE | 0x00);
+#endif
 }
 
 void simple_test (void)
@@ -604,9 +593,7 @@ void simple_test (void)
     unsigned long len;
 
     //write_cmd(MAPPING_CTL | 0x00);
-
-    GUI_FillSCR(0x00);
-    Init_Ram_Address();
+    //Init_Ram_Address();
 
     write_cmd(WIN_MODE | 0x00);
     
@@ -616,59 +603,29 @@ void simple_test (void)
     format->y= 0;
     format->gapX= 0;
     format->gapY = 0;
-    format->width = 12;
-    format->height = 24;
-    format->size = 16 * 3;
+    format->width = 16;
+    format->height = 32;
+    format->size = 32*2;
 
-    len = format->size * 12;    
-    display_string(format, width_12_ENG_R2L + 5 * format->size, len);
-#if 0
-    format->y= 24 * 2;
-    format->width = 13;
-    format->height = 26;
-    format->size = 13 * 8;
     len = format->size * 1;
-    display_string(format, width_13_test, len);    
-#endif
+    display_string(format, width_16_BL, len);
 
 #else
 
-    int i;
-    GUI_FillSCR(0x00);
-    Init_Ram_Address();
+    int i, j = 0;
 
-    //write_cmd(MAPPING_CTL | 0x00);
-    //write_cmd(RAM_ADDR_CTL | 0x01); /* AC[2:0] AC[0] -> RA or CA will increment by one step */
+    //Init_Ram_Address(); 
 
-    for(i = 0; i < 16 * 1; i++)
-    {  
-        write_data(0xff);
-        write_data(0xff);
-        write_data(0xff);
-        write_data(0xff);
-        write_data(0x0); 
-        write_data(0xff);
-        write_data(0xff);
-        write_data(0xff);
-        write_data(0xff);
-        msleep(100);     
-        write_data(0xff);
-        write_data(0xff);
-        write_data(0xff);
-        write_data(0xff);
-        write_data(0x0); 
-        write_data(0xff);
-        write_data(0xff);
-        write_data(0xff);
-        write_data(0xff);
-        msleep(100);              
-    }
-    if (0)for(i = 0; i < 4; i++)
+    for(j = 0; j < 1; j++)
     {
-        display_word(i*4, 0, 12, 24, width_12_ENG_R2L + (12 - i )* 48);
-        display_word(i*8, 24, 24, 24, width_24_sft_R2L + i * 72);
-        display_word3(i*10, 48, 16, 32, width_16_ENG_COL + i * 64);
-    }        
+        for(i = 0; i < 27; i++)
+        {
+            write_data(0xff);
+            write_data(0xff);
+            write_data(0xff);       
+        }
+        msleep(1500);
+    }
 #endif
 
     //GUI_FillSCR(0x00);
@@ -704,6 +661,7 @@ static int initialize (void)
 	    );
 
     init_uc1698();
+    GUI_FillSCR(0x00);
     simple_test();
     return 0;
 }
