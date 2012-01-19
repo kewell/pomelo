@@ -41,6 +41,7 @@ typedef unsigned char     U8;
 /**********************************************************/
 #define GUI_LCM_XMAX        160
 #define GUI_LCM_YMAX        160
+U8  gui_disp_buf[GUI_LCM_YMAX][GUI_LCM_XMAX / 8];
 
 void __iomem *lcd_base;
 
@@ -78,25 +79,6 @@ inline void write_cmd(unsigned char cmd)
     *(unsigned char *)(lcd_base) = cmd;
 }
 
- 
-//inline U8 read_data(void) 
-U8 read_data(void)
-{
-    U8 tmp;
-    tmp = *(unsigned char *)(lcd_base + 4);
-    //printk("        [%02d]\n", tmp);
-    return tmp;
-}
-
-void set_addr(U8 x, U8 y)
-{
-    x = 0x25 + x / 3;
-    write_cmd(COL_ADDR_LSB | (x & 0x0f));
-    write_cmd(COL_ADDR_MSB | (x >> 4));
-    write_cmd(ROW_ADDR_LSB | (y & 0x0f));
-    write_cmd(ROW_ADDR_MSB | (y >> 4));
-}
-
 /*
  * Get data by ROWs, the first bit at the high level
  *
@@ -111,11 +93,17 @@ void dis_normal (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
     U8 data[160] = {0};
     U8 *font, write_data_count = 0, compare_index;
                 
+    xMirror = 37 + xMirror;
+
     each_row_byte = width / 8 + ((0 == width % 8) ? 0 : 1);
 
     for (i = 0; i < width; i++)
     {
-        set_addr(xMirror, yMirror + i);
+        write_cmd(0x00 | (xMirror  & 0x0f));
+        write_cmd(0x10 | ((xMirror & 0xf0) >> 4)); /* Why this four command must be together ??? */
+
+        write_cmd(0x60 | ((yMirror + i)  & 0x0f));
+        write_cmd(0x70 | (((yMirror + i) & 0xf0) >> 4));
 
         write_data_count = 0;
         compare_index = 7 - i % 8; //7,6,5,,,1,0,7,6,5,,,1,0
@@ -168,11 +156,17 @@ void dis_inverse(U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
     U8 data[160] = {0};
     U8 *font, write_data_count = 0;
 
+    xMirror = 37 + xMirror;
+
     each_row_byte = width / 8 + ((0 == width % 8) ? 0 : 1);
     
     for (i = 0; i < height; i++)
     {
-        set_addr(xMirror, yMirror + i);
+        write_cmd(0x00 | (xMirror  & 0x0f));
+        write_cmd(0x10 | ((xMirror & 0xf0) >> 4)); /* Why this four command must be together ??? */
+
+        write_cmd(0x60 | ((yMirror + i)  & 0x0f));
+        write_cmd(0x70 | (((yMirror + i) & 0xf0) >> 4));
 
         write_data_count = 0;
         byte_count = 0;
@@ -228,11 +222,20 @@ void dis_reverse (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
     U8 data[160] = {0};
     U8 *font, write_data_count = 0;
 
+    xMirror = 37 + xMirror;
+
     each_row_byte = width / 8 + ((0 == width % 8) ? 0 : 1);
+
+    write_cmd(0x00 | (xMirror  & 0x0f));
+    write_cmd(0x10 | ((xMirror & 0xf0) >> 4)); /* Why this four command must be together ??? */
     
     for (i = 0; i < height; i++)
     {
-        set_addr(xMirror, yMirror + i);
+        write_cmd(0x00 | (xMirror  & 0x0f));
+        write_cmd(0x10 | ((xMirror & 0xf0) >> 4)); /* Why this four command must be together ??? */
+
+        write_cmd(0x60 | ((yMirror + i)  & 0x0f));
+        write_cmd(0x70 | (((yMirror + i) & 0xf0) >> 4));
 
         write_data_count = 0;
         byte_count = each_row_byte - 1;
@@ -310,8 +313,8 @@ static void display_string(struct dis_fmt *fmt, U8 *font, int len)
             break;
         }
 
-        dis_reverse(xMirror, yMirror, fmt->width, fmt->height, font);        
-        //dis_inverse(xMirror, yMirror, fmt->width, fmt->height, font);write_cmd(MAPPING_CTL | 0x04);
+        dis_reverse( xMirror / 3, yMirror, fmt->width, fmt->height, font);        
+        //dis_inverse( xMirror / 3, yMirror, fmt->width, fmt->height, font);write_cmd(MAPPING_CTL | 0x04);
 #else
         yMirror  = fmt->y + row * (fmt->gapX + fmt->width);
         row++;
@@ -329,7 +332,7 @@ static void display_string(struct dis_fmt *fmt, U8 *font, int len)
             break;
         }
         
-        dis_normal(xMirror, yMirror, fmt->width, fmt->height, font);
+        dis_normal( xMirror / 3, yMirror, fmt->width, fmt->height, font);
 #endif
 
         font += fmt->size;
@@ -338,35 +341,145 @@ static void display_string(struct dis_fmt *fmt, U8 *font, int len)
     //lcd_invs = 0;
 }
 
-#ifdef GLOVAL_ARRAY_BUF
 void pixle(int x, int y, U8 status)
-{}
+{
+    //if (0 > x || 159 < x || 0 > y || 159 < y) return;
+    
+    U8 index_x, alive_bit;
+
+    alive_bit = x % 8;
+    index_x = x / 8;
+    alive_bit = 0x80 >> alive_bit;
+
+    if (1 == status)
+        gui_disp_buf[y][index_x] |= alive_bit;
+    else
+        gui_disp_buf[y][index_x] &= (0xff - alive_bit);
+}
 
 void set_row(int index, int start, int end, U8 status)
-{}
+{
+    //if (0 > index || 159 < index)return;
+    
+    int i, j, startBit, endBit;
+
+    startBit = start % 8;
+    endBit = end % 8;
+    
+    start = start / 8;
+    end = end / 8;
+    
+    for(j = start; j <= end; j++)
+    {
+        if ((end == start))
+        {
+            for(i = startBit; i <= endBit; i++)
+            {
+                if (1 == status)
+                    gui_disp_buf[index][j] |= 0x80 >> i;
+                else
+                    gui_disp_buf[index][j] &= (0xff - (0x80 >> i));
+            }
+        }
+        else if (j == start)
+        {            
+            if (1 == status)
+                gui_disp_buf[index][j] |= (0xff >> startBit);
+            else
+                gui_disp_buf[index][j] &= (0xff << (8 - startBit));
+        }
+
+        else if (j == end)
+        {
+            if (1 == status)
+                //gui_disp_buf[index][j] |= (0xff << (8 - endBit));
+                gui_disp_buf[index][j] |= (0xff << (7 - endBit)); /*  */
+            else
+                //gui_disp_buf[index][j] &= (0xff >> (endBit));
+                gui_disp_buf[index][j] &= (0xff >> (endBit + 1)); /*  */
+        }
+        else
+        {
+            if (1 == status)
+                gui_disp_buf[index][j] = 0xff;
+            else
+                gui_disp_buf[index][j] = 0x00;
+        }
+    }    
+}
 
 void set_col(int index, int start, int end, U8 status)
-{}
+{
+    //if (0 > index || 159 < index)return;
+    
+    int i, index_x, alive_bit;
+
+    alive_bit = index % 8;
+    index_x = index / 8;
+    alive_bit = 0x80 >> alive_bit;
+
+    for(i = start; i < end; i++)
+    {
+        if (1 == status)
+            gui_disp_buf[i][index_x] |= alive_bit;
+        else
+            gui_disp_buf[i][index_x] &= 0xff - alive_bit;
+    }
+}
+
+void LCD_SetAddress(U8 x, U8 y)
+{
+    x = 0x25 + x / 2;//计算出该点所在的列地址，注意该液晶每3个点共有一个地址
+    write_cmd(0x60 | (y & 0x0f));       //写行地址低位
+    write_cmd(0x70 | (y >> 4));     //写行地址高位
+    write_cmd(x & 0x0f);        //写列地址低位
+    write_cmd(0x10 | (x >> 4)); //写列地址高位
+}
 
 void GUI_RefreshSCR(void)
-{}
+{
+    U8 i, j, k;
+    U8 TempData = 0;
+    LCD_SetAddress(0, 0) ;
 
-#endif
+    for (i = 0; i < GUI_LCM_YMAX; i++)
+    {
+        for (j = 0; j < 20; j++)
+        {
+            for (k = 0; k < 8;)
+            {
+                TempData=0;
+
+                if (gui_disp_buf[i][j] & (0x80 >> k))
+                {
+                    TempData = 0xf0;
+                }
+                
+                if (gui_disp_buf[i][j] & (0x80 >> (k + 1)))
+                {
+                    TempData |= 0x0f;
+                }
+                
+                write_data(TempData);
+                k += 2;
+            }
+        }
+        write_data(0x00);
+    }
+}
 
 void  GUI_FillSCR(U8 dat)
-{
-    //set_addr(0, 0);
-    
-    int i = 0, j = 0;
-    for (i = 0; i < 160; i++)
-    {
-        for(j = 0; j < 27; j++)
-        {
-            write_data(dat);
-            write_data(dat);
-            write_data(dat);
+{  
+    U8 i, j;
+
+    for(i = 0; i < GUI_LCM_YMAX; i++)
+    {  
+        for(j = 0; j < GUI_LCM_XMAX / 8; j++)
+        {  
+            gui_disp_buf[i][j] = dat;
         }
     }
+    GUI_RefreshSCR();
 }
 
 void init_uc1698 (void)
@@ -418,7 +531,7 @@ void Init_Ram_Address(void)
 
     write_cmd(COL_ADDR_MSB | 0x02); /* CA[6:4] */
     write_cmd(COL_ADDR_LSB | 0x05); /* CA[3:0] 0100101B --> 37D*/
-
+#if 0
     write_cmd(WIN_COL_START_CMD);
     write_cmd(0x25);                /* 37D ---> SEG 112*/
 
@@ -432,19 +545,17 @@ void Init_Ram_Address(void)
     write_cmd(0x9f);                /* 0x9F->159 */
 
     write_cmd(WIN_MODE | 0x00);
+#endif
 }
 
 void simple_test (void)
 {
-    int i = 0, j = 0;
-    U8 temp0=1,temp1=2,temp2=3,temp3=4, data0=1,data1=1,data2=1;
-    
-#if 0
-
+#if 1
     struct dis_fmt *fmt;
     unsigned long len;
 
     //write_cmd(MAPPING_CTL | 0x00);
+    //Init_Ram_Address();
 
     write_cmd(WIN_MODE | 0x00);
     
@@ -454,66 +565,43 @@ void simple_test (void)
     fmt->y= 0;
     fmt->gapX= 0;
     fmt->gapY = 0;
-    fmt->width = 13;
-    fmt->height = 26;
+    fmt->width = 16;
+    fmt->height = 32;
     fmt->size = fmt->height * (fmt->width / 8 + ((fmt->width % 8) ? 1 : 0));
-    len = fmt->size * 25;
+    len = fmt->size * 30;
 
-    display_string(fmt, width_13_EN, len);
-    
+    display_string(fmt, width16, len);
 #else
 
-#if 1
-    
-    GUI_FillSCR(0x00);
-    set_addr(123, 123);
-    //write_data(0x0f);write_data(0xf0);write_data(0x0f);write_data(0xf0);write_data(0x0f);write_data(0xf0);
-    //write_data(0x88);write_data(0x88);write_data(0x88);
-    //write_data(0xf0);write_data(0x00);write_data(0x0f);
-    write_data(0xf0);write_data(0x0f);write_data(0xf);
-//#else
-    /*
-    R4 R3 R2 R1	R0 G5 G4 G3	| G2 G1	G0 B4 B3 B2 B1 B0
-        |--------|       |-----------|    |---------|
-    D[7:0] 
-    R3 R2 R1 R0	G3 G2 G1 G0
-    B3 B2 B1 B0	R3 R2 R1 R0
-    G3 G2 G1 G0	B3 B2 B1 B0
-    */
+    fmt->x= fmt->height * 3;
+    fmt->width = 12;
+    fmt->height = 24;
+    fmt->size = fmt->height * (fmt->width / 8 + ((fmt->width % 8) ? 1 : 0));
+    len = fmt->size * 26;
+    display_string(fmt, width_12_EN, len);
 
-    set_addr(123, 123);
-    //write_cmd(0xE3);//NOP
-    
-    //read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();
-    //printk("%x\n", read_data());printk("%x\n", read_data());printk("%x\n", read_data());printk("%x\n", read_data());printk("%x\n", read_data());printk("%x\n", read_data());printk("%x\n", read_data());
-    
-    read_data();
-    temp0 = read_data();
-    temp1 = read_data();
-    temp2 = read_data();
-    temp3 = read_data();
     
 
-    /*
-    temp0 = 0xf8;
-    temp1 = 0x0;
-    temp2 = 0xf8;
-    temp3 = 0x1f;
-    */
-    printk(" [0x%02x] [0x%02x] [0x%02x] [0x%02x]\n", temp0, temp1, temp2, temp3);
-    
-    data0 = ((temp0 & 0x78) << 1) + ((temp0 & 0x01) << 3) + (temp1 >> 5);
-    data1 = (temp1 << 4) + ((temp2 & 0x78) >> 3);
-    data2 = ((temp2 & 0x01) << 7) + ((temp3 & 0xe0) >> 1) + (temp3 & 0x0f);
-    
-    //printk(" [0x%02x] [0x%02x] [0x%02x]\n", data0, data1, data2);
-     
-    
-#endif    
 
+
+    int i, j = 0;
+
+    //Init_Ram_Address(); 
+
+    for(j = 0; j < 1; j++)
+    {
+        for(i = 0; i < 27; i++)
+        {
+            write_data(0xff);
+            write_data(0xff);
+            write_data(0xff);       
+        }
+        msleep(1500);
+    }
 #endif
-}
 
+    //GUI_FillSCR(0x00);
+}
 static int initialize (void)
 {
     at91_set_B_periph(AT91_PIN_PC12, 0); /* Enable CS7 */
@@ -524,7 +612,7 @@ static int initialize (void)
                 | AT91_SMC_NCS_WRSETUP_(1)              //tcssa=5ns
                 | AT91_SMC_NRDSETUP_(1)
                 | AT91_SMC_NCS_RDSETUP_(1)
-        );
+    );
     at91_sys_write(AT91_SMC_PULSE(7),
                       AT91_SMC_NWEPULSE_(7)
                     | AT91_SMC_NCS_WRPULSE_(11)         //tcy=100ns
@@ -545,11 +633,8 @@ static int initialize (void)
         );
 
     init_uc1698();
-    Init_Ram_Address();    
-    
+    GUI_FillSCR(0x00);
     simple_test();
-    printk("-----------------------------\n\n");
-    
     return 0;
 }
 
