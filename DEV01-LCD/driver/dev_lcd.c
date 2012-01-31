@@ -79,13 +79,10 @@ inline void write_cmd(unsigned char cmd)
 }
 
  
-//inline U8 read_data(void) 
-U8 read_data(void)
+U8 read_data(void) 
 {
-    U8 tmp;
-    tmp = *(unsigned char *)(lcd_base + 4);
-    //printk("        [%02d]\n", tmp);
-    return tmp;
+    udelay(1);
+    return *(unsigned char *)(lcd_base + 4);
 }
 
 void set_addr(U8 x, U8 y)
@@ -437,7 +434,7 @@ void Init_Ram_Address(void)
 void simple_test (void)
 {
     int i = 0, j = 0;
-    U8 temp0=1,temp1=2,temp2=3,temp3=4, data0=1,data1=1,data2=1;
+    U8 temp0, temp1, temp2, temp3, data0, data1, data2;
     
 #if 0
 
@@ -462,16 +459,11 @@ void simple_test (void)
     display_string(fmt, width_13_EN, len);
     
 #else
-
-#if 1
     
     GUI_FillSCR(0x00);
-    set_addr(123, 123);
-    //write_data(0x0f);write_data(0xf0);write_data(0x0f);write_data(0xf0);write_data(0x0f);write_data(0xf0);
-    //write_data(0x88);write_data(0x88);write_data(0x88);
-    //write_data(0xf0);write_data(0x00);write_data(0x0f);
-    write_data(0xf0);write_data(0x0f);write_data(0xf);
-//#else
+    set_addr(13, 13);
+    write_data(0x0f);write_data(0xff);write_data(0xf0);
+    
     /*
     R4 R3 R2 R1	R0 G5 G4 G3	| G2 G1	G0 B4 B3 B2 B1 B0
         |--------|       |-----------|    |---------|
@@ -481,35 +473,18 @@ void simple_test (void)
     G3 G2 G1 G0	B3 B2 B1 B0
     */
 
-    set_addr(123, 123);
-    //write_cmd(0xE3);//NOP
-    
-    //read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();read_data();
-    //printk("%x\n", read_data());printk("%x\n", read_data());printk("%x\n", read_data());printk("%x\n", read_data());printk("%x\n", read_data());printk("%x\n", read_data());printk("%x\n", read_data());
-    
+    set_addr(13, 13);
     read_data();
     temp0 = read_data();
     temp1 = read_data();
     temp2 = read_data();
     temp3 = read_data();
-    
 
-    /*
-    temp0 = 0xf8;
-    temp1 = 0x0;
-    temp2 = 0xf8;
-    temp3 = 0x1f;
-    */
-    printk(" [0x%02x] [0x%02x] [0x%02x] [0x%02x]\n", temp0, temp1, temp2, temp3);
-    
     data0 = ((temp0 & 0x78) << 1) + ((temp0 & 0x01) << 3) + (temp1 >> 5);
     data1 = (temp1 << 4) + ((temp2 & 0x78) >> 3);
     data2 = ((temp2 & 0x01) << 7) + ((temp3 & 0xe0) >> 1) + (temp3 & 0x0f);
     
-    //printk(" [0x%02x] [0x%02x] [0x%02x]\n", data0, data1, data2);
-     
-    
-#endif    
+    printk(" [0x%02x] [0x%02x] [0x%02x]\n", data0, data1, data2);   
 
 #endif
 }
