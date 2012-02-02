@@ -37,14 +37,14 @@ module_param(dev_minor, int, S_IRUGO);
         {printk("[kernel] ");printk(format, ##args);}    
 
 typedef unsigned char     U8;
+void set_addr(U8 x, U8 y);
+inline void get_data(int lenght, U8 *data);
 
 /**********************************************************/
 #define GUI_LCM_XMAX        160
 #define GUI_LCM_YMAX        160
 
 void __iomem *lcd_base;
-
-void  GUI_FillSCR(U8 dat);
 
 struct dis_fmt 
 {   
@@ -78,11 +78,49 @@ inline void write_cmd(unsigned char cmd)
     *(unsigned char *)(lcd_base) = cmd;
 }
 
- 
 U8 read_data(void) 
 {
     udelay(1);
     return *(unsigned char *)(lcd_base + 4);
+}
+
+inline void get_data(int length, U8 *data) 
+{
+    U8 temp0, temp1;//, temp2, temp3;
+    int i;
+    
+    /*
+    read 2 times will get 3 pixel data
+    R4 R3 R2 R1	R0 G5 G4 G3	| G2 G1	G0 B4 B3 B2 B1 B0
+        |--------|        |----------|     |--------|
+
+    D[7:0] 
+    write 3 times will display 6 pixel
+    R3 R2 R1 R0	G3 G2 G1 G0
+    B3 B2 B1 B0	R3 R2 R1 R0
+    G3 G2 G1 G0	B3 B2 B1 B0
+    */
+    
+    read_data();
+
+    for (i = 0; i < length;)
+    {
+        temp0 = read_data();
+        temp1 = read_data();
+        //temp2 = read_data();
+        //temp3 = read_data();
+
+        //data[i] = ((temp0 & 0x78) << 1) + ((temp0 & 0x01) << 3) + (temp1 >> 5);
+        //data[i] = (temp1 << 4) + ((temp2 & 0x78) >> 3);
+        //data[i] = ((temp2 & 0x01) << 7) + ((temp3 & 0xe0) >> 1) + (temp3 & 0x0f);
+
+        data[i] = ((temp0 & 0x78) >> 3);
+        i++;
+        data[i] = ((temp0 & 0x01) << 3) + (temp1 >> 5);
+        i++;
+        data[i] = (temp1 & 0xf);
+        i++;
+    }
 }
 
 void set_addr(U8 x, U8 y)
@@ -114,7 +152,6 @@ void dis_normal (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
     {
         set_addr(xMirror, yMirror + i);
 
-        write_data_count = 0;
         compare_index = 7 - i % 8; //7,6,5,,,1,0,7,6,5,,,1,0
         byte_count = i / 8;
 
@@ -129,6 +166,7 @@ void dis_normal (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
             {
                 if(0 == j % 2)
                 {
+                    write_data_count = 0;
                     data[j] = 0x80;
                 }
                 else
@@ -289,7 +327,7 @@ static void display_string(struct dis_fmt *fmt, U8 *font, int len)
          * When column address(WPC) increase by one, three pixel will be displayed.
          * So, segment must be 3 integral multiples in window program
          */
-#if 0
+#if 1
         xMirror = fmt->x + col * (fmt->gapX + fmt->width);
         col++;
         
@@ -335,33 +373,111 @@ static void display_string(struct dis_fmt *fmt, U8 *font, int len)
     //lcd_invs = 0;
 }
 
-#ifdef GLOVAL_ARRAY_BUF
-void pixle(int x, int y, U8 status)
-{}
-
-void set_row(int index, int start, int end, U8 status)
-{}
-
-void set_col(int index, int start, int end, U8 status)
-{}
-
-void GUI_RefreshSCR(void)
-{}
-
-#endif
-
-void  GUI_FillSCR(U8 dat)
+void set_pixel(U8 x, U8 y, U8 status)
 {
-    //set_addr(0, 0);
+    U8 data[3];
     
-    int i = 0, j = 0;
+    set_addr(x, y);
+    get_data(3, data);
+    
+    if (0 == x % 3)
+        data[0] = status;
+    else if (1 == x % 3)
+        data[1] = status;
+    else
+        data[2] = status;
+
+    set_addr(x, y);
+    write_data(data[0] << 4 | data[1]);
+    write_data(data[2] << 4);
+}
+
+void set_col(U8 index, U8 status)
+{
+    int i = 0;
+
     for (i = 0; i < 160; i++)
     {
-        for(j = 0; j < 27; j++)
+        set_pixel(index, i, status);
+    }
+}
+
+void set_row(U8 index, U8 status)
+{
+    int i = 0;
+    set_addr(0, index);
+    for (i = 0; i < 27; i++)
+    {
+        write_data(status);
+        write_data(status);
+        write_data(status);
+    }
+}
+
+void set_area(U8 startX, U8 startY, U8 endX, U8 endY, U8 status)
+{
+    int i, j;
+    for (i = startY; i <= endY; i++)
+    {
+        set_addr(startX, i);
+
+        for (j = 0; j <= (endX - startX) / 2; j++)
         {
-            write_data(dat);
-            write_data(dat);
-            write_data(dat);
+            write_data(status);
+        }
+        j++;
+        
+        if (1 == (j % 3))
+        {
+            write_data(status);
+            write_data(status);
+        }
+        else if (2 == (j % 3))
+        {
+            write_data(status);
+        }
+    }
+}
+
+void inverse_area(U8 startX, U8 startY, U8 endX, U8 endY)
+{
+    int i, length;
+    length = (endX + 1 - startX) * (endY + 1 - startY);
+
+    U8 *data;
+    data = kmalloc(length, GFP_KERNEL);
+
+    if (0 != startX || 159 != endX)
+    {
+        write_cmd(WIN_COL_START_CMD);
+        write_cmd(0x25 + (startX / 3));
+
+        write_cmd(WIN_COL_END_CMD);
+        write_cmd(startY);
+
+        write_cmd(WIN_ROW_START_CMD);
+        write_cmd(0x25 + (endX / 3));
+
+        write_cmd(WIN_ROW_END_CMD);
+        write_cmd(endY);
+    }
+
+    printk("len=%d\n", length);
+
+    //for (i = 0; i < length; i++)printk("%04d=%d\n", i, data[i]);
+
+    if(1)
+    {
+        set_addr(startX, startY);
+        get_data(length, data);
+
+        set_addr(startX, startY);
+
+        for (i = 1; i < length; i++)
+        {
+            //printk("%04d=%d\n", i, data[i]);
+            if (0 == i % 2)
+                write_data(((data[i-1]) << 4) | (data[i]));
         }
     }
 }
@@ -434,9 +550,8 @@ void Init_Ram_Address(void)
 void simple_test (void)
 {
     int i = 0, j = 0;
-    U8 temp0, temp1, temp2, temp3, data0, data1, data2;
-    
-#if 0
+
+    #if 0
 
     struct dis_fmt *fmt;
     unsigned long len;
@@ -457,36 +572,22 @@ void simple_test (void)
     len = fmt->size * 25;
 
     display_string(fmt, width_13_EN, len);
-    
-#else
-    
-    GUI_FillSCR(0x00);
-    set_addr(13, 13);
-    write_data(0x0f);write_data(0xff);write_data(0xf0);
-    
-    /*
-    R4 R3 R2 R1	R0 G5 G4 G3	| G2 G1	G0 B4 B3 B2 B1 B0
-        |--------|       |-----------|    |---------|
-    D[7:0] 
-    R3 R2 R1 R0	G3 G2 G1 G0
-    B3 B2 B1 B0	R3 R2 R1 R0
-    G3 G2 G1 G0	B3 B2 B1 B0
-    */
+    #else
+    set_area(0, 0, 159, 159, 0xff);
 
-    set_addr(13, 13);
-    read_data();
-    temp0 = read_data();
-    temp1 = read_data();
-    temp2 = read_data();
-    temp3 = read_data();
+    set_row(3, 0);
+    set_row(13, 0);
+    set_col(23, 0);
+    set_col(33, 0);
 
-    data0 = ((temp0 & 0x78) << 1) + ((temp0 & 0x01) << 3) + (temp1 >> 5);
-    data1 = (temp1 << 4) + ((temp2 & 0x78) >> 3);
-    data2 = ((temp2 & 0x01) << 7) + ((temp3 & 0xe0) >> 1) + (temp3 & 0x0f);
-    
-    printk(" [0x%02x] [0x%02x] [0x%02x]\n", data0, data1, data2);   
+    set_area(50, 50, 50, 150, 0);
+    set_area(50, 50, 150, 50, 0);
 
-#endif
+    mdelay(1000);
+
+    inverse_area(0, 0, 159, 15);
+        
+    #endif
 }
 
 static int initialize (void)
