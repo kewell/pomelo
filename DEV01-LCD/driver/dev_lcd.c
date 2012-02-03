@@ -168,11 +168,11 @@ void dis_normal (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
                 if(0 == j % 2)
                 {
                     write_data_count = 0;
-                    data[j] = 0x80;
+                    data[j] = 0xf0;
                 }
                 else
                 {
-                    data[j] = 0x08;
+                    data[j] = 0x0f;
                 }
             }
             
@@ -223,11 +223,11 @@ void dis_inverse(U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
             {
                 if(0 == j % 2)
                 {
-                    data[j] = 0x80;
+                    data[j] = 0xf0;
                 }
                 else
                 {
-                    data[j] = 0x08;
+                    data[j] = 0x0f;
                 }
             }
 
@@ -283,11 +283,11 @@ void dis_reverse (U8 xMirror, U8 yMirror, U8 width, U8 height, U8 *p)
             {
                 if(0 == j % 2)
                 {
-                    data[j] = 0x08;
+                    data[j] = 0x0f;
                 }
                 else
                 {
-                    data[j] = 0x80;
+                    data[j] = 0xf0;
                 }
             }
 
@@ -447,42 +447,34 @@ void set_area(U8 startX, U8 startY, U8 endX, U8 endY, U8 status)
 
 void inverse_area(U8 startX, U8 startY, U8 endX, U8 endY)
 {
-    int i, length;int tmp = 0;
-    length = (endX + 1 - startX) * (endY + 1 - startY);
-
+    int i, j, length;
     U8 *data;
+
+    length = endX - startX + 1;
+
+    if (1 == length % 3)
+        length += 2;
+    else if (2 == length % 3)
+        length += 1;
+
     data = kmalloc(length, GFP_KERNEL); /* Should be global variable cuz 160*160=25K size */
 
-    if (0 != startX || 159 != endX)
+    for (j = startY; j <= endY; j++)
     {
-        write_cmd(WIN_COL_START_CMD);
-        write_cmd(0x25 + (startX / 3));
+        set_addr(startX, j);
+        get_data(length, data);
 
-        write_cmd(WIN_COL_END_CMD);
-        write_cmd(startY);
+        set_addr(startX, j);
 
-        write_cmd(WIN_ROW_START_CMD);
-        write_cmd(0x25 + (endX / 3));
-
-        write_cmd(WIN_ROW_END_CMD);
-        write_cmd(endY);
-    }
-
-    set_addr(startX, startY);
-    get_data(length, data);
-
-    set_addr(startX, startY);
-
-    for (i = 0; i < length; i++)
-    {
-        if (1 == i % 2)
+        for (i = 0; i < length; i++)
         {
-            write_data((~(data[i-1] << 4) & 0xf0) | (~data[i] & 0x0f));
-            tmp++;
+            if (1 == i % 2)
+            {
+                write_data((~(data[i-1] << 4) & 0xf0) | (~data[i] & 0x0f));
+            }
         }
     }
     kfree(data);
-    printk("%d--------\n", tmp);
 }
 
 void init_uc1698 (void)
@@ -577,15 +569,17 @@ void simple_test (void)
     display_string(fmt, width_13_EN, len);
     #else
 
-    set_area(0, 0, 159, 159, 0xff);mdelay(1500);
+    set_area(0, 0, 159, 159, 0xff);mdelay(1000);
 
-    set_row(1, 0);mdelay(1500);    
-    //set_col(2, 0);set_col(5, 0);
+    set_row(33, 0);set_row(55, 0);
+    set_col(33, 0);set_col(55, 0);
 
-    //set_area(50, 50, 50, 150, 0);
-    //set_area(50, 50, 150, 50, 0);
+    set_area(50, 50, 70, 100, 0);
+    set_area(80, 80, 100, 100, 0);
 
-    inverse_area(0, 0, 159, 1);
+    mdelay(1000);
+
+    inverse_area(10, 10, 139, 130);
 
     #endif
 }
