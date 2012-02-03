@@ -39,6 +39,7 @@ module_param(dev_minor, int, S_IRUGO);
 typedef unsigned char     U8;
 void set_addr(U8 x, U8 y);
 inline void get_data(int lenght, U8 *data);
+//void set_area(U8 startX, U8 startY, U8 endX, U8 endY, U8 status);
 
 /**********************************************************/
 #define GUI_LCM_XMAX        160
@@ -379,7 +380,9 @@ void set_pixel(U8 x, U8 y, U8 status)
     
     set_addr(x, y);
     get_data(3, data);
-    
+
+    status = status & 0x0f;
+
     if (0 == x % 3)
         data[0] = status;
     else if (1 == x % 3)
@@ -416,17 +419,19 @@ void set_row(U8 index, U8 status)
 
 void set_area(U8 startX, U8 startY, U8 endX, U8 endY, U8 status)
 {
-    int i, j;
+    U8 i, j;
+    U8 count;
+    count = (endX - startX) / 2 + (endX - startX) % 2;
+    
     for (i = startY; i <= endY; i++)
     {
         set_addr(startX, i);
 
-        for (j = 0; j <= (endX - startX) / 2; j++)
+        for (j = 0; j < count; j++)
         {
             write_data(status);
         }
-        j++;
-        
+
         if (1 == (j % 3))
         {
             write_data(status);
@@ -436,16 +441,17 @@ void set_area(U8 startX, U8 startY, U8 endX, U8 endY, U8 status)
         {
             write_data(status);
         }
+        
     }
 }
 
 void inverse_area(U8 startX, U8 startY, U8 endX, U8 endY)
 {
-    int i, length;
+    int i, length;int tmp = 0;
     length = (endX + 1 - startX) * (endY + 1 - startY);
 
     U8 *data;
-    data = kmalloc(length, GFP_KERNEL);
+    data = kmalloc(length, GFP_KERNEL); /* Should be global variable cuz 160*160=25K size */
 
     if (0 != startX || 159 != endX)
     {
@@ -462,24 +468,21 @@ void inverse_area(U8 startX, U8 startY, U8 endX, U8 endY)
         write_cmd(endY);
     }
 
-    printk("len=%d\n", length);
+    set_addr(startX, startY);
+    get_data(length, data);
 
-    //for (i = 0; i < length; i++)printk("%04d=%d\n", i, data[i]);
+    set_addr(startX, startY);
 
-    if(1)
+    for (i = 0; i < length; i++)
     {
-        set_addr(startX, startY);
-        get_data(length, data);
-
-        set_addr(startX, startY);
-
-        for (i = 1; i < length; i++)
+        if (1 == i % 2)
         {
-            //printk("%04d=%d\n", i, data[i]);
-            if (0 == i % 2)
-                write_data(((data[i-1]) << 4) | (data[i]));
+            write_data((~(data[i-1] << 4) & 0xf0) | (~data[i] & 0x0f));
+            tmp++;
         }
     }
+    kfree(data);
+    printk("%d--------\n", tmp);
 }
 
 void init_uc1698 (void)
@@ -573,20 +576,17 @@ void simple_test (void)
 
     display_string(fmt, width_13_EN, len);
     #else
-    set_area(0, 0, 159, 159, 0xff);
 
-    set_row(3, 0);
-    set_row(13, 0);
-    set_col(23, 0);
-    set_col(33, 0);
+    set_area(0, 0, 159, 159, 0xff);mdelay(1500);
 
-    set_area(50, 50, 50, 150, 0);
-    set_area(50, 50, 150, 50, 0);
+    set_row(1, 0);mdelay(1500);    
+    //set_col(2, 0);set_col(5, 0);
 
-    mdelay(1000);
+    //set_area(50, 50, 50, 150, 0);
+    //set_area(50, 50, 150, 50, 0);
 
-    inverse_area(0, 0, 159, 15);
-        
+    inverse_area(0, 0, 159, 1);
+
     #endif
 }
 
