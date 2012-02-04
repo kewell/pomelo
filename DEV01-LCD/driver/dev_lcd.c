@@ -549,11 +549,7 @@ void simple_test (void)
     #if 0
 
     struct dis_fmt *fmt;
-    unsigned long len;
-
-    //write_cmd(MAPPING_CTL | 0x00);
-
-    write_cmd(WIN_MODE | 0x00);
+    unsigned long len;  
     
     fmt = kmalloc(sizeof(struct dis_fmt), GFP_KERNEL);
     
@@ -568,58 +564,57 @@ void simple_test (void)
 
     display_string(fmt, width_13_EN, len);
     #else
-
+    
     set_area(0, 0, 159, 159, 0xff);mdelay(1000);
 
     set_row(33, 0);set_row(55, 0);
     set_col(33, 0);set_col(55, 0);
 
-    set_area(50, 50, 70, 100, 0);
-    set_area(80, 80, 100, 100, 0);
+    set_area(30, 30, 130, 130, 0);
+    set_area(60, 60, 90, 90, 0xff);
 
     mdelay(1000);
 
-    inverse_area(10, 10, 139, 130);
+    inverse_area(20, 20, 110, 140);
 
     #endif
+    printk("-----------------------------\n\n");
 }
 
 static int initialize (void)
 {
-    at91_set_B_periph(AT91_PIN_PC12, 0); /* Enable CS7 */
+    at91_set_B_periph(AT91_PIN_PC12, 0);    /* Enable CS7 */
     lcd_base = ioremap(0x80000000, 0x0f);
     
     at91_sys_write(AT91_SMC_SETUP(7),
-                  AT91_SMC_NWESETUP_(1)
-                | AT91_SMC_NCS_WRSETUP_(1)              //tcssa=5ns
-                | AT91_SMC_NRDSETUP_(1)
-                | AT91_SMC_NCS_RDSETUP_(1)
-        );
+        AT91_SMC_NWESETUP_(1)
+        | AT91_SMC_NCS_WRSETUP_(1)      //tcssa=5ns
+        | AT91_SMC_NRDSETUP_(1)
+        | AT91_SMC_NCS_RDSETUP_(1)
+    );
     at91_sys_write(AT91_SMC_PULSE(7),
-                      AT91_SMC_NWEPULSE_(7)
-                    | AT91_SMC_NCS_WRPULSE_(11)         //tcy=100ns
-                    | AT91_SMC_NRDPULSE_(7)
-                    | AT91_SMC_NCS_RDPULSE_(11)
-        );
+        AT91_SMC_NWEPULSE_(7)
+        | AT91_SMC_NCS_WRPULSE_(11)     //tcy=100ns
+        | AT91_SMC_NRDPULSE_(7)
+        | AT91_SMC_NCS_RDPULSE_(11)
+    );
     at91_sys_write(AT91_SMC_CYCLE(7),
-                      AT91_SMC_NWECYCLE_(12)
-                    | AT91_SMC_NRDCYCLE_(12)
-        );
+        AT91_SMC_NWECYCLE_(12)
+        | AT91_SMC_NRDCYCLE_(12)
+    );
     at91_sys_write(AT91_SMC_MODE(7),
-                      AT91_SMC_READMODE
-                    | AT91_SMC_EXNWMODE_DISABLE
-                    | AT91_SMC_DBW_8
-                    | AT91_SMC_WRITEMODE
-                    | AT91_SMC_BAT_WRITE
-                    | AT91_SMC_TDF_(4)
-        );
+        AT91_SMC_READMODE
+        | AT91_SMC_EXNWMODE_DISABLE
+        | AT91_SMC_DBW_8
+        | AT91_SMC_WRITEMODE
+        | AT91_SMC_BAT_WRITE
+        | AT91_SMC_TDF_(4)
+    );
 
     init_uc1698();
     Init_Ram_Address();    
     
     simple_test();
-    printk("-----------------------------\n\n");
-    
     return 0;
 }
 
