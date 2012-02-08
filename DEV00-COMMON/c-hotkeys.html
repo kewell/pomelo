@@ -1,0 +1,168 @@
+2.  USAGE WITHOUT GUI  (Vim)                              *csupport-usage-vim*<br>
+The frequently used constructs can be inserted with key mappings.  The<br>
+mappings are also described in the document c-hot-keys.pdf (reference card,<br>
+part of this package).<br>
+Hint: Typing speed matters. The combination of a leader ('\') and the<br>
+following character(s) will only be recognized for a short time.<br>
+Some mappings can be used with range (of lines). In normal mode<br>
+  \cl<br>
+appends a end-of-line comment to the current line,  whereas<br>
+  4\cl<br>
+appends end-of-line comments to the 4 lines starting with the current line.<br>
+<br>
+Legend:  (i) insert mode, (n) normal mode, (v) visual mode<br>
+         [n] range<br>
+<br>
+  -- Help ---------------------------------------------------------------<br>
+<br>
+     \hm       show manual for word under the cursor (n,i)<br>
+     \hp       show plugin help                      (n,i)<br>
+<br>
+  -- Comments -----------------------------------------------------------<br>
+<br>
+  [n]\cl       end-of-line comment                 (n,v,i)<br>
+  [n]\cj       adjust end-of-line comment(s)       (n,v,i)<br>
+     \cs       set end-of-line comment column      (n)<br>
+  [n]\c*       code -> comment /* */               (n,v)<br>
+  [n]\cc       code -> comment //                  (n,v)<br>
+  [n]\co       comment -> code                     (n,v)<br>
+     \cfr      frame comment                       (n,i)<br>
+     \cfu      function comment                    (n,i)<br>
+     \cme      method description                  (n,i)<br>
+     \ccl      class description                   (n,i)<br>
+     \cfdi     file description (implementation)   (n,i)<br>
+     \cfdh     file description (header)           (n,i)<br>
+     \ccs      C/C++-file section  (tab. compl.)   (n,i)<br>
+     \chs      H-file section      (tab. compl.)   (n,i)<br>
+     \ckc      keyword comment     (tab. compl.)   (n,i)<br>
+     \csc      special comment     (tab. compl.)   (n,i)<br>
+     \cd       date                                (n,v,i)<br>
+     \ct       date \& time                        (n,v,i)<br>
+  [n]\cx       toggle comments: C <--> C++         (n,v,i)<br>
+<br>
+  -- Statements ---------------------------------------------------------<br>
+<br>
+     \sd       do { } while                        (n,v,i)<br>
+     \sf       for                                 (n,i)<br>
+     \sfo      for { }                             (n,v,i)<br>
+     \si       if                                  (n,i)<br>
+     \sif      if { }                              (n,v,i)<br>
+     \sie      if else                             (n,v,i)<br>
+     \sife     if { } else { }                     (n,v,i)<br>
+     \se       else { }                            (n,v,i)<br>
+     \sw       while                               (n,i)<br>
+     \swh      while { }                           (n,v,i)<br>
+     \ss       switch                              (n,v,i)<br>
+     \sc       case                                (n,i)<br>
+     \s{ \sb   { }                                 (n,v,i)<br>
+<br>
+  -- Preprocessor -------------------------------------------------------<br>
+<br>
+     \ps       choose a standard library include   (n,i)<br>
+     \pc       choose a C99 include                (n,i)<br>
+     \p<       #include <>                         (n,i)<br>
+     \p"       #include ""                         (n,i)<br>
+     \pd       #define                             (n,i)<br>
+     \pu       #undef                              (n,i)<br>
+     \pif      #if  #endif                         (n,v,i)<br>
+     \pie      #if  #else #endif                   (n,v,i)<br>
+     \pid      #ifdef #else #endif                 (n,v,i)<br>
+     \pin      #ifndef #else #endif                (n,v,i)<br>
+     \pind     #ifndef #def #endif                 (n,v,i)<br>
+     \pi0      #if 0 #endif                        (n,v,i)<br>
+     \pr0      remove #if 0 #endif                 (n,i)<br>
+     \pe       #error                              (n,i)<br>
+     \pl       #line                               (n,i)<br>
+     \pp       #pragma                             (n,i)<br>
+<br>
+  -- Idioms -------------------------------------------------------------<br>
+<br>
+     \if       function                            (n,v,i)<br>
+     \isf      static function                     (n,v,i)<br>
+     \im       main()                              (n,v,i)<br>
+  [n]\i0       for( x=0; x<n; x+=1 )               (n,v,i)<br>
+  [n]\in       for( x=n-1; x>=0; x-=1 )            (n,v,i)<br>
+     \ie       enum   + typedef                    (n,i)<br>
+     \is       struct + typedef                    (n,i)<br>
+     \iu       union  + typedef                    (n,i)<br>
+     \ip       printf()                            (n,i)<br>
+     \isc      scanf()                             (n,i)<br>
+     \ica      p=calloc()                          (n,i)<br>
+     \ima      p=malloc()                          (n,i)<br>
+     \ire      p=realloc()                         (n,i)<br>
+     \isi      sizeof()                            (n,v,i)<br>
+     \ias      assert()                            (n,v)<br>
+     \ii       open input file                     (n,i)<br>
+     \io       open output file                    (n,i)<br>
+     \ifs      fscanf                              (n,i)<br>
+     \ifp      fprintf                             (n,i)<br>
+<br>
+  -- Snippets -----------------------------------------------------------<br>
+<br>
+     \nr       read code snippet                   (n,i)<br>
+     \nw       write code snippet                  (n,v,i)<br>
+     \ne       edit code snippet                   (n,i)<br>
+  [n]\nf       pick up function prototype          (n,v,i)<br>
+  [n]\np       pick up function prototype          (n,v,i)<br>
+  [n]\nm       pick up method prototype            (n,v,i)<br>
+     \ni       insert prototype(s)                 (n,i)<br>
+     \nc       clear  prototype(s)                 (n,i)<br>
+     \ns       show   prototype(s)                 (n,i)<br>
+     \ntl      edit local templates                (n,i)<br>
+     \ntg      edit global templates               (n,i)<br>
+     \ntr      rebuild templates                   (n,i)<br>
+<br>
+  -- C++ ----------------------------------------------------------------<br>
+<br>
+     \+co      cout  <<  << endl;                  (n,i)<br>
+     \+"       << ""                               (n,i)<br>
+     \+c       class                               (n,i)<br>
+     \+ps      #include <...> STL                  (n,i)<br>
+     \+pc      #include <c..> C                    (n,i)<br>
+     \+cn      class (using new)                   (n,i)<br>
+     \+ci      class implementation                (n,i)<br>
+     \+cni     class (using new) implementation    (n,i)<br>
+     \+mi      method implementation               (n,i)<br>
+     \+ai      accessor implementation             (n,i)<br>
+<br>
+     \+tc      template class                      (n,i)<br>
+     \+tcn     template class (using new)          (n,i)<br>
+     \+tci     template class implementation       (n,i)<br>
+     \+tcni    template class (using new) impl.    (n,i)<br>
+     \+tmi     template method implementation      (n,i)<br>
+     \+tai     template accessor implementation    (n,i)<br>
+<br>
+     \+tf      template function                   (n,i)<br>
+     \+ec      error class                         (n,i)<br>
+     \+tr      try ... catch                       (n,v,i)<br>
+     \+ca      catch                               (n,v,i)<br>
+     \+c.      catch(...)                          (n,v,i)<br>
+<br>
+  -- Run ----------------------------------------------------------------<br>
+<br>
+    \rc       save and compile                    (n,i)<br>
+    \rl       link                                (n,i)<br>
+    \rr       run                                 (n,i)<br>
+    \ra       set comand line arguments           (n,i)<br>
+    \rm       run make                            (n,i)<br>
+    \rmc      run 'make clean'                    (n,i)<br>
+    \rcm      choose makefile                     (n,i)<br>
+    \rme      executable to run                   (n,i)<br>
+    \rma      cmd. line arg. for make             (n,i)<br>
+    \rp       run splint                          (n,i)<br>
+    \rpa      cmd. line arg. for splint           (n,i)<br>
+    \rk       run CodeCheck (TM)                  (n,i)<br>
+    \rka      cmd. line arg. for CodeCheck (TM)   (n,i)<br>
+    \rd       run indent                          (n,v,i)<br>
+ [n]\rh       hardcopy buffer                     (n,v,i)<br>
+    \rs       show plugin settings                (n,i)<br>
+    \rx       set xterm size                      (n, only Linux/UNIX & GUI)<br>
+    \ro       change output destination           (n,i)<br>
+<br>
+  -- Load / Unload C/C++ Support ----------------------------------------<br>
+<br>
+    \lcs      Load C/C++ Support Menus            (n, GUI only)<br>
+    \ucs      Unload C/C++ Support Menus          (n, GUI only)<br>
+<br>
+The hotkeys are defined in the file type plugin c.vim (part of this csupport<br>
+plugin package) and described in the document c-hot-keys.pdf<br>
