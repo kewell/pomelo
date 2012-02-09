@@ -102,16 +102,19 @@ int main (int argc, char **argv)
             sprintf(pcC, "%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f<br>", C[0], C[1], C[2], C[3], C[4], C[5], C[6], C[7], C[8], C[9]);
             sprintf(pcN, "%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f<br>", N[0], N[1], N[2], N[3], N[4], N[5], N[6], N[7], N[8], N[9]);
 
-            out = fopen(OUT_PUT, "r+");
-
+            out = fopen(OUT_PUT, "r");
             fread(pcOrig, 1, STATIC_LEN, out);
-            fseek(out, 0, SEEK_SET);
+            if(out)fclose(out);
+
+            out = fopen(OUT_PUT, "w+");
+
+            //fseek(out, 0, SEEK_SET);
 
             fwrite(pcOrig, 1, STATIC_LEN, out);
             fwrite(pcNa, 1, strlen(pcNa), out);
-            fwrite(pcC, 1, strlen(pcC), out);
-            fwrite(pcM, 1, strlen(pcM), out);
             fwrite(pcN, 1, strlen(pcN), out);
+            fwrite(pcM, 1, strlen(pcM), out);
+            fwrite(pcC, 1, strlen(pcC), out);
 
             if(out)fclose(out);
 
