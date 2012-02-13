@@ -34,7 +34,7 @@ int main (int argc, char **argv)
     size_t len = 0;
 
     //char *p1, *p2, *p3, *pcBf1, *pcBf2;
-    char *pcNa = "0.01 1.57 8.93 8.97 3.08 3.62 5.35 8.66 8.84 6.68<br>";
+    char *pcNa = "<pre>0.01 1.57 8.93 8.97 3.08 3.62 5.35 8.66 8.84 6.68<br>";
     float M[STK_CNT], C[STK_CNT], N[STK_CNT], T[STK_CNT];
     int i = 0, write_flag = 0, wait;
     wait = 60 / argc;
@@ -86,19 +86,19 @@ int main (int argc, char **argv)
 #endif
             T[i] = strtof(line, NULL);
 
-            if (fabs(C[i] - T[i]) > 0.0001)
+            if (fabs(C[i] - T[i]) > 0.1)
             {
                 write_flag = 1;
                 C[i] = T[i];
 
                 if (C[i] > M[i])
                 {
-                    printf("cur[%d]=%-6.2f > Max[%d]=%-6.2f\n", i, C[i], i, M[i]);
+                    //printf("cur[%d]=%-6.2f > Max[%d]=%-6.2f\n", i, C[i], i, M[i]);
                     M[i] = C[i];
                 }
                 else if (C[i] < N[i])
                 {
-                    printf("cur[%d]=%-6.2f < Nin[%d]=%-6.2f\n", i, C[i], i, N[i]);
+                    //printf("cur[%d]=%-6.2f < Nin[%d]=%-6.2f\n", i, C[i], i, N[i]);
                     N[i] = C[i];
                 }
             }
@@ -107,10 +107,10 @@ int main (int argc, char **argv)
 
         if (write_flag)
         {
-            printf("-----------------------------\n");
-            sprintf(pcM, "%-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f<br>", M[0], M[1], M[2], M[3], M[4], M[5], M[6], M[7], M[8], M[9]);
-            sprintf(pcC, "%-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f<br>", C[0], C[1], C[2], C[3], C[4], C[5], C[6], C[7], C[8], C[9]);
-            sprintf(pcN, "%-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f %-4.1f<br>", N[0], N[1], N[2], N[3], N[4], N[5], N[6], N[7], N[8], N[9]);
+            //printf("---------------------------------------\n");
+            sprintf(pcN, "%4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f<br>", N[0], N[1], N[2], N[3], N[4], N[5], N[6], N[7], N[8], N[9]);
+            sprintf(pcM, "%4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f<br>", M[0], M[1], M[2], M[3], M[4], M[5], M[6], M[7], M[8], M[9]);
+            sprintf(pcC, "%4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f</pre>", C[0], C[1], C[2], C[3], C[4], C[5], C[6], C[7], C[8], C[9]);
 
             out = fopen(OUT_PUT, "r");
             fread(pcOrig, 1, STATIC_LEN, out);
