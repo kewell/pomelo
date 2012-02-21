@@ -1,0 +1,7 @@
+Simple steps as follow:
+
+tar xjf ($SOME_WHERE_PATH)/buildroot-2011.02.tar.bz2
+cd buildroot-2011.02
+cp ($SOME_WHERE_PATH)/buildroot-2011.02-config_arm926t .config
+cp ($SOME_WHERE_PATH)/dl -a .
+make

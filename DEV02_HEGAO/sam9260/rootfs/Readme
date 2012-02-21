@@ -1,0 +1,87 @@
+Catalog
+========================================
+HowTo
+ChangeLog
+Issues
+
+
+
+HowTo
+================================================================================
+TODO
+
+
+ChangeLog
+================================================================================
+1: Busybox add rpm command support                                              Thu Jan  5 14:26:36 CST 2012
+2: Rootfs tree show confirm msg to login user from /etc/motd
+3: Add command waitfor/sntdate
+4: Default mount /apps /data /info as UBIFS
+5: Change default passwd to 'root'                                              Wed Feb 15 16:51:01 CST 2012
+6: Add gdbserver for application debug
+7: Mount /apps /info as JFFS2 format, /data as UBIFS format
+
+Issues
+================================================================================
+How to show dynamic msg after user logined success
+
+
+
+:<<BLOCKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+FS_NAME="nrfs.ext2"
+
+function Ext2fsStart ()
+{
+    CMD_PREFIX=
+    if [ "root" != `whoami` ];then
+        CMD_PREFIX=sudo
+    fi
+
+    if [ 1 -eq $# ];then
+        echo "Skip the first 64 byte data"
+        $CMD_PREFIX dd bs=64 skip=1 if=$1 of=$FS_NAME.gz
+    fi
+
+    if [ ! -s $FS_NAME.gz ];then
+        echo "Are u in the correct folder?"
+        return 
+    fi
+
+    mkdir new
+    mkdir org
+    $CMD_PREFIX gunzip $FS_NAME.gz
+    $CMD_PREFIX mount -o loop $FS_NAME org
+    $CMD_PREFIX dd if=/dev/ram6  of=/dev/ram7 bs=1k count=10240
+    $CMD_PREFIX mke2fs -vm0 /dev/ram7 10240
+    $CMD_PREFIX mount -t ext2 /dev/ram7 new
+    $CMD_PREFIX cp -Rf org/* new/
+    $CMD_PREFIX rm -rf new/lost+found/
+}
+
+function Ext2fsEnd ()
+{
+    CMD_PREFIX=
+    if [ "root" != `whoami` ];then
+        CMD_PREFIX=sudo
+    fi
+    
+    if [ ! -d new ] || [ ! -d org ];then
+        echo "Are u in the correct folder?"
+        return
+    fi
+
+    $CMD_PREFIX umount new
+    $CMD_PREFIX dd if=/dev/ram7 bs=1k count=10240 of=$FS_NAME
+    $CMD_PREFIX gzip -f $FS_NAME
+    $CMD_PREFIX umount org
+    rm -rf new org
+
+    if [ -s $FS_NAME.gz ];then
+        mkimage -A arm -O linux -T filesystem -C gzip -d $FS_NAME.gz $FS_NAME.gz.Magic
+        'cp' $FS_NAME.gz.Magic /tftp
+    fi
+}
+
+alias Ext2fsFinish='Ext2fsEnd'
+
+BLOCKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
