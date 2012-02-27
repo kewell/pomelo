@@ -1,15 +1,3 @@
-/*********************************************************************************
- *                  All rights reserved.
- *
- *       Filename:  mytk.c
- *    Description:  This file 
- *                 
- *        Version:  1.0.0(02/08/2012~)
- *         Author:  WENJING <WENJIGN0101@GMAIL.COM>
- *      ChangeLog:  1, Release initial version on "02/08/2012 03:57:59 PM"
- *http://59.175.132.51/list=s_sh000001,s_sz000157,s_sz000893,s_sz000897,s_sh600308,s_sh600362,s_sh600535,s_sh600866,s_sh600884,s_sh601668                 
- *http://hq.sinajs.cn/list=s_sh000001,s_sz000157,s_sz000893,s_sz000897,s_sh600308,s_sh600362,s_sh600535,s_sh600866,s_sh600884,s_sh601668                 
- ********************************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -18,126 +6,112 @@
 #include <math.h>
 #include <fcntl.h>
 #include <string.h>
-#define OUT_PUT "/var/www/html/c-hotkeys.html"
-#define FL_TMP "/var/www/redmine/.pmt"
-#define STATIC_LEN  9216
-#define STK_CNT   10
-#define STK_EACH   10
-#define ALL_STK_LEN (STK_CNT * STK_EACH)
+
+/*
+var hq_str_sz0="||||,9.57,9.54,9.79,9.84,9.43,9.79,9.80,73317197,711198597.82,642866,9.79,339019,9.78,134400,9.77,122800,9.76,129200,9.75,974067,9.80,372836,9.81,566180,9.82,851896,9.83,1095996,9.84,2012-02-24,15:06:00";
+
+0-name 1-open 2-yesterday 3-now 4-High 5-Low 6---B  7---S  9---SUM  10---Money  
+       9.57,  9.54,       9.79, 9.84,  9.43, 9.79,  9.80,  73317197,711198597.82,
+642866,9.79,339019,9.78,134400,9.77,122800,9.76,129200,9.75,974067,9.80,372836,9.81,566180,9.82,851896,9.83,1095996,9.84,
+*/
+
+#define HEADS_LEN           16
+#define NAMES_LEN           3
+#define ALL_DATA_LEN        9
+#define OUT_PUT "/tmp/.data2.list"
+#define EACH_MAX_LEN        20
+
+void analysia_each_stk (char *pcData, int argc, char **argv)
+{
+    char *pcName, *pcTmp, *pcNext;
+    char *aPcVal[ALL_DATA_LEN];
+    float val[ALL_DATA_LEN];
+
+    int i = 0, len = 0;
+
+    pcName = malloc(NAMES_LEN);
+
+    for (i = 0; i < ALL_DATA_LEN; i++)
+    {
+        aPcVal[i] = malloc(EACH_MAX_LEN);
+        memset(aPcVal[i], 0, EACH_MAX_LEN);
+        val[i] = 0.0;
+    }
+
+    strncpy(pcName, pcData + HEADS_LEN, NAMES_LEN);
+
+    i = 0;
+    while (i < ALL_DATA_LEN && (pcTmp = strchr(pcData, ',') + 1) != NULL)
+    {
+        pcNext = strchr(pcTmp, ',');
+        len = pcNext - pcTmp;
+        
+        strncpy(aPcVal[i], pcTmp, len);
+
+        if (8 == i)
+        {
+            if (NULL != strchr(aPcVal[i], '.'))
+            {
+                len -= 3;
+            }
+            if (0 == strcmp(pcName, "001"))
+            {
+                len -= 4;
+            }
+            memset(aPcVal[i], 0, EACH_MAX_LEN);
+            strncpy(aPcVal[i], pcTmp, len - 4);
+        }
+
+        pcData = pcTmp;
+
+        if (i < 5)
+            val[i] = strtof(aPcVal[i], NULL);
+
+        i++;
+    }
+
+    //0-open 1-yester 2-n 3-h 4-l 8-S
+    if (2 == argc && (0 == strcmp(argv[1], pcName) || 0 == strcmp(argv[1], "lla")))
+    {
+        printf("%s %-5.2f,%-5.2f,%-5.2f %s\n", 
+            pcName, 
+            (float)(((val[2] / val[1]) - 1) * 100), 
+            ((val[3] / val[1]) - 1) * 100,
+            ((val[4] / val[1]) - 1) * 100,
+            aPcVal[8]);
+    }
+
+    for (i = 0; i < ALL_DATA_LEN; i++)
+    {
+        free(aPcVal[i]);
+    }
+    free(pcName);
+}
 
 int main (int argc, char **argv)
 {
-    FILE *in, *out;
-    char *pcM, *pcC, *pcN;
-    char *line = NULL;
-    char *pcOrig;
+    FILE *out;
+    char *eachData = NULL;
     size_t len = 0;
 
-    //char *p1, *p2, *p3, *pcBf1, *pcBf2;
-    char *pcNa = "<pre>0.01 1.57 8.93 8.97 3.08 3.62 5.35 8.66 8.84 6.68<br>";
-    float M[STK_CNT], C[STK_CNT], N[STK_CNT], T[STK_CNT];
-    int i = 0, write_flag = 0, wait;
-    wait = 60 / argc;
-
-    for (i = 0; i < STK_CNT; i++)
+    if (2 == argc && 3 == strlen(argv[1]))
     {
-        M[i] = -9.9;
-        N[i] = 9.9;
-        C[i] = 0.0;
-        T[i] = 0.0;
+        system("wget -q -O /tmp/.data2.list -i /var/www/icons/.README.list");
     }
 
-    //pcBf2 = malloc(STK_EACH);
-    pcM = malloc(ALL_STK_LEN);
-    pcC = malloc(ALL_STK_LEN);
-    pcN = malloc(ALL_STK_LEN);
-    pcOrig = malloc(STATIC_LEN);
+    out = fopen(OUT_PUT, "r");
 
-    while (1)
+    if(NULL != out)
     {
-        system("wget -q -i /var/www/redmine/.lru -O /var/www/redmine/.tmp");
-        system("rm -rf /var/www/redmine/.pmt;for i in `cat /var/www/redmine/.tmp`;do echo $i | awk -F ',' '{ if( $6 )print $4}' >> /var/www/redmine/.pmt;done;rm -rf /var/www/redmine/.tmp");
-
-        in = fopen(FL_TMP, "r");
-        if(NULL == in)
+        while (getline(&eachData, &len, out) != -1)
         {
-            //exit(EXIT_FAILURE);
-            sleep(wait);
-            continue;
+            analysia_each_stk(eachData, argc, argv);
         }
-
-        i = 0;
-        write_flag = 0;
-
-        while (getline(&line, &len, in) != -1)
-        {
-            memset(pcC, 0, ALL_STK_LEN);
-            memset(pcM, 0, ALL_STK_LEN);
-            memset(pcN, 0, ALL_STK_LEN);
-#if 0
-            memset(pcBf2, 0, STK_EACH);
-            p1 = strchr(line, ',');p1++;
-            p2 = strchr(p1, ',');p2++;
-            p3 = strchr(p2, ',');p3++;
-            pcBf1 = strchr(p3, ',');
-
-            strncpy(pcBf2, p3, (pcBf1 - p3));
-            T[i] = strtof(pcBf2, NULL);
-#endif
-            T[i] = strtof(line, NULL);
-
-            if (fabs(C[i] - T[i]) > 0.1)
-            {
-                write_flag = 1;
-                C[i] = T[i];
-
-                if (C[i] > M[i])
-                {
-                    //printf("cur[%d]=%-6.2f > Max[%d]=%-6.2f\n", i, C[i], i, M[i]);
-                    M[i] = C[i];
-                }
-                else if (C[i] < N[i])
-                {
-                    //printf("cur[%d]=%-6.2f < Nin[%d]=%-6.2f\n", i, C[i], i, N[i]);
-                    N[i] = C[i];
-                }
-            }
-            i++;
-        }
-
-        if (write_flag)
-        {
-            //printf("---------------------------------------\n");
-            sprintf(pcN, "%4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f<br>", N[0], N[1], N[2], N[3], N[4], N[5], N[6], N[7], N[8], N[9]);
-            sprintf(pcM, "%4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f<br>", M[0], M[1], M[2], M[3], M[4], M[5], M[6], M[7], M[8], M[9]);
-            sprintf(pcC, "%4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f %4.1f</pre>", C[0], C[1], C[2], C[3], C[4], C[5], C[6], C[7], C[8], C[9]);
-
-            out = fopen(OUT_PUT, "r");
-            fread(pcOrig, 1, STATIC_LEN, out);
-            if(out)fclose(out);
-
-            out = fopen(OUT_PUT, "w+");
-
-            //fseek(out, 0, SEEK_SET);
-
-            fwrite(pcOrig, 1, STATIC_LEN, out);
-            fwrite(pcNa, 1, strlen(pcNa), out);
-            fwrite(pcN, 1, strlen(pcN), out);
-            fwrite(pcM, 1, strlen(pcM), out);
-            fwrite(pcC, 1, strlen(pcC), out);
-
-            if(out)fclose(out);
-
-        }
-
-        if(in)fclose(in);
-        sleep(wait);
     }
-    
-    //if(pcBf2)free(pcBf2);
-    if(pcM)free(pcM);if(pcC)free(pcC);if(pcN)free(pcN);
-    if(pcOrig)free(pcOrig);
-    if(line)free(line);
 
+    if(out)
+        fclose(out);
+
+    system("rm -rf /tmp/.data2.list");
     exit(EXIT_SUCCESS);
 }
