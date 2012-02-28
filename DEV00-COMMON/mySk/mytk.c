@@ -71,14 +71,15 @@ void analysia_each_stk (char *pcData, int argc, char **argv)
     }
 
     //0-open 1-yester 2-n 3-h 4-l 8-S
-    if (2 == argc && (0 == strcmp(argv[1], pcName) || 0 == strcmp(argv[1], "lla")))
+    if (3 == argc && (0 == strcmp(argv[1], pcName) || 0 == strcmp(argv[1], "lla")))
     {
-        printf("%s %-5.2f,%-5.2f,%-5.2f %s\n", 
+        printf("%s %-5.2f,%-5.2f,%-5.2f %5s %s\n", 
             pcName, 
             (float)(((val[2] / val[1]) - 1) * 100), 
             ((val[3] / val[1]) - 1) * 100,
             ((val[4] / val[1]) - 1) * 100,
-            aPcVal[8]);
+            aPcVal[8],
+            (0 == strcmp(argv[2], "tail")) ? aPcVal[2] : "");
     }
 
     for (i = 0; i < ALL_DATA_LEN; i++)
@@ -94,7 +95,7 @@ int main (int argc, char **argv)
     char *eachData = NULL;
     size_t len = 0;
 
-    if (2 == argc && 3 == strlen(argv[1]))
+    if (3 == argc && 3 == strlen(argv[1]))
     {
         system("wget -q -O /tmp/.data2.list -i /var/www/icons/.README.list");
     }
