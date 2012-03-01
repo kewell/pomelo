@@ -1,0 +1,236 @@
+
+Atmel AT91SAM9260-EK
+
+Atmel login: root
+Password: 
+~ >: cd /usr/drivers/
+/usr/drivers >: ifconfig eth0 down
+/usr/drivers >: ifconfig eth1 down
+/usr/drivers >:
+/usr/drivers >: insmod rt2070sta.ko 
+[   25.900000] rt2070sta: module license 'unspecified' taints kernel.
+[   25.910000] Symbol usb_register_driver is being used by a non-GPL module, which will not be allowed in the future
+[   25.920000] Please see the file Documentation/feature-removal-schedule.txt in the kernel source tree for more details.
+[   25.940000] Symbol usb_deregister is being used by a non-GPL module, which will not be allowed in the future
+[   25.950000] Please see the file Documentation/feature-removal-schedule.txt in the kernel source tree for more details.
+[   25.980000] rtusb init --->
+[   26.280000] usb 1-1: new full speed USB device using at91_ohci and address 2
+[   26.480000] usb 1-1: configuration #1 chosen from 1 choice
+[   26.580000] usbcore: registered new interface driver rt2870
+
+/usr/drivers >:
+/usr/drivers >: cat /etc/Wireless/rt2070sta/rt2070sta.dat 
+[Default]
+CountryRegion=0
+CountryRegionABand=7
+WirelessMode=0
+SSID=TP-KEWELL
+NetworkType=Infra
+Channel=0
+AuthMode=WPA2PSK
+EncrypType=AES
+DefaultKeyID=1
+Key1Type=0
+Key1Str=tomato88tomato88
+Key2Type=0
+Key2Str=
+Key3Type=0
+Key3Str=
+Key4Type=0
+Key4Str=
+WPAPSK=tomato88tomato88
+TxBurst=0
+PktAggregate=0
+TurboRate=0
+WmmCapable=0
+AckPolicy=0;0;0;0
+BGProtection=0
+IEEE80211H=0
+TxRate=0
+BasicRate=11
+RTSThreshold=2347
+FragThreshold=2346
+PSMode=CAM
+TxPreamble=0
+AdhocOfdm=0
+FastRoaming=0
+RoamThreshold=70
+NativeWpa=1
+/usr/drivers >: 
+/usr/drivers >: 
+/usr/drivers >: ifconfig ra0 inet 192.168.200.222 up
+[   35.930000] Initial and add wifi led timer in rt28xx_open().
+[   46.820000] 0x1300 = 000a4200
+/usr/drivers >: ifconfig 
+ra0       Link encap:Ethernet  HWaddr 00:08:10:72:90:2F  
+          inet addr:192.168.200.222  Bcast:192.168.200.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:268 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:17 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:37000 (36.1 KiB)  TX bytes:1412 (1.3 KiB)
+
+/usr/drivers >: iwconfig ra0
+ra0       RT2870 Wireless  ESSID:"TP-KEWELL"  
+          Mode:Managed  Frequency=2.432 GHz  Access Point: E0:05:C5:CA:39:1C   
+          Bit Rate=54 Mb/s   
+          Encryption key:D523-255D-A69B-8242-8DE2-E26F-AA68-9EF2 [2]
+          Link Quality=100/100  Signal level:-55 dBm  Noise level:-83 dBm
+          Rx invalid nwid:0  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+/usr/drivers >: 
+/usr/drivers >: ping 192.168.200.101 -c 3
+PING 192.168.200.101 (192.168.200.101): 56 data bytes
+64 bytes from 192.168.200.101: seq=0 ttl=64 time=10.162 ms
+64 bytes from 192.168.200.101: seq=1 ttl=64 time=5.388 ms
+64 bytes from 192.168.200.101: seq=2 ttl=64 time=6.654 ms
+
+--- 192.168.200.101 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 5.388/7.401/10.162 ms
+/usr/drivers >:
+
+==========================================================================================
+/usr/drivers >: cat /etc/tools/wifi_connect.sh 
+#!/bin/sh
+WIFI_INT=ra0
+Usage()
+{
+  echo "$0 ESSID AuthMode EncrypType [Password]"
+  echo "ESSID     :  The Access Point ESSID"
+  echo ""
+  echo "AuthMode  :  OPEN, SHARED, WPAPSK, WPA, WPA2, WPA2PSK, WPAPSKWPA2PSK"
+  echo "             OPEN               For open system"
+  echo "             SHARED             For shared key system"
+  echo "             WPA                Use WPA-Supplicant"
+  echo "             WPA2               Use WPA-Supplicant"
+  echo "             WPAPSK             For WPA pre-shared key"
+  echo "             WPA2PSK            For WPA2 pre-shared key"
+  echo "             WPAPSKWPA2PSK      WPAPSK/WPA2PSK mix mode"
+
+  echo ""
+  echo "EncrypType:  NONE, WEP, TKIP, AES, TKIPAES"
+  echo "             NONE               For AuthMode=OPEN"
+  echo "             WEP                For AuthMode=OPEN or SHARED"
+  echo "             TKIP               For AuthMode=WPAPSK or WPA2PSK"
+  echo "             AES                For AuthMode=WPAPSK or WPA2PSK"
+  echo "             TKIPAES            TKIP/AES Mixed"
+
+  echo "Password  :  Depend on and EncrypType " 
+  echo "             If EncrypType=NONE, no need such argument."
+  echo "             Else, password should be set as the KEY or WPAPSK password."
+  echo ""
+}
+
+#All connect command need set them, so I put it here.
+#iwpriv $WIFI_INT set NetworkType=Infra
+
+iwpriv $WIFI_INT set AuthMode=$AuthMode
+
+iwpriv $WIFI_INT set EncrypType=$EncrypType
+
+if [ $AuthMode = "OPEN" ]; then 
+        iwpriv $WIFI_INT set SSID=$ssid
+elif [ $AuthMode = "SHARED" ]; then
+        iwpriv $WIFI_INT set DefaultKeyID=1
+        iwpriv $WIFI_INT set Key1=$password
+        iwpriv $WIFI_INT set SSID=$ssid
+else
+        iwpriv $WIFI_INT set SSID=$ssid
+        iwpriv $WIFI_INT set WPAPSK=$password
+        iwpriv $WIFI_INT set SSID=$ssid
+fi
+==========================================================================================
+~ >: 
+~ >: cat /etc/Wireless/rt2070ap/rt2070ap.dat 
+#The word of "Default" must not be removed
+Default
+CountryRegion=0
+CountryRegionABand=7
+CountryCode=MY
+BssidNum=1
+SSID=TP-KEWELL
+WirelessMode=0
+TxRate=0
+Channel=0
+BasicRate=11
+BeaconPeriod=100
+DtimPeriod=1
+TxPower=100
+DisableOLBC=0
+BGProtection=0
+TxPreamble=0
+RTSThreshold=2347
+FragThreshold=2346
+TxBurst=1
+PktAggregate=0
+TurboRate=0
+WmmCapable=0
+APSDCapable=0
+DLSCapable=0
+APAifsn=3;7;1;1
+APCwmin=4;4;3;2
+APCwmax=6;10;4;3
+APTxop=0;0;94;47
+APACM=0;0;0;0
+BSSAifsn=3;7;2;2
+BSSCwmin=4;4;3;2
+BSSCwmax=10;10;4;3
+BSSTxop=0;0;94;47
+BSSACM=0;0;0;0
+AckPolicy=0;0;0;0
+NoForwarding=0
+NoForwardingBTNBSSID=0
+HideSSID=0
+StationKeepAlive=0
+ShortSlot=1
+AutoChannelSelect=0
+IEEE8021X=0
+IEEE80211H=0
+CSPeriod=10
+WirelessEvent=0
+IdsEnable=0
+AuthFloodThreshold=32
+AssocReqFloodThreshold=32
+ReassocReqFloodThreshold=32
+ProbeReqFloodThreshold=32
+DisassocFloodThreshold=32
+DeauthFloodThreshold=32
+EapReqFooldThreshold=32
+PreAuth=0
+AuthMode=WPAPSK
+EncrypType=TKIPAES
+RekeyInterval=0
+RekeyMethod=DISABLE
+PMKCachePeriod=10
+WPAPSK=tomato88tomato88
+DefaultKeyID=1
+Key1Type=1
+Key1Str=passd
+Key2Type=1
+Key2Str=passd
+Key3Type=1
+Key3Str=passd
+Key4Type=1
+Key4Str=passd
+HSCounter=0
+AccessPolicy0=0
+AccessControlList0=
+AccessPolicy1=0
+AccessControlList1=
+AccessPolicy2=0
+AccessControlList2=
+AccessPolicy3=0
+AccessControlList3=
+WdsEnable=0
+WdsEncrypType=NONE
+WdsList=
+WdsKey=
+RADIUS_Server=192.168.1.15
+RADIUS_Port=1812
+RADIUS_Key=ralink
+own_ip_addr=192.168.5.234
+EAPifname=br0
+PreAuthifname=br0
+~ >: 
