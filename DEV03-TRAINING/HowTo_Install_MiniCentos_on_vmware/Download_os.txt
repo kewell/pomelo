@@ -1,0 +1,15 @@
+CentOS 6.0
+
+sohu的下载源，对国内用户速度算很快的，这个是一个MINI版本，提供最小系统
+http://mirrors.sohu.com/centos/6.0/isos/i386/CentOS-6.0-i386-minimal.iso (257M)，我安装的这个版本
+
+同时还有更多版本的不同格式可从http://mirrors.sohu.com/centos下载
+http://mirrors.sohu.com/centos/(VRESION)/isos/
+
+
+
+Ubuntu 10.10
+http://releases.ubuntu.com/10.10/
+http://releases.ubuntu.com/10.10/ubuntu-10.10-alternate-i386.iso (693M) ，我安装的这个版本
+
+另外SOHU的镜像一般只提供DVD版本下载，网速没问题的直接从http://mirrors.sohu.com/ubuntu-releases/ 下载吧，4G左右的DVD镜像

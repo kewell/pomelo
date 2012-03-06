@@ -1,0 +1,34 @@
+目的: 在你熟悉Windows操作系统上逐步了解->练习->熟练Linux操作系统
+原理: Windows运行一个虚拟机软件，此虚拟机软件能安装多种操作系统，如Linux/solaris
+实践: 不需刻盘，不需重启电脑，一个小时你就能在Windows下看到新奇的Linux操作系统
+
+
+1: 先在Windows上安装一个虚拟机，这里有一个绿色版本(14M)
+http://code.google.com/p/kewell0101/downloads/detail?name=VMware_6.5.1_green_Version.rar&can=2&q=#makechanges
+下载后解压，运行文件夹内文件"绿化.CMD"就完成了安装!
+
+
+2: 下载一个Linux发行版操作系统
+这里有两种Linux操作系统安装过程的配图
+
+ A  在虚拟机上安装Ubuntu 10.10 (2010年VCD版本，692M)
+    http://code.google.com/p/kewell0101/downloads/detail?name=HowTo_Install_Ubuntu_on_vmware.rar&can=2&q=#makechanges
+    对应的操作系统可从官方网站下载
+    http://releases.ubuntu.com/10.10/ubuntu-10.10-alternate-i386.iso
+
+
+ B  在虚拟机上安装CentOS 6.0 (迷你版本，新手慎用! 257M)
+    http://code.google.com/p/kewell0101/downloads/detail?name=HowTo_Install_MiniCentos_on_vmware.rar&can=2&q=#makechanges
+    对应的操作系统可从SOHU网站下载
+    http://mirrors.sohu.com/centos/6.0/isos/i386/CentOS-6.0-i386-minimal.iso
+
+同时还有更多版本的不同格式可从http://mirrors.sohu.com/centos下载
+
+
+3: 安装并配置网络成功后，启动SSHD服务，就能远程登录到你虚拟机上的Linux操作系统
+如下下载绿色版本远程登录软件secureCRT(10M)
+http://code.google.com/p/kewell0101/downloads/detail?name=secureCRT_6.5.0_and_KeyGen.rar&can=2&q=#makechanges
+
+
+安装配置过程如有疑问请联系QQ群3519336
+or Mail:wenjing0101@gmail.com

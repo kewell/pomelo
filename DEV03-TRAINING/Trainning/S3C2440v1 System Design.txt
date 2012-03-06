@@ -1,0 +1,57 @@
+开发板硬件特性：
+
+核心板(Micro 2440)  现有核心板
+      CPU:  S3C2440A
+      RAM:  HY57V561620FTP-H
+ Norflash:  AM29LV160DB/SST39VF1601
+Nandflash:  K9FXX08
+
+底板：
+      LED:　5*LED
+   Button:  5*User Define, 1*Reset
+   Buzzer:  1*Buzzer
+   EEPROM:  1*Common EEPROM
+      USB:  3*USB Host (1*3G模块)
+  SD Card:  1*MMC Card
+   LCD/TS:  1*LCD/Touch Screen(3.5寸或4.3寸)
+ Ethernet:  DM9000
+    RS232:  2*RS232(1*Console, 1*User, 1*GPRS Module)
+    J-TAG:  1*J-TAG Debug
+   
+      
+模块(像L350一样，作为插件插入,考虑LCD屏可能覆盖上面，不好插入)：
+ WiFi模块:  RT5700  (23~25元)
+ GPRS模块A：SIM900  (90元)
+ GPRS模块B：SIM5215 (200元)
+ 
+
+软件特性及任务:
+1，使用buildroot或crosstool建立交叉编译及其文档；                           
+2，移植u-boot到s3c2440上，能同时支持Norflash和Nandflash启动(通过跳线设置)  
+3，移植Linux内核到s3c2440,支持以下驱动: 
+   a,DM9000 b,Nandflash c,U盘 d,MMC卡 e,触摸屏 f, 2*RS232
+4，分别使用buildroot和crosstool制作最小启动根文件系统，并编写相关文档；
+5，编写或移植下面驱动程序：
+   a,LED  b,Buzzer  c,Button d,EEPROM e,SIM900/SIM5215 f,WiFi
+6，编写mobiled的应用程序，实现收发短信，拨号上网，打接/电话的功能；
+7，移植QT，完成MP3/MP4的播放功能，实现按键拨打电话的功能；
+   
+   
+备注:
+  1，现有核心板38块，SIM900模块10块；
+  2，得认真考虑一下LCD, GPRS和WiFi模块怎么安放的问题；
+  
+任务进度：
+  1，准备讲解使用现有源码编译并烧录到开发板上的整个流程文档，让学生了解嵌入式开发的基本流程；
+  2，u-boot,Linux内核移植(包括DM9000,Nandflash,U盘，触摸屏和RS232)到FL2440上已OK; 让学生学会u-boot和Linux内核的移植过程；
+  2，buildroot制作交叉编译器和制作最小文件系统已OK，但需要使用crosstool制作交叉编译器和最小系统的文档；让学生学习制作交叉编译器；
+  3，LED,Buzzer等驱动最好写成两种模式，一种是普通字符设备注册过程，一种是Platform模式注册；通过不同的模式让学生学习Linux下简单的驱动开发；
+  4，需要编写mobiled的应用程序，来实现收发短信和拨号上网的功能；同时用这个项目锻炼学生做Linux应用程序开发的能力；
+  5，编写移植EEPROM, GPRS/3G WiFi等驱动，让学生学习Linux的高级设备驱动(可以学习I2C总线和USB设备驱动).
+  6，移植QT，完成MP3/MP4的播放功能和拨打电话的功能；
+
+
+  
+   
+ 
+
