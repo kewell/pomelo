@@ -20,14 +20,17 @@ var hq_str_sz0="||||,9.57,9.54,9.79,9.84,9.43,9.79,9.80,73317197,711198597.82,64
 #define ALL_DATA_LEN        9
 #define OUT_PUT "/tmp/.data2.list"
 #define EACH_MAX_LEN        20
-#define WAIT_SEC            30
-#define FILE_LENGTH         10
+#define WAIT_SEC            60
+#define LOOP_TIME           120
+#define FILE_OUTP           "/dev/pts/1"
+#define USEFUL_ID           502
+#define DEBUG_FLAG          "--outa"
 
 unsigned char g_ucDebug = 0;
 unsigned char g_ucLineCnt = 0;
 unsigned char g_ucMaxCnt = 10;
 
-void analysia_each_stk (char *pcData, char *pcFileName, float fAlarmRate)
+void analysia_each_stk (char *pcData, float fAlarmRate)
 {
     char *pcName, *pcTmp, *pcNext;
     char *aPcVal[ALL_DATA_LEN];
@@ -94,9 +97,9 @@ void analysia_each_stk (char *pcData, char *pcFileName, float fAlarmRate)
 
     g_ucLineCnt++;
 
-    if((FILE_LENGTH == strlen(pcFileName)) && (fTmpRate > fAlarmRate || fTmpRate < (0 - fAlarmRate)))
+    if(fTmpRate > fAlarmRate || fTmpRate < (0 - fAlarmRate))
     {
-        pts = open(pcFileName, O_RDWR);
+        pts = open(FILE_OUTP, O_RDWR);
         if(0 < pts)
         {
             pcSend = (char *)malloc(EACH_MAX_LEN);
@@ -128,25 +131,34 @@ int main (int argc, char **argv)
     FILE *out;
     char *eachData = NULL;
     size_t len = 0;
-    float fAlarmRate = 3.0;
+    float fAlarmRate = 12.0;
     int iRunCnt = 1;
 
-    if (3 == argc)
+    if (USEFUL_ID != getuid() || USEFUL_ID != geteuid() || 0 != strcmp(FILE_OUTP, ttyname(0)))
     {
-        fAlarmRate = strtof(argv[2], NULL);
+        printf("hello world\n");
+        return 0;
+    }
 
-        if (fAlarmRate > 6.0)
+    if (2 == argc)
+    {
+        if (1 == strlen(argv[1]))
         {
-            fAlarmRate = 3.0;
+            fAlarmRate = strtof(argv[1], NULL);
         }
 
-        if (FILE_LENGTH == strlen(argv[1]))
+        if (fAlarmRate > 0.9 && fAlarmRate < 9.1)
         {
-            iRunCnt= 840; //7hours, 2times/sec
+            iRunCnt= LOOP_TIME;
+        }
+        else if(0 == strcmp(argv[1], DEBUG_FLAG))
+        {
+            g_ucDebug = 1;
         }
         else
         {
-            g_ucDebug = 1;
+            printf("hello world\n");
+            return 0;
         }
     }
     else
@@ -166,12 +178,14 @@ int main (int argc, char **argv)
         {
             while (getline(&eachData, &len, out) != -1)
             {
-                analysia_each_stk(eachData, argv[1], fAlarmRate);
+                analysia_each_stk(eachData, fAlarmRate);
             }
         }
 
         if(out)
           fclose(out);
+
+        system("rm -rf /tmp/.data2.list");
 
         if (iRunCnt > 0)
             sleep(WAIT_SEC);
