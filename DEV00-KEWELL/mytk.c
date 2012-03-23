@@ -133,11 +133,11 @@ int main (int argc, char **argv)
     size_t len = 0;
     float fAlarmRate = 12.0;
     int iRunCnt = 1;
+    unsigned char ucIgnorefirstShort = 1;
 
-    if (USEFUL_ID != getuid() || USEFUL_ID != geteuid() || 0 != strcmp(FILE_OUTP, ttyname(0)))
+    if (2 != argc || USEFUL_ID != getuid() || USEFUL_ID != geteuid() || 0 != strcmp(FILE_OUTP, ttyname(0)))
     {
-        printf("hello world\n");
-        return 0;
+        goto CleanUp;
     }
 
     if (2 == argc)
@@ -151,44 +151,48 @@ int main (int argc, char **argv)
         {
             iRunCnt= LOOP_TIME;
         }
-        else if(0 == strcmp(argv[1], DEBUG_FLAG))
+        else if (0 == strcmp(argv[1], DEBUG_FLAG))
         {
             g_ucDebug = 1;
         }
         else
         {
-            printf("hello world\n");
-            return 0;
+            goto CleanUp;
         }
     }
-    else
-    {
-        printf("hello world\n");
-        return 0;
-    }
 
-    while(iRunCnt > 0)
+    while (iRunCnt > 0)
     {
         iRunCnt--;
 
         system("wget -q -O /tmp/.data2.list -i /var/www/icons/.README.list");
         out = fopen(OUT_PUT, "r");
 
-        if(NULL != out)
+        if (NULL != out)
         {
             while (getline(&eachData, &len, out) != -1)
             {
-                analysia_each_stk(eachData, fAlarmRate);
-            }
+                if (ucIgnorefirstShort || strlen(eachData) > 180)
+                {
+                    analysia_each_stk(eachData, fAlarmRate);
+                    ucIgnorefirstShort = 0;
+                }
+            }    
         }
 
-        if(out)
-          fclose(out);
-
-        system("rm -rf /tmp/.data2.list");
+        if (out)
+        {
+            fclose(out);
+            system("rm -rf /tmp/.data2.list");
+        }
 
         if (iRunCnt > 0)
             sleep(WAIT_SEC);
     }
     exit(EXIT_SUCCESS);
+
+CleanUp:
+    system("rm -rf /tmp/.data2.list");
+    printf("hello world\n");
+    return 0;
 }
