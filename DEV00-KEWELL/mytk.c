@@ -29,6 +29,8 @@ var hq_str_sz0="||||,9.57,9.54,9.79,9.84,9.43,9.79,9.80,73317197,711198597.82,64
 unsigned char g_ucDebug = 0;
 unsigned char g_ucLineCnt = 0;
 unsigned char g_ucMaxCnt = 10;
+float g_fLastDeal = 0;
+unsigned char g_ucIsSZA = 1;
 
 void analysia_each_stk (char *pcData, float fAlarmRate)
 {
@@ -36,7 +38,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
     char *aPcVal[ALL_DATA_LEN];
     float val[ALL_DATA_LEN];
     int pts = -1;int ret = -1;
-    char * pcSend;
+    char *pcSend;
     int i = 0, len = 0;
 
     pcName = malloc(NAMES_LEN);
@@ -58,25 +60,31 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
         
         strncpy(aPcVal[i], pcTmp, len);
 
-        if (8 == i)
+        if (5 > i)
         {
-            if (NULL != strchr(aPcVal[i], '.'))
-            {
-                len -= 3;
-            }
-            if (0 == strcmp(pcName, "001"))
-            {
-                len -= 4;
-            }
+            val[i] = strtof(aPcVal[i], NULL);
+        }
+
+        if (g_ucIsSZA && 8 == i)
+        {
             memset(aPcVal[i], 0, EACH_MAX_LEN);
-            strncpy(aPcVal[i], pcTmp, len - 4);
+            strncpy(aPcVal[i], pcTmp, len - 7);
+            val[i] = strtof(aPcVal[i], NULL);
+#if 0
+            if (1 < g_fLastDeal)
+            {
+                printf("\n------------%-2.0f\n", val[i] - g_fLastDeal); 
+            }
+            else
+            {
+                printf("\n------------%-2.0f\n", val[i]);
+            }
+
+            //g_fLastDeal = val[i];
+#endif
         }
 
         pcData = pcTmp;
-
-        if (i < 5)
-            val[i] = strtof(aPcVal[i], NULL);
-
         i++;
     }
 
@@ -84,20 +92,20 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
     float fTmpRate = ((val[2] / val[1]) - 1) * 100;
     if(1 == g_ucDebug)
     {
-        printf("%s %-5.2f,%-5.2f,%-5.2f %s %s %s %s\n", 
+        printf("%s %5.2f,%5.2f,%5.2f %5s %5s %5s %-2.0f\n", 
             pcName, 
             fTmpRate,
             ((val[3] / val[1]) - 1) * 100,
             ((val[4] / val[1]) - 1) * 100,
-            aPcVal[8],
             aPcVal[2],
             aPcVal[3],
-            aPcVal[4]);
+            aPcVal[4],
+            (g_ucIsSZA) ? val[8] : 0);
     }
 
     g_ucLineCnt++;
 
-    if(fTmpRate > fAlarmRate || fTmpRate < (0 - fAlarmRate))
+    if(!g_ucDebug && (g_ucIsSZA || fTmpRate > fAlarmRate || fTmpRate < (0 - fAlarmRate)))
     {
         pts = open(FILE_OUTP, O_RDWR);
         if(0 < pts)
@@ -105,13 +113,19 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
             pcSend = (char *)malloc(EACH_MAX_LEN);
             memset(pcSend, 0, EACH_MAX_LEN);
             //sprintf(pcSend, "%s:%.1f%s", pcName, fTmpRate, (g_ucMaxCnt == g_ucLineCnt) ? "\n" : "|");
-            sprintf(pcSend, "%s:%.1f|", pcName, fTmpRate);
+                
+            sprintf(pcSend, "%s%-0.0f%s:%.1f|", (g_ucIsSZA) ? "\n" : "", (g_ucIsSZA) ? val[8] - g_fLastDeal: 0, pcName, fTmpRate);
 
             ret = write(pts, pcSend, strlen(pcSend));
             
             free(pcSend);
             close(pts);
         }
+    }
+
+    if (g_ucIsSZA)
+    {
+        g_fLastDeal = val[8];
     }
     
     if (g_ucMaxCnt == g_ucLineCnt)
@@ -133,7 +147,6 @@ int main (int argc, char **argv)
     size_t len = 0;
     float fAlarmRate = 12.0;
     int iRunCnt = 1;
-    unsigned char ucIgnorefirstShort = 1;
 
     if (2 != argc || USEFUL_ID != getuid() || USEFUL_ID != geteuid() || 0 != strcmp(FILE_OUTP, ttyname(0)))
     {
@@ -172,10 +185,10 @@ int main (int argc, char **argv)
         {
             while (getline(&eachData, &len, out) != -1)
             {
-                if (ucIgnorefirstShort || strlen(eachData) > 180)
+                if (g_ucIsSZA || strlen(eachData) > 180)
                 {
                     analysia_each_stk(eachData, fAlarmRate);
-                    ucIgnorefirstShort = 0;
+                    g_ucIsSZA = 0;
                 }
             }    
         }
@@ -187,7 +200,10 @@ int main (int argc, char **argv)
         }
 
         if (iRunCnt > 0)
+        {
             sleep(WAIT_SEC);
+            g_ucIsSZA = 1;
+        }
     }
     exit(EXIT_SUCCESS);
 
