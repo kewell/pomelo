@@ -70,18 +70,6 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
             memset(aPcVal[i], 0, EACH_MAX_LEN);
             strncpy(aPcVal[i], pcTmp, len - 7);
             val[i] = strtof(aPcVal[i], NULL);
-#if 0
-            if (1 < g_fLastDeal)
-            {
-                printf("\n------------%-2.0f\n", val[i] - g_fLastDeal); 
-            }
-            else
-            {
-                printf("\n------------%-2.0f\n", val[i]);
-            }
-
-            //g_fLastDeal = val[i];
-#endif
         }
 
         pcData = pcTmp;
@@ -112,9 +100,16 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
         {
             pcSend = (char *)malloc(EACH_MAX_LEN);
             memset(pcSend, 0, EACH_MAX_LEN);
-            //sprintf(pcSend, "%s:%.1f%s", pcName, fTmpRate, (g_ucMaxCnt == g_ucLineCnt) ? "\n" : "|");
                 
-            sprintf(pcSend, "%s%-0.0f%s:%.1f|", (g_ucIsSZA) ? "\n" : "", (g_ucIsSZA) ? val[8] - g_fLastDeal: 0, pcName, fTmpRate);
+            sprintf(pcSend, "%s%0.0f%s:%.1f|", (g_ucIsSZA) ? "\n" : "", (g_ucIsSZA) ? val[8] - g_fLastDeal : 0, pcName, fTmpRate);
+
+            if (g_ucIsSZA)
+            {
+                if (g_fLastDeal > 0)
+                {
+                    strncat(pcSend, "==================================================", ((int)(val[8] - g_fLastDeal)) / 10);
+                }
+            }
 
             ret = write(pts, pcSend, strlen(pcSend));
             
