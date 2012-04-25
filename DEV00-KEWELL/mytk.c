@@ -96,19 +96,19 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
     if(!g_ucDebug && (g_ucIsSZA || fTmpRate > fAlarmRate || fTmpRate < (0 - fAlarmRate)))
     {
         pts = open(FILE_OUTP, O_RDWR);
+
         if(0 < pts)
         {
             pcSend = (char *)malloc(EACH_MAX_LEN);
             memset(pcSend, 0, EACH_MAX_LEN);
                 
-            sprintf(pcSend, "%s%0.0f%s:%.1f|", (g_ucIsSZA) ? "\n" : "", (g_ucIsSZA) ? val[8] - g_fLastDeal : 0, pcName, fTmpRate);
-
             if (g_ucIsSZA)
             {
-                if (g_fLastDeal > 0)
-                {
-                    strncat(pcSend, "==================================================", ((int)(val[8] - g_fLastDeal)) / 10);
-                }
+                sprintf(pcSend, "\n%.0f:%.1f|", val[8] - g_fLastDeal, fTmpRate);
+            }
+            else
+            {
+                sprintf(pcSend, "%s:%.1f|", pcName, fTmpRate);
             }
 
             ret = write(pts, pcSend, strlen(pcSend));
