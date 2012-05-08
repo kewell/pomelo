@@ -1,0 +1,7 @@
+======================================================================================================================
+        2G DATA_PORT CTRL_PORT      3G DATA_PORT       CTRL_PORT    PSTN_DATA_PORT
+L1/L2      ttyS1       gprs         ttyUC864E0/ttyS1   ttyUC864E1   ttyS2
+                                    ttyUC864E0/E2      GPRS
+L3         ttyS2       gprs         ttyUSB0/ttyS2      ttyUSB1      ttyS1
+N3                     gprs         ttyUSB2/ttyUSB0    ttyUSB1
+======================================================================================================================
