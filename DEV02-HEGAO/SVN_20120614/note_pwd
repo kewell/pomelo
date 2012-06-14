@@ -1,16 +1,19 @@
-7za a -p SVN.7za SVN
-split -b 20m SVN.7za SVN.7z
-cat SVN.7za[a-k] > SVN.7za
-7za x SVN.7za
+
+7za a -p SVN_20120614.7za SVN_20120614
+split -b 20m SVN_20120614.7za SVN_20120614.7z
+cat SVN_20120614.7za[a-k] > SVN_20120614.7za
+
+
+7za x SVN_20120614.7zaa
 
          7-Zip (A) 9.20  Copyright (c) 1999-2010 Igor Pavlov  2010-11-18
          p7zip Version 9.20 (locale=en_US.UTF-8,Utf16=on,HugeFiles=on,4 CPUs)
          
-         Processing archive: SVN.7za
+         Processing archive: SVN_20120614.7za
          
          
          Enter password (will not be echoed) :z+w#7******
-         Extracting  SVN/..........
-         Extracting  SVN/..........
-         Extracting  SVN/..........
+         Extracting  SVN_20120614/..........
+         Extracting  SVN_20120614/..........
+         Extracting  SVN_20120614/..........
          
