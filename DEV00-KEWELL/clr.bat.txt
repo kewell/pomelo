@@ -1,20 +1,211 @@
-@echo off 
-echo Clearing... ... ...
-del /f /s /q %systemdrive%\*.tmp 
-del /f /s /q %systemdrive%\*._mp 
-del /f /s /q %systemdrive%\*.log 
-del /f /s /q %systemdrive%\*.gid 
-del /f /s /q %systemdrive%\*.chk 
-del /f /s /q %systemdrive%\*.old 
-del /f /s /q %systemdrive%\recycled\*.* 
-del /f /s /q %windir%\*.bak 
-del /f /s /q %windir%\prefetch\*.* 
-rd /s /q %windir%\temp & md %windir%\temp 
-del /f /q %userprofile%\cookies\*.* 
-del /f /q %userprofile%\recent\*.* 
-del /f /s /q "%userprofile%\Local Settings\Temporary Internet Files\*.*" 
-del /f /s /q "%userprofile%\Local Settings\Temp\*.*" 
+cls
+@echo off
+echo 系统垃圾清理
+echo 包括IE,软件等等
+echo Loading...
+del /f /s /q %systemdrive%\*.tmp
+del /f /s /q %systemdrive%\*._mp
+del /f /s /q %systemdrive%\*.log
+del /f /s /q %systemdrive%\*.gid
+del /f /s /q %systemdrive%\*.chk
+del /f /s /q %systemdrive%\*.old
+del /f /s /q %systemdrive%\*.syd
+del /f /s /q %systemdrive%\recycled\*.*
+del /f /s /q %windir%\*.bak
+echo 清理IE文件,软件等等
+del /f /s /q %windir%\prefetch\*.*
+rd /s /q %windir%\temp & md %windir%\temp   
+del /f /s /q %windir%\temp\*.*
+del /f /s /q "%appdata%\Microsoft\Windows\cookies\*.*"
+del /f /q %userprofile%\recent\*.*
+del /f /s /q "%userprofile%\Local Settings\Temporary Internet Files\*.*"
+del /f /s /q "%userprofile%\AppData\Local\Microsoft\Windows\Temporary Internet Files\*.*"
+del /f /s /q  "%userprofile%\Local Settings\Temp\*.*"
 del /f /s /q "%userprofile%\recent\*.*"
-del /f /s /q %systemdrive%"\Documents and Settings\Administrator\Application Data\Microsoft\Office\Recent"\*  
-echo
+del /f /s /q %windir%\SoftwareDistribution\Download\*.*
+del /f /s /q "%appdata%\Microsoft\Windows\Recent\*.*"
+rd /s /q "%userprofile%\Local Settings\Temp\" & md "%userprofile%\Local Settings\Temp\"
+del /f /s /q "%userprofile%\Application Data\PPStream\*.*"
+del /f /s /q "%userprofile%\AppData\Roaming\PPStream\*.*"
+del /f /s /q "%userprofile%\AppData\Roaming\TheWorld\data\*.*"
+del /f /s /q "%userprofile%\Application Data\PPLive\*.*"
+del /f /s /q "%userprofile%\AppData\Roaming\PPLive\*.*"
+del /f /s /q "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\*.*"
+del /f /s /q "%windir%\Offline Web Pages\*.*
+del /f /s /q "%userprofile%\UpdateData\*.*"
+del /f /s /q "%userprofile%\Application Data\QQUpdate\*.*"
+del /f /s /q "%ProgFile%\Thunder Network\Thunder\Program\Update\*.*"
+rd /s /q "%ProgramFiles%\Tencent\QQGame\Download"
+del /a /f /s /q "%ProgramFiles%\Kaspersky Lab\*.tmp"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Recorded TV\*.*"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Pictures\*.*"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Music\*.*"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Videos\*.*"
+del /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\PPLive\*.*"
+rd /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\thunder_vod_cache\" 
+del /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\thunder_dctemp\*.*" 
+del /f /s /q "%systemdrive%\Documents and Settings\Application Data\Kaspersky Lab\AVP8\Data\*.*"
+del /a /f /s /q "%HOMEDRIVE%\pragramdata\All Users\Application Data\Kaspersky Lab\AVP8\*.*"
+del /f /s /q "%userprofile%\AppData\Local\Microsoft\Windows Photo Gallery\Original Images\*.*"
+del /f /s /q "%userprofile%\AppData\Roaming\Kingsoft\KavRep\*.*"
+del /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\Kingsoft\KavRep\*.*"
+del /f /s /q "%userprofile%\AppData\Roaming\Kingsoft\office6\backup\*"
+del /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\Microsoft\Search\*.*"
+del /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\Microsoft\Windows Defender\Backup\*.*"
+del /f /s /q "%ProgramFiles%\Microsoft Security Essentials\Backup\*.*"
+del /a /f /s /q "%userprofile%\Application Data\SogouPY\sgim_ext.bin"
+del /f /s /q "%userprofile%\AppData\LocalLow\SogouPY\sgim_ext.bin"
+del /a /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\Microsoft\Microsoft Antimalware\LocalCopy\*.*"  
+del /a /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\Microsoft\Windows Defender\LocalCopy\*.*" 
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Thunder Network\Thunder_A30B0AF7-D81B-464e-B4E4-4B6DF996FB46_\*.*"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Thunder Network\thunder_DEF2CF18-A4A5-468A-ADE3-B410C49964BC_\Temp\*.*"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Thunder Network\Thunder_xmp\*.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\Application Data\Microsoft\Internet Explorer\Quick Launch\风行网络电影.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\Application Data\Microsoft\Internet Explorer\Quick Launch\酷我音乐盒.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\Application Data\Microsoft\Internet Explorer\Quick Launch\UUSee 网络电视.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\Application Data\Microsoft\Internet Explorer\Quick Launch\查查看2.0.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\多特软件站.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\桌面\金山清理专家2009.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\桌面\金山网镖.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\桌面\迅雷看看-免费高清影视.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\千千音乐.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\在线演示.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\酷我游戏.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\多特软件站.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\修复360安全卫士.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\桌面\风行游戏.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\「开始」菜单\程序\PPLive\最新免费影视展播.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\PPLive\PPLive 首页.*"
+del /a /f /q "%ProgramFiles%\PPLiveVA\PPLiveVA.url"
+del /a /f /q "%ProgramFiles%\PPLive\PPLive.url"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\360安全卫士\修复360安全卫士.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\「开始」菜单\程序\乐鱼影音盒\乐鱼影音盒 主页.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\PPS网络电视\多特知道 电脑答疑.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\PPS网络电视\下载软件最新版.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\酷狗\多特知道 电脑答疑.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\酷狗\下载软件最新版.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\Microsoft Office\访问完美者精品下载站.*"
+del /a /f /q "D:\我的文档\收藏夹\爱词霸英语学习社区.*"
+del /a /f /q "D:\我的文档\Favorites\QQ网址大全.*"
+del /a /f /q "D:\我的文档\Favorites\爱词霸英语学习社区.*"
+del /a /f /q "D:\我的文档\Favorites\链接\QQ网址大全.*"
+del /a /f /q "D:\我的文档\Favorites\金狐电脑工作室-Jinhu Computer Studio.*"
+del /a /f /q "D:\我的文档\Favorites\搜索王 - Search All.*"
+del /a /f /q "%USERPROFILE%\收藏夹\爱词霸英语学习社区.*"
+del /a /f /q "%USERPROFILE%\Favorites\QQ网址大全.*"
+del /a /f /q "%USERPROFILE%\Favorites\爱词霸英语学习社区.*"
+del /a /f /q "%USERPROFILE%\Favorites\链接\QQ网址大全.*"
+del /a /f /q "%USERPROFILE%\Favorites\金狐电脑工作室-Jinhu Computer Studio.*"
+del /a /f /q "%USERPROFILE%\Favorites\搜索王 - Search All.*"
+del /a /f /q "%ProgramFiles%\FlashGet Network\FlashGet 3\绿色下载吧.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\快车 (FlashGet)\访问 自由分享绿色下载吧！.*"
+del /a /f /q "%ProgramFiles%\StormII\绿色下载吧.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\暴风影音\访问 自由分享绿色下载吧！.*"
+del /a /f /q "%SystemDrive%\WINDOWS\Tasks\SogouImeMgr.job"
+exit
+把下面的代码复制粘贴到新建文本保存，修改文本后缀名“.txt”为“.Bat”
+cls
+@echo off
+echo 系统垃圾清理
+echo 包括IE,软件等等
+echo Loading...
+del /f /s /q %systemdrive%\*.tmp
+del /f /s /q %systemdrive%\*._mp
+del /f /s /q %systemdrive%\*.log
+del /f /s /q %systemdrive%\*.gid
+del /f /s /q %systemdrive%\*.chk
+del /f /s /q %systemdrive%\*.old
+del /f /s /q %systemdrive%\*.syd
+del /f /s /q %systemdrive%\recycled\*.*
+del /f /s /q %windir%\*.bak
+echo 清理IE文件,软件等等
+del /f /s /q %windir%\prefetch\*.*
+rd /s /q %windir%\temp & md %windir%\temp   
+del /f /s /q %windir%\temp\*.*
+del /f /s /q "%appdata%\Microsoft\Windows\cookies\*.*"
+del /f /q %userprofile%\recent\*.*
+del /f /s /q "%userprofile%\Local Settings\Temporary Internet Files\*.*"
+del /f /s /q "%userprofile%\AppData\Local\Microsoft\Windows\Temporary Internet Files\*.*"
+del /f /s /q  "%userprofile%\Local Settings\Temp\*.*"
+del /f /s /q "%userprofile%\recent\*.*"
+del /f /s /q %windir%\SoftwareDistribution\Download\*.*
+del /f /s /q "%appdata%\Microsoft\Windows\Recent\*.*"
+rd /s /q "%userprofile%\Local Settings\Temp\" & md "%userprofile%\Local Settings\Temp\"
+del /f /s /q "%userprofile%\Application Data\PPStream\*.*"
+del /f /s /q "%userprofile%\AppData\Roaming\PPStream\*.*"
+del /f /s /q "%userprofile%\AppData\Roaming\TheWorld\data\*.*"
+del /f /s /q "%userprofile%\Application Data\PPLive\*.*"
+del /f /s /q "%userprofile%\AppData\Roaming\PPLive\*.*"
+del /f /s /q "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\*.*"
+del /f /s /q "%windir%\Offline Web Pages\*.*
+del /f /s /q "%userprofile%\UpdateData\*.*"
+del /f /s /q "%userprofile%\Application Data\QQUpdate\*.*"
+del /f /s /q "%ProgFile%\Thunder Network\Thunder\Program\Update\*.*"
+rd /s /q "%ProgramFiles%\Tencent\QQGame\Download"
+del /a /f /s /q "%ProgramFiles%\Kaspersky Lab\*.tmp"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Recorded TV\*.*"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Pictures\*.*"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Music\*.*"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Videos\*.*"
+del /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\PPLive\*.*"
+rd /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\thunder_vod_cache\" 
+del /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\thunder_dctemp\*.*" 
+del /f /s /q "%systemdrive%\Documents and Settings\Application Data\Kaspersky Lab\AVP8\Data\*.*"
+del /a /f /s /q "%HOMEDRIVE%\pragramdata\All Users\Application Data\Kaspersky Lab\AVP8\*.*"
+del /f /s /q "%userprofile%\AppData\Local\Microsoft\Windows Photo Gallery\Original Images\*.*"
+del /f /s /q "%userprofile%\AppData\Roaming\Kingsoft\KavRep\*.*"
+del /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\Kingsoft\KavRep\*.*"
+del /f /s /q "%userprofile%\AppData\Roaming\Kingsoft\office6\backup\*"
+del /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\Microsoft\Search\*.*"
+del /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\Microsoft\Windows Defender\Backup\*.*"
+del /f /s /q "%ProgramFiles%\Microsoft Security Essentials\Backup\*.*"
+del /a /f /s /q "%userprofile%\Application Data\SogouPY\sgim_ext.bin"
+del /f /s /q "%userprofile%\AppData\LocalLow\SogouPY\sgim_ext.bin"
+del /a /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\Microsoft\Microsoft Antimalware\LocalCopy\*.*"  
+del /a /f /s /q "%systemdrive%\Documents and Settings\All Users\Application Data\Microsoft\Windows Defender\LocalCopy\*.*" 
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Thunder Network\Thunder_A30B0AF7-D81B-464e-B4E4-4B6DF996FB46_\*.*"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Thunder Network\thunder_DEF2CF18-A4A5-468A-ADE3-B410C49964BC_\Temp\*.*"
+del /a /f /s /q "%HOMEDRIVE%\Users\Public\Thunder Network\Thunder_xmp\*.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\Application Data\Microsoft\Internet Explorer\Quick Launch\风行网络电影.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\Application Data\Microsoft\Internet Explorer\Quick Launch\酷我音乐盒.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\Application Data\Microsoft\Internet Explorer\Quick Launch\UUSee 网络电视.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\Application Data\Microsoft\Internet Explorer\Quick Launch\查查看2.0.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\多特软件站.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\桌面\金山清理专家2009.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\桌面\金山网镖.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\桌面\迅雷看看-免费高清影视.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\千千音乐.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\在线演示.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\酷我游戏.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\多特软件站.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\桌面\修复360安全卫士.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\桌面\风行游戏.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\「开始」菜单\程序\PPLive\最新免费影视展播.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\PPLive\PPLive 首页.*"
+del /a /f /q "%ProgramFiles%\PPLiveVA\PPLiveVA.url"
+del /a /f /q "%ProgramFiles%\PPLive\PPLive.url"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\360安全卫士\修复360安全卫士.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\All Users\「开始」菜单\程序\乐鱼影音盒\乐鱼影音盒 主页.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\PPS网络电视\多特知道 电脑答疑.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\PPS网络电视\下载软件最新版.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\酷狗\多特知道 电脑答疑.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\酷狗\下载软件最新版.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\Microsoft Office\访问完美者精品下载站.*"
+del /a /f /q "D:\我的文档\收藏夹\爱词霸英语学习社区.*"
+del /a /f /q "D:\我的文档\Favorites\QQ网址大全.*"
+del /a /f /q "D:\我的文档\Favorites\爱词霸英语学习社区.*"
+del /a /f /q "D:\我的文档\Favorites\链接\QQ网址大全.*"
+del /a /f /q "D:\我的文档\Favorites\金狐电脑工作室-Jinhu Computer Studio.*"
+del /a /f /q "D:\我的文档\Favorites\搜索王 - Search All.*"
+del /a /f /q "%USERPROFILE%\收藏夹\爱词霸英语学习社区.*"
+del /a /f /q "%USERPROFILE%\Favorites\QQ网址大全.*"
+del /a /f /q "%USERPROFILE%\Favorites\爱词霸英语学习社区.*"
+del /a /f /q "%USERPROFILE%\Favorites\链接\QQ网址大全.*"
+del /a /f /q "%USERPROFILE%\Favorites\金狐电脑工作室-Jinhu Computer Studio.*"
+del /a /f /q "%USERPROFILE%\Favorites\搜索王 - Search All.*"
+del /a /f /q "%ProgramFiles%\FlashGet Network\FlashGet 3\绿色下载吧.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\快车 (FlashGet)\访问 自由分享绿色下载吧！.*"
+del /a /f /q "%ProgramFiles%\StormII\绿色下载吧.*"
+del /a /f /q "%SystemDrive%\Documents and Settings\Administrator\「开始」菜单\程序\暴风影音\访问 自由分享绿色下载吧！.*"
+del /a /f /q "%SystemDrive%\WINDOWS\Tasks\SogouImeMgr.job"
 exit
