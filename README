@@ -1,16 +1,12 @@
+
 git init
 touch README 
 git commit -m "introduce note"
 git remote add origin git@github.com:kewell/pomelo.git
 git push origin master
 git config --global user.name="harry kewell"
-#WAR3_GAME.DLL_3D0408000074_THE FIRST_74->EB
-[root@centos6 ~]# date
-Wed Mar  7 09:36:12 CST 2012
-[root@centos6 ~]# 
-[root@centos6 ~]# runlevel 
-N 3
-[root@centos6 ~]# 
+
+
 [root@centos6 ~]# chkconfig --list | grep "3:on"
 dkms_autoinstaller      0:off   1:off   2:on    3:on    4:on    5:on    6:off
 mysqld          0:off   1:off   2:off   3:on    4:off   5:off   6:off
@@ -21,7 +17,8 @@ redmine         0:off   1:off   2:off   3:on    4:off   5:off   6:off
 rpcbind         0:off   1:off   2:on    3:on    4:on    5:on    6:off
 sshd            0:off   1:off   2:on    3:on    4:on    5:on    6:off
 xinetd          0:off   1:off   2:off   3:on    4:on    5:on    6:off
-[root@centos6 ~]# 
+
+
 [root@centos6 ~]# cat /boot/grub/menu.lst | grep -v "^#"
 default=0
 timeout=1
@@ -35,10 +32,8 @@ title win2003
         root (hd0,0)
         rootnoverify (hd0,0)
         chainloader +1
-[root@centos6 ~]# 
-[root@centos6 ~]# cat /etc/inittab | grep -v "^#"                    
-id:3:initdefault:
-[root@centos6 ~]# 
+
+
 [root@centos6 ~]# fdisk -l
 
 Disk /dev/sdb: 500.1 GB, 500107862016 bytes
@@ -109,8 +104,8 @@ Partition 4 does not end on cylinder boundary.
 Partition table entries are not in disk order
 
 Unable to read /dev/dm-2
-[root@centos6 ~]# 
-[root@centos6 ~]# 
+
+
 [root@centos6 ~]# mount
 /dev/mapper/ddf1_4c53492020202020808627c3000000004711471100001450p7 on / type ext4 (rw)
 proc on /proc type proc (rw)
@@ -120,13 +115,4 @@ tmpfs on /dev/shm type tmpfs (rw)
 none on /proc/sys/fs/binfmt_misc type binfmt_misc (rw)
 sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw)
 nfsd on /proc/fs/nfsd type nfsd (rw)
-//192.168.8.104/win/ on /home/wenjing/WIN type cifs (rw,mand)
-[root@centos6 ~]# 
-[root@centos6 ~]# 
-[root@centos6 ~]# 
-[root@centos6 ~]# df -h
-Filesystem            Size  Used Avail Use% Mounted on
-/dev/mapper/ddf1_4c53492020202020808627c3000000004711471100001450p7
-                      114G   32G   77G  30% /
-tmpfs                1012M     0 1012M   0% /dev/shm
-//192.168.8.104/win/   69G   22G   47G  32% /home/wenjing/WIN
+
