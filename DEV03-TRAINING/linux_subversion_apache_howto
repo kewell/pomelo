@@ -1,0 +1,360 @@
+linux简单用户认证SVN服务器搭建?
+keyword:linux subversion apache ssl Authentication
+目的:转移windows上SVN服务器到LINUX，支持简单用户认证（怎么支持Linux系统用户的httpd认证，以方便用户自己维护密码？），支持SSL加密协议
+
+google搜索svn server优先显示"Apache Subversion"-----Enterprise-class centralized version control for the masses,网上安装教程比较丰富
+
+1：安装apache subversion及依赖包
+1.1 获取装apache subversion源码
+wget -c http://labs.renren.com/apache-mirror/subversion/subversion-1.7.5.tar.bz2
+tar xjf subversion-1.7.5.tar.bz2 
+cd subversion-1.7.5
+[wenjing@centos6 subversion-1.7.5]$ cat INSTALL | grep "REQUIRED" * libapr and libapr-util (REQUIRED for client and server) * SQLite (REQUIRED for client and server) * libz (REQUIRED for client and server)
+1. Apache Portable Runtime 0.9.7 or 1.X.X (REQUIRED)
+2. Zlib (REQUIRED)
+13. SQLite (REQUIRED)
+
+主要精读INSTALL文档，因为一个较完善的SVN服务器依赖较多其他插件，这里主要是httpd/apr/apr-util,按照INSTALL顺序应该先安装强制依赖包
+
+1.2 安装依赖包
+apr/apr-util/libtool/neon等安装过程略，因为这里已经安装完毕所以可以查到相关依赖包版本信息
+[root@centos6 ~]# rpm -qa "apr*" 
+apr-util-1.3.9-3.el6_0.1.i686
+apr-util-devel-1.3.9-3.el6_0.1.i686
+apr-util-ldap-1.3.9-3.el6_0.1.i686
+apr-1.3.9-3.el6_0.1.i686
+apr-devel-1.3.9-3.el6_0.1.i686
+[root@centos6 ~]# 
+[root@centos6 ~]# 
+[root@centos6 ~]# rpm -qa "libtool*" 
+libtool-2.2.6-15.5.el6.i686
+libtool-ltdl-2.2.6-15.5.el6.i686
+[root@centos6 ~]# 
+[root@centos6 ~]# 
+[root@centos6 ~]# 
+[root@centos6 ~]# rpm -qa "neon*" 
+neon-0.29.3-1.2.el6.i686
+[root@centos6 ~]# 
+[root@centos6 ~]# 
+[root@centos6 ~]# rpm -qa "autoconf*" 
+autoconf-2.63-5.1.el6.noarch
+[root@centos6 ~]# 
+[root@centos6 ~]# 
+[root@centos6 ~]# 
+[root@centos6 ~]# rpm -qa "sqlite*" 
+sqlite-3.6.20-1.el6.i686
+sqlite-devel-3.6.20-1.el6.i686
+[root@centos6 ~]# 
+[root@centos6 ~]# 
+[root@centos6 ~]# 
+[root@centos6 ~]# rpm -qa "openssl*" 
+openssl-1.0.0-4.el6_0.2.i686
+openssl098e-0.9.8e-17.el6.centos.i686
+openssl-devel-1.0.0-4.el6_0.2.i686
+1.3 安装依赖包Apache Httpd
+wget http://mirror.bit.edu.cn/apache/httpd/httpd-2.4.2.tar.bz2
+tar httpd-2.4.2.tar.bz2
+cd httpd-2.4.2
+./configure --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr --enable-dav --enable-so --enable-maintainer-mode --enable-ssl --enable-deflate --enable-so
+make
+make instal
+1.4 安装apache subersion
+确定依赖包都安装完毕，可以再返回到subersion-1.7.5源码目录
+cd subversion-1.7.5
+./configure --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr --with-apxs=/usr/local/apache2/bin/apxs --with-neon=/usr/lib --with-apache-libexecdir=/usr/local/apache2/modules --with-ssl
+make 
+make install
+1.5 SVN代码迁移
+备份windows svn服务器的代码版本库
+svnadmin dump d:/svndata > d:\svnbak\svnbak20120721.dump
+linux的svn代码库为:/opt/.svn/svn
+
+修改目录权限
+#chmod -R 777 /opt/.svn/svn
+
+加载已经备份的代码库
+svnadmin load /opt/.svn/svn < ~/WIN/svnbak20120721.dump
+
+2: Apache Httpd
+详细配置步骤还请参见subversion源码下的INSTALL文件
+2.1 Apache Httpd简单用户验证配置/SIMPLE Authentication and Authorization
+please refer to http://httpd.apache.org/docs/2.4/howto/auth.html
+Will add following section for Httpd config file /usr/local/apache2/conf/httpd.conf
+
+AuthType Basic
+AuthName "Restricted Files"
+(Following line optional)
+AuthBasicProvider file
+AuthUserFile /usr/local/apache2/passwd/passwords
+AuthGroupFile /usr/local/apache2/passwd/groups
+Require group group_name_1 group_name_2
+#Require user user_name_1 user_name_2
+</Location>
+2.2 Apache Httpd支持SSL
+How To Install Apache 2 with SSL on Linux (with mod_ssl, openssl)
+please refer to http://www.thegeekstuff.com/2011/03/install-apache2-ssl/
+or 
+http://onlamp.com/onlamp/2008/03/04/step-by-step-configuring-ssl-under-apache.html
+openssl genrsa -des3 -out server.key 1024
+  openssl req -new -key server.key -out server.csr
+  openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+在制作证书时 Common Name (eg, YOUR name) []: 这个属性一定要填，不然用 svn 访问时会有错误
+"Server certificate was missing commonName attribute in subject name"
+
+3: 验证测试及部分文件摘录
+3.1 启动步骤
+/usr/local/apache2/bin/apachectl start
+Apache/2.4.2 mod_ssl (Pass Phrase Dialog)
+Some of your private key files are encrypted for security reasons.
+In order to read them you have to provide the pass phrases.
+Server www.example.com:443 (RSA)
+Enter pass phrase:
+
+OK: Pass Phrase Dialog successful.
+
+[root@centos6 ~]# ps -ef | grep "httpd" 
+root 32400 1 0 Jul23 ? 00:00:00 /usr/local/apache2/bin/httpd -k start
+daemon 32401 32400 0 Jul23 ? 00:00:00 /usr/local/apache2/bin/httpd -k start
+daemon 32402 32400 0 Jul23 ? 00:00:00 /usr/local/apache2/bin/httpd -k start
+daemon 32403 32400 0 Jul23 ? 00:00:00 /usr/local/apache2/bin/httpd -k start
+daemon 32404 32400 0 Jul23 ? 00:00:00 /usr/local/apache2/bin/httpd -k start
+daemon 32495 32400 0 Jul23 ? 00:00:00 /usr/local/apache2/bin/httpd -k start
+root 32679 32655 0 08:43 pts/1 00:00:00 grep httpd
+
+3.2 svn客户端版本信息
+[wenjing@centos6 ~]$ svn --version
+svn, version 1.7.5 (r1336830)
+compiled Jul 23 2012, 11:01:51
+Copyright (C) 2012 The Apache Software Foundation.
+This software consists of contributions made by many people; see the NOTICE
+file for more information.
+Subversion is open source software, see http://subversion.apache.org/
+
+The following repository access (RA) modules are available:
+
+ra_svn : Module for accessing a repository using the svn network protocol.
+- with Cyrus SASL authentication
+- handles 'svn' scheme
+ra_local : Module for accessing a repository on local disk.
+- handles 'file' scheme
+ra_serf : Module for accessing a repository via WebDAV protocol using serf.
+- handles 'http' scheme
+- handles 'https' scheme
+*注意：这3个模块必须启动成功，否则SVN客户端运行过程会有很多不同类型错误*
+
+3.3 运行LOG目录
+[root@centos6 ~]# ll /usr/local/apache2/logs 
+total 80
+rw-r--r- 1 root root 43349 Jul 23 17:40 access_log
+srwx------ 1 daemon root 0 Jul 23 17:38 cgisock.32400
+rw-r--r- 1 root root 17213 Jul 23 17:38 error_log
+rw-r--r- 1 root root 6 Jul 23 17:38 httpd.pid
+rw-r--r- 1 root root 945 Jul 23 17:40 ssl_request_log
+[root@centos6 ~]#
+3.4 正常运行的apache httpd配置文件
+[root@centos6 /]# 
+[root@centos6 /]# diff /usr/local/apache2/conf/httpd.conf /usr/local/apache2/conf/original/httpd.conf 
+147,150d146
+< 
+< LoadModule dav_svn_module modules/mod_dav_svn.so
+< LoadModule authz_svn_module modules/mod_authz_svn.so
+< 
+482c478
+< Include conf/extra/httpd-ssl.conf
+---
+
+#Include conf/extra/httpd-ssl.conf
+
+492,509d487
+< 
+< #<Location /svn/repos>
+< <Location /svn/emmbed>
+< DAV svn
+< #SVNPath /opt/emmbed
+< SVNPath /opt/.svn/svn
+< 
+< AuthType Basic
+< AuthName "Restricted Files" 
+< # (Following line optional)
+< AuthBasicProvider file
+< AuthUserFile /usr/local/apache2/passwd/passwords
+< #AuthGroupFile /usr/local/apache2/passwd/groups
+< #Require group embedded
+< AuthzSVNAccessFile /usr/local/apache2/passwd/access
+< Require valid-user
+< </Location>
+< 
+[root@centos6 /]# 
+[root@centos6 /]# 
+[root@centos6 /]# 
+[root@centos6 /]# cat /usr/local/apache2/conf/httpd.conf | grep -v "#" | grep [A-Za-z0-9]
+ServerRoot "/usr/local/apache2" 
+Listen 80
+LoadModule authn_file_module modules/mod_authn_file.so
+LoadModule authn_dbm_module modules/mod_authn_dbm.so
+LoadModule authn_anon_module modules/mod_authn_anon.so
+LoadModule authn_dbd_module modules/mod_authn_dbd.so
+LoadModule authn_socache_module modules/mod_authn_socache.so
+LoadModule authn_core_module modules/mod_authn_core.so
+LoadModule authz_host_module modules/mod_authz_host.so
+LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
+LoadModule authz_user_module modules/mod_authz_user.so
+LoadModule authz_dbm_module modules/mod_authz_dbm.so
+LoadModule authz_owner_module modules/mod_authz_owner.so
+LoadModule authz_dbd_module modules/mod_authz_dbd.so
+LoadModule authz_core_module modules/mod_authz_core.so
+LoadModule access_compat_module modules/mod_access_compat.so
+LoadModule auth_basic_module modules/mod_auth_basic.so
+LoadModule auth_form_module modules/mod_auth_form.so
+LoadModule auth_digest_module modules/mod_auth_digest.so
+LoadModule allowmethods_module modules/mod_allowmethods.so
+LoadModule file_cache_module modules/mod_file_cache.so
+LoadModule cache_module modules/mod_cache.so
+LoadModule cache_disk_module modules/mod_cache_disk.so
+LoadModule socache_shmcb_module modules/mod_socache_shmcb.so
+LoadModule socache_dbm_module modules/mod_socache_dbm.so
+LoadModule socache_memcache_module modules/mod_socache_memcache.so
+LoadModule dbd_module modules/mod_dbd.so
+LoadModule dumpio_module modules/mod_dumpio.so
+LoadModule buffer_module modules/mod_buffer.so
+LoadModule ratelimit_module modules/mod_ratelimit.so
+LoadModule reqtimeout_module modules/mod_reqtimeout.so
+LoadModule ext_filter_module modules/mod_ext_filter.so
+LoadModule request_module modules/mod_request.so
+LoadModule include_module modules/mod_include.so
+LoadModule filter_module modules/mod_filter.so
+LoadModule substitute_module modules/mod_substitute.so
+LoadModule sed_module modules/mod_sed.so
+LoadModule deflate_module modules/mod_deflate.so
+LoadModule mime_module modules/mod_mime.so
+LoadModule log_config_module modules/mod_log_config.so
+LoadModule log_debug_module modules/mod_log_debug.so
+LoadModule logio_module modules/mod_logio.so
+LoadModule env_module modules/mod_env.so
+LoadModule expires_module modules/mod_expires.so
+LoadModule headers_module modules/mod_headers.so
+LoadModule unique_id_module modules/mod_unique_id.so
+LoadModule setenvif_module modules/mod_setenvif.so
+LoadModule version_module modules/mod_version.so
+LoadModule remoteip_module modules/mod_remoteip.so
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule proxy_connect_module modules/mod_proxy_connect.so
+LoadModule proxy_ftp_module modules/mod_proxy_ftp.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+LoadModule proxy_fcgi_module modules/mod_proxy_fcgi.so
+LoadModule proxy_scgi_module modules/mod_proxy_scgi.so
+LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
+LoadModule proxy_balancer_module modules/mod_proxy_balancer.so
+LoadModule proxy_express_module modules/mod_proxy_express.so
+LoadModule session_module modules/mod_session.so
+LoadModule session_cookie_module modules/mod_session_cookie.so
+LoadModule session_dbd_module modules/mod_session_dbd.so
+LoadModule slotmem_shm_module modules/mod_slotmem_shm.so
+LoadModule ssl_module modules/mod_ssl.so
+LoadModule lbmethod_byrequests_module modules/mod_lbmethod_byrequests.so
+LoadModule lbmethod_bytraffic_module modules/mod_lbmethod_bytraffic.so
+LoadModule lbmethod_bybusyness_module modules/mod_lbmethod_bybusyness.so
+LoadModule lbmethod_heartbeat_module modules/mod_lbmethod_heartbeat.so
+LoadModule unixd_module modules/mod_unixd.so
+LoadModule dav_module modules/mod_dav.so
+LoadModule status_module modules/mod_status.so
+LoadModule autoindex_module modules/mod_autoindex.so
+LoadModule info_module modules/mod_info.so
+LoadModule cgid_module modules/mod_cgid.so
+LoadModule dav_fs_module modules/mod_dav_fs.so
+LoadModule vhost_alias_module modules/mod_vhost_alias.so
+LoadModule negotiation_module modules/mod_negotiation.so
+LoadModule dir_module modules/mod_dir.so
+LoadModule actions_module modules/mod_actions.so
+LoadModule speling_module modules/mod_speling.so
+LoadModule userdir_module modules/mod_userdir.so
+LoadModule alias_module modules/mod_alias.so
+LoadModule rewrite_module modules/mod_rewrite.so
+LoadModule dav_svn_module modules/mod_dav_svn.so
+LoadModule authz_svn_module modules/mod_authz_svn.so
+<IfModule unixd_module>
+User daemon
+Group daemon
+</IfModule>
+ServerAdmin you@example.com
+<Directory />
+AllowOverride none
+Require all denied
+</Directory>
+DocumentRoot "/usr/local/apache2/htdocs" 
+<Directory "/usr/local/apache2/htdocs">
+Options Indexes FollowSymLinks
+AllowOverride None
+Require all granted
+</Directory>
+<IfModule dir_module>
+DirectoryIndex index.html
+</IfModule>
+<Files ".ht*">
+Require all denied
+</Files>
+ErrorLog "logs/error_log" 
+LogLevel warn
+<IfModule log_config_module>
+LogFormat "%h l %u %t \"%r\" %>s %b \"{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%h l %u %t \"%r\" %>s %b" common
+<IfModule logio_module>
+LogFormat "%h %l %u %t \"%r\" %>s %b \"{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
+</IfModule>
+CustomLog "logs/access_log" common
+</IfModule>
+<IfModule alias_module>
+ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/" 
+</IfModule>
+<IfModule cgid_module>
+</IfModule>
+<Directory "/usr/local/apache2/cgi-bin">
+AllowOverride None
+Options None
+Require all granted
+</Directory>
+<IfModule mime_module>
+TypesConfig conf/mime.types
+AddType application/x-compress .Z
+AddType application/x-gzip .gz .tgz
+</IfModule>
+<IfModule proxy_html_module>
+Include conf/extra/proxy-html.conf
+</IfModule>
+Include conf/extra/httpd-ssl.conf
+<IfModule ssl_module>
+SSLRandomSeed startup builtin
+SSLRandomSeed connect builtin
+</IfModule>
+<Location /svn/emmbed>
+DAV svn
+SVNPath /opt/.svn/svn
+AuthType Basic
+AuthName "Restricted Files" 
+AuthBasicProvider file
+AuthUserFile /usr/local/apache2/passwd/passwords
+AuthzSVNAccessFile /usr/local/apache2/passwd/access
+Require valid-user
+</Location>
+[root@centos6 /]# 
+[root@centos6 /]# 
+[root@centos6 /]# 
+[root@centos6 /]# 
+[root@centos6 /]# cat /usr/local/apache2/passwd/access 
+[groups]
+admin = wenjing
+devteam1 = wenjing, duanjinbing, xushixia, rongzhenyu, wangwei
+devteam2 = wenjing, duanjinbing, xushixia
+test = husuhua
+
+Default access rule for ALL repositories
+Everyone can read, admins can write, DanGer man is excluded
+[/]
+= r
+@admin = rw
+dangerman =
+Allow developers complete access to their project repos
+[/dev01_concentrator]
+@devteam1 = rw
+[/dev01_common]
+@admin = rw
