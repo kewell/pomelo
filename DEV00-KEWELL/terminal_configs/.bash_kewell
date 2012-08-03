@@ -1,0 +1,154 @@
+#!/bin/bash
+
+set -o vi
+
+alias vt100='export TERM=vt100'
+alias linux='export TERM=linux'
+alias rm='rm -i'
+alias mv='mv -i'
+alias cp='cp -i'
+#alias myctages='ctags --c-kinds=+defglmnstuvx --langmap=c:.c.h.ho.hem.het.hec.hev.him.hit.hic.hiv -R .'
+alias myctages='cscope -Rbq && ctags --c-kinds=+defglmnstuvx --langmap=c:.c.h.ho.hem.het.hec.hev.him.hit.hic.hiv -R .'
+alias pf='ps -ef'
+alias gitlog='git log --pretty=format:"%h : %s" --topo-order --graph'
+alias dstats="dstat -cdlmnpsy"
+alias myindent='indent -npro -kr -i4 -ts4 -bls -bl -bli0 -cli2 -ss -bap -sc -sob -l100 -ncs -nce -nut'
+
+function greps ( )
+{
+    if [ $# -lt 1 ] ; then
+        echo "   Usage: $FUNCNAME key [-g] [suffix]"
+        echo "Example1: mygrep haha"
+        echo "Example2: mygrep haha -g"
+        echo "Example3: mygrep haha *.c"
+        echo "Example4: mygrep haha -g *.c"
+        return
+    fi
+
+    key=$1         #The grep key
+
+    if [ $# = 1 ] ; then
+        grep "$key" -rIn *
+
+    elif [ $# = 2 ] ; then
+        if [ $2 = "-g" ] ; then
+            grep -n "\<$key\>" -rI *
+        else
+            suffix=$2
+            #find -iname "$suffix" | xargs grep -n "$key"
+            find -iname "$suffix" | xargs grep -nI "$key"
+        fi
+    else # Arguments more than 3
+
+        if [ $2 = "-g" ] ; then
+            suffix=$3
+
+        elif [ $3 = "-g" ]; then
+            suffix=$2
+        fi
+
+        #find -iname "$suffix" | xargs grep -n "\<$key\>"
+        find -iname "$suffix" | xargs grep -nI "\<$key\>"
+    fi
+}
+
+function findll ()
+{
+    if [ 1 -eq $# ];then
+        find . -mount -type f -name $1 -exec ls -l {} \;
+    else
+        echo "$0 FULL_FILE_NAME"
+    fi
+}
+
+function findvi ()
+{
+    if [ 1 -eq $# ];then
+        find . -mount -type f -name $1 -exec vi {} \;
+    else
+        echo "$0 FULL_FILE_NAME"
+    fi
+}
+
+function findrm ()
+{
+    if [ 1 -eq $# ];then
+        find . -mount -type f -name $1 -exec rm -f {} \;
+    else
+        echo "$0 FULL_FILE_NAME"
+    fi
+}
+
+FS_NAME="nrfs.ext2"
+function Ext2fsStart ()
+{
+    mount | grep -E "/dev/ram6|/dev/ram7"
+    if [ 0 == $? ];then
+        echo "/dev/ram6 or /dev/ram7 is in useing"
+        return
+    fi
+
+    CMD_PREFIX=
+    if [ "root" != `whoami` ];then
+        CMD_PREFIX=sudo
+    fi
+
+    if [ 1 -eq $# ]&&[ $1 != $FS_NAME.gz ];then
+        echo "Skip the first 64 byte data"
+        $CMD_PREFIX dd bs=64 skip=1 if=$1 of=$FS_NAME.gz
+    fi
+
+    if [ ! -s $FS_NAME.gz ];then
+        echo "Are u in the correct folder?"
+        return 
+    fi
+
+    mkdir new
+    mkdir org
+    $CMD_PREFIX gunzip $FS_NAME.gz
+    $CMD_PREFIX mount -o loop $FS_NAME org
+    $CMD_PREFIX dd if=/dev/ram6  of=/dev/ram7 bs=1k count=10240
+    $CMD_PREFIX mke2fs -vm0 /dev/ram7 10240
+    $CMD_PREFIX mount -t ext2 /dev/ram7 new
+    $CMD_PREFIX cp -Rf org/* new/
+    $CMD_PREFIX rm -rf new/lost+found/
+}
+
+function Ext2fsEnd ()
+{
+    CMD_PREFIX=
+    if [ "root" != `whoami` ];then
+        CMD_PREFIX=sudo
+    fi
+    
+    if [ ! -d new ] || [ ! -d org ];then
+        echo "Are u in the correct folder?"
+        return
+    fi
+    
+    svn up
+    svn info
+    if [ 1 -eq $? ];then
+        echo -e "\n\nWarnning : You are out of SVN Conctrl\n\n"
+    else
+        if [ -f new/etc/fs.fcfg ];then
+            echo SVN=$(svnversion .) | $CMD_PREFIX tee new/etc/fs.fcfg
+        else
+            echo -e "\n\nWarnning : FileSystem is unknow svn version\n\n"
+        fi
+    fi
+
+    $CMD_PREFIX umount new
+    $CMD_PREFIX dd if=/dev/ram7 bs=1k count=10240 of=$FS_NAME
+    $CMD_PREFIX gzip -f $FS_NAME
+    $CMD_PREFIX umount org
+    rm -rf new org
+
+    if [ -s $FS_NAME.gz ];then
+        mkimage -A arm -O linux -T filesystem -C gzip -d $FS_NAME.gz $FS_NAME.gz.Magic
+        'cp' $FS_NAME.gz.Magic /tftp
+        #'cp' $FS_NAME.gz.Magic /tftp/NRFS.EXT2.GZ
+    fi
+}
+alias Ext2fsFinish='Ext2fsEnd'
+

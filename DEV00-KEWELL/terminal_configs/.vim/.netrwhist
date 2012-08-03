@@ -1,0 +1,5 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_1='/home/wenjing/.svn_lhg/DEV18-NAP/AppWeb/trunk/src/appweb-Lserials'
+let g:netrw_dirhist_2='/home/wenjing/.svn_lhg/DEV18-NAP/AppWeb/trunk/src'
+let g:netrw_dirhist_3='/home/wenjing/appweb-src-2.4.2/build'
