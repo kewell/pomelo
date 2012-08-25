@@ -7,18 +7,6 @@ git push origin master
 git config --global user.name="harry kewell"
 
 
-[root@centos6 ~]# chkconfig --list | grep "3:on"
-dkms_autoinstaller      0:off   1:off   2:on    3:on    4:on    5:on    6:off
-mysqld          0:off   1:off   2:off   3:on    4:off   5:off   6:off
-network         0:off   1:off   2:on    3:on    4:on    5:on    6:off
-nfs             0:off   1:off   2:off   3:on    4:off   5:off   6:off
-opentftp        0:off   1:off   2:on    3:on    4:on    5:on    6:off
-redmine         0:off   1:off   2:off   3:on    4:off   5:off   6:off
-rpcbind         0:off   1:off   2:on    3:on    4:on    5:on    6:off
-sshd            0:off   1:off   2:on    3:on    4:on    5:on    6:off
-xinetd          0:off   1:off   2:off   3:on    4:on    5:on    6:off
-
-
 [root@centos6 ~]# cat /boot/grub/menu.lst | grep -v "^#"
 default=0
 timeout=1
@@ -34,78 +22,6 @@ title win2003
         chainloader +1
 
 
-[root@centos6 ~]# fdisk -l
-
-Disk /dev/sdb: 500.1 GB, 500107862016 bytes
-255 heads, 63 sectors/track, 60801 cylinders
-Units = cylinders of 16065 * 512 = 8225280 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0xf328f328
-
-   Device Boot      Start         End      Blocks   Id  System
-/dev/sdb1   *           1        6374    51199123+   7  HPFS/NTFS
-/dev/sdb2            6375       60666   436100490    f  W95 Ext'd (LBA)
-/dev/sdb5            6375       31871   204804621    7  HPFS/NTFS
-/dev/sdb6           31872       45369   108422653+   7  HPFS/NTFS
-/dev/sdb7           45370       60406   120775680   83  Linux
-/dev/sdb8           60406       60666     2094080   82  Linux swap / Solaris
-
-Disk /dev/sda: 500.1 GB, 500107862016 bytes
-255 heads, 63 sectors/track, 60801 cylinders
-Units = cylinders of 16065 * 512 = 8225280 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0xf328f328
-
-   Device Boot      Start         End      Blocks   Id  System
-/dev/sda1   *           1        6374    51199123+   7  HPFS/NTFS
-/dev/sda2            6375       60666   436100490    f  W95 Ext'd (LBA)
-/dev/sda5            6375       31871   204804621    7  HPFS/NTFS
-/dev/sda6           31872       45369   108422653+   7  HPFS/NTFS
-/dev/sda7           45370       60406   120775680   83  Linux
-/dev/sda8           60406       60666     2094080   82  Linux swap / Solaris
-
-Disk /dev/dm-0: 499.0 GB, 498999492608 bytes
-255 heads, 63 sectors/track, 60666 cylinders
-Units = cylinders of 16065 * 512 = 8225280 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0xf328f328
-
-     Device Boot      Start         End      Blocks   Id  System
-/dev/dm-0p1   *           1        6374    51199123+   7  HPFS/NTFS
-/dev/dm-0p2            6375       60666   436100490    f  W95 Ext'd (LBA)
-/dev/dm-0p5            6375       31871   204804621    7  HPFS/NTFS
-/dev/dm-0p6           31872       45369   108422653+   7  HPFS/NTFS
-/dev/dm-0p7           45370       60406   120775680   83  Linux
-/dev/dm-0p8           60406       60666     2094080   82  Linux swap / Solaris
-
-Disk /dev/dm-1: 52.4 GB, 52427902464 bytes
-255 heads, 63 sectors/track, 6373 cylinders
-Units = cylinders of 16065 * 512 = 8225280 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0x69205244
-
-This doesn't look like a partition table
-Probably you selected the wrong device.
-
-     Device Boot      Start         End      Blocks   Id  System
-/dev/dm-1p1   ?       13578      119522   850995205   72  Unknown
-Partition 1 does not end on cylinder boundary.
-/dev/dm-1p2   ?       45382       79243   271987362   74  Unknown
-Partition 2 does not end on cylinder boundary.
-/dev/dm-1p3   ?       10499       10499           0   65  Novell Netware 386
-Partition 3 does not end on cylinder boundary.
-/dev/dm-1p4          167628      167631       25817+   0  Empty
-Partition 4 does not end on cylinder boundary.
-
-Partition table entries are not in disk order
-
-Unable to read /dev/dm-2
-
-
 [root@centos6 ~]# mount
 /dev/mapper/ddf1_4c53492020202020808627c3000000004711471100001450p7 on / type ext4 (rw)
 proc on /proc type proc (rw)
@@ -116,3 +32,12 @@ none on /proc/sys/fs/binfmt_misc type binfmt_misc (rw)
 sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw)
 nfsd on /proc/fs/nfsd type nfsd (rw)
 
+
+  Name     Flags    Part Type    FS Type                  [Label]        Size (MB)
+---------------------------------------------------------------------------------------
+  sda1     Boot      Primary     NTFS                     [^F]            52427.94      
+  sda5               Logical     NTFS                     [^X]           209719.97
+  sda6               Logical     NTFS                     [^L]           111024.83
+  sda7     NC        Logical     Linux ext3                              123676.14     *
+  sda8     NC        Logical     Linux swap / Solaris                      2145.39     *
+                                            Pri/Log     Free Space         1111.00     *
