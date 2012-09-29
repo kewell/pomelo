@@ -44,7 +44,8 @@ if [ ! -s .config ];then
     'cp' ../${TARGET}_4SAM9260.config .config -a
 fi
 
-make ARCH=arm CROSS_COMPILE=${CROSS_PATH}/arm-linux-
+#make ARCH=arm CROSS_COMPILE=${CROSS_PATH}/arm-linux-
+make CROSS_COMPILE=${CROSS_PATH}/arm-linux-
 
 cd ../
 

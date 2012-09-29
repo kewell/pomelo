@@ -50,15 +50,27 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
         val[i] = 0.0;
     }
 
-    strncpy(pcName, pcData + HEADS_LEN, NAMES_LEN);
+    if(NULL != (pcData + HEADS_LEN) && strlen(pcData + HEADS_LEN) > NAMES_LEN)
+        strncpy(pcName, pcData + HEADS_LEN, NAMES_LEN);
+    else
+        return;
 
     i = 0;
     while (i < ALL_DATA_LEN && (pcTmp = strchr(pcData, ',') + 1) != NULL)
     {
         pcNext = strchr(pcTmp, ',');
+
+        if (NULL == pcNext)
+        {
+            continue;
+        }
+
         len = pcNext - pcTmp;
         
-        strncpy(aPcVal[i], pcTmp, len);
+        if (NULL != pcTmp && strlen(pcTmp) > len)
+            strncpy(aPcVal[i], pcTmp, len);
+        else
+            return;
 
         if (5 > i)
         {
@@ -68,7 +80,12 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
         if (g_ucIsSZA && 8 == i)
         {
             memset(aPcVal[i], 0, EACH_MAX_LEN);
-            strncpy(aPcVal[i], pcTmp, len - 7);
+
+            if (NULL != pcTmp && strlen(pcTmp) > (len -7))
+                strncpy(aPcVal[i], pcTmp, len - 7);
+            else
+                return;
+
             val[i] = strtof(aPcVal[i], NULL);
         }
 
@@ -182,8 +199,11 @@ int main (int argc, char **argv)
             {
                 if (g_ucIsSZA || strlen(eachData) > 180)
                 {
-                    analysia_each_stk(eachData, fAlarmRate);
-                    g_ucIsSZA = 0;
+                    if (NULL != eachData)
+                    {
+                        analysia_each_stk(eachData, fAlarmRate);
+                        g_ucIsSZA = 0;
+                    }
                 }
             }    
         }
