@@ -1,0 +1,59 @@
+#!/bin/sh
+
+USAGE ()
+{
+    echo "USAGE : $0   TYPE(A/B/C)   PIN(0-32)   [VALUE (0/1)]"
+    echo "read  PA20   : $0 A 20"
+    echo "write PC12 1 : $0 C 12 1"
+    exit
+}
+
+if [ $1 = "A" -o $1 = "a" ];then
+        GPIO=`expr $2 + 32`
+elif [ $1 = "B" -o $1 = "b" ];then
+        GPIO=`expr $2 + 64`
+elif [ $1 = "C" -o $1 = "c" ];then
+        GPIO=`expr $2 + 96`
+else
+        USAGE;
+fi
+
+if [ $# -lt 2 ] || [ $# -gt 3 ] || [ $2 -gt 32 ];then
+        USAGE;
+fi
+
+# Read Operation
+if [ $# -eq 2 ];then
+
+        if [ ! -d /sys/class/gpio/gpio${GPIO} ];then 
+            echo ${GPIO} > /sys/class/gpio/export
+        fi
+
+        #if [ "out" = "`cat /sys/class/gpio/gpio${GPIO}/direction`" ];then
+        #    echo "in" > /sys/class/gpio/gpio${GPIO}/direction
+        #fi
+
+        cat /sys/class/gpio/gpio${GPIO}/value
+
+# Write Operation
+elif [ 3 -eq $# ];then
+
+	if [ 1 -eq $3 ] || [ 0 -eq $3 ];then
+	
+        if [ ! -d /sys/class/gpio/gpio${GPIO} ];then 
+            echo ${GPIO} > /sys/class/gpio/export
+        fi
+
+        if [ "in" = "`cat /sys/class/gpio/gpio${GPIO}/direction`" ];then
+            echo "out" > /sys/class/gpio/gpio${GPIO}/direction
+        fi
+        
+        echo $3 > /sys/class/gpio/gpio${GPIO}/value
+        cat /sys/class/gpio/gpio${GPIO}/value
+        
+    else
+	        USAGE;
+    fi
+else
+        USAGE;
+fi

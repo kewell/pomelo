@@ -1,0 +1,11 @@
+#!/bin/sh
+
+version=`uname -r`
+mkdir -p /lib/modules/$version/kernel
+mount -t debugfs none /sys/kernel/debug
+
+# register drivers
+insmod /usr/drivers/dev_beep.ko
+insmod /usr/drivers/dev_detect.ko
+insmod /usr/drivers/dev_gprs.ko
+insmod /usr/drivers/dev_led.ko

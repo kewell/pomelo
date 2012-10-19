@@ -1,0 +1,28 @@
+#!/bin/sh
+
+E=flash_erase
+W=nandwrite
+
+if [ $# -eq 2 -a "" != $2 ];then
+    if [ $1 = "ub" ];then
+        MTD=0
+        SIZE=2
+    elif [ $1 = "os" ];then
+        MTD=4
+        SIZE=40
+    elif [ $1 = "fs" ];then
+        MTD=5
+        SIZE=40
+    else
+        echo $0 ub/os/fs FILE_NAME
+        exit 1
+    fi
+else
+    echo
+    echo $0 ub/os/fs FILE_NAME
+    echo
+    exit 1
+fi
+
+get $E && get $W && get $2 && ./$E /dev/mtd${MTD} 0 ${SIZE} && ./$W -p /dev/mtd${MTD} $2
+

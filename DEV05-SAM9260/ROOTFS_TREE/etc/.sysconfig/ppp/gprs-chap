@@ -1,0 +1,41 @@
+# Restart after idle X second
+idle 86400
+
+refuse-mschap
+refuse-mschap-v2
+refuse-eap
+refuse-pap
+require-chap
+
+# *** Below this line you probably won't need to change.
+
+nodefaultroute
+updetach
+debug
+
+# Chat scripts
+connect "/usr/sbin/chat -v -E -V -f /etc/ppp/gprs-start-chat"
+
+# Turn on the gprs echo request
+lcp-echo-failure 3
+lcp-echo-interval 5
+
+ipcp-accept-local
+ipcp-accept-remote
+ipcp-restart 50
+
+# Use hardware flow control
+modem
+crtscts
+
+# Let the phone figure out all the IP addresses
+noipdefault
+noauth
+
+# No ppp compression
+novj
+noccp
+novjccomp
+
+# For sanity, keep a lock on the serial line
+lock

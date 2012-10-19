@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+port_file=$1
+port_rate=$2
+interface=$3
+username=$4
+password=$5
+ip_addr=$6
+
+if (pppd $port_file $port_rate unit $interface file /etc/ppp/gprs-chap $ip_addr $username $password)
+then
+	while true;
+	do
+		if (waitfor -q -t 500 -m "unit $interface" pppd)
+		then
+			exit 2
+		fi
+
+		if (ifconfig ppp$interface | grep -q "addr:")
+		then
+			exit 0
+		fi
+	done
+
+	exit 3
+else
+	ret=$?
+
+	if (test $ret -eq 0)
+	then
+		ret=1
+	fi
+
+	exit $ret
+fi

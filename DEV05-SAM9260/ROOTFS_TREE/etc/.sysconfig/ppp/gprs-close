@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+interface=$1
+
+if (waitfor -q -t 20000 -k -m "unit $interface" pppd)
+then
+	exit 0
+else
+	waitfor -q -t 20000 -k KILL -m "unit $interface" pppd
+	exit 0
+fi

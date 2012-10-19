@@ -1,0 +1,3 @@
+#!/bin/sh
+uname -rnv
+exit 0

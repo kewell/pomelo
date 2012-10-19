@@ -1,0 +1,73 @@
+#!/bin/sh
+NAME7="apps"
+NAME8="info"
+NAME9="data"
+
+SIZE7=30062000
+SIZE8=4386000
+SIZE9=51350000
+
+i=9
+#OPTIONS="-o ro,sync,noatime"
+OPTIONS="-o sync,noatime"
+LOGS="/tmp/mount.log"
+REMOUNT=0
+
+if [ -e /dev/ubi_ctrl ];then
+    
+    while [ $i -lt 10 ];
+    do
+    
+        if [ $i = 7 ];then
+            NAME=$NAME7
+            SIZE=$SIZE7
+        elif [ $i = 8 ];then
+            NAME=$NAME8
+            SIZE=$SIZE8
+        elif [ $i = 9 ];then
+            NAME=$NAME9
+            SIZE=$SIZE9
+        fi
+
+        # Move this section to /etc/inittab
+        #if [ ! -e /dev/ubi$i ];then
+        #    ubiattach /dev/ubi_ctrl -m $i -d $i
+        #    usleep 10000
+        #fi
+
+        if [ -e /dev/ubi$i ];then
+
+            if [ ! -e /dev/ubi$i"_0" ];then
+                ubimkvol /dev/ubi$i -N $NAME -s $SIZE
+                OPTIONS="-o sync,noatime"
+                #REMOUNT=1
+                REMOUNT=0
+                usleep 100000 # Make sure create volume for UBIFS
+            fi
+
+            if [ -e /dev/ubi$i"_0" ];then
+                mount $OPTIONS -t ubifs /dev/ubi$i"_0" /$NAME
+                
+                if [ $REMOUNT = 1 ];then
+                    mount -r -o remount,sync,noatime /$NAME
+                fi
+            fi
+
+        else
+        
+            echo "mount $OPTIONS -t jffs2 /dev/mtdblock$i /$NAME" >> $LOGS
+
+        fi
+    
+        i=`expr $i + 1`
+
+    done
+
+else
+
+    echo "mount $OPTIONS -t jffs2 /dev/mtdblock7 /apps" >> $LOGS
+    echo "mount $OPTIONS -t jffs2 /dev/mtdblock8 /info" >> $LOGS
+    echo "mount $OPTIONS -t jffs2 /dev/mtdblock9 /data" >> $LOGS
+
+fi
+

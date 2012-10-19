@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Start all init scripts in /apps/etc/init.d
+# executing them in numerical order.
+#
+
+if [ `gpio R C 4` -eq 0 ] && [ `gpio R C 5` -eq 0 ];then
+    exit 0
+fi
+
+if (test -d /apps/etc/init.d)
+then
+    for i in /apps/etc/init.d/S??* ;do
+        $i
+    done    
+fi

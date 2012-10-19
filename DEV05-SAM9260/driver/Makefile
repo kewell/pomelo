@@ -6,7 +6,7 @@ HWVER ?= OLD
 #KERNEL_VER = linux-2.6.22.1
 KERNEL_VER = linux-3.6-rc4
 
-LINUX_SRC ?= ../$(KERNEL_VER)
+LINUX_SRC ?= ~/SAM9260_NEW/$(KERNEL_VER)
 CROSS_COMPILE ?= /opt/buildroot-2012.08/output/host/usr/bin/arm-linux-
 
 PWD := $(shell pwd)

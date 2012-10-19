@@ -1,0 +1,26 @@
+#!/bin/sh
+
+POWER_LOG_FILE="/apps/power.log"
+
+unlock apps
+
+if [ "$1" = "END" ];then
+    echo "System power     off at '$(date)'"  >> ${POWER_LOG_FILE}
+else
+
+    if [ -s ${POWER_LOG_FILE} ];then
+        if [ `ls -l ${POWER_LOG_FILE} | awk '{print $5}'` -gt 128000 ];then
+            cat /dev/null > ${POWER_LOG_FILE}
+        else
+            tail -1 ${POWER_LOG_FILE} | grep "off"
+
+            if [ 1 -eq $? ];then
+                echo "System power     off at      unknow time and status" >> ${POWER_LOG_FILE}
+            fi
+
+        fi
+    fi
+    echo "System power on      at '$(date)'"  >> ${POWER_LOG_FILE}
+fi
+lock apps
+
