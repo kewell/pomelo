@@ -1,7 +1,7 @@
 #!/bin/sh
 
-E=flash_erase
-W=nandwrite
+E=flash_erase_
+W=nandwrite_
 
 if [ $# -eq 2 -a "" != $2 ];then
     if [ $1 = "ub" ];then

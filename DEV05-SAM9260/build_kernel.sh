@@ -45,6 +45,10 @@ if [ ! -s .config ];then
     cp ../${TARGET}_4SAM9260.config .config -a
 fi
 
+if [ -s ../${TARGET}_4SAM9260.patch ];then
+    patch -p1 < ../${TARGET}_4SAM9260.patch
+fi
+
 make ARCH=arm CROSS_COMPILE=${CROSS_PATH}/arm-linux-
 
 'cp' arch/arm/boot/zImage . -f -a 
