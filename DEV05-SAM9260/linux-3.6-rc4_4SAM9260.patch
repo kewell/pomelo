@@ -1,7 +1,81 @@
-diff -uNr linux-3.6-rc4/arch/arm/mach-at91/board-sam9260ek.c linux-3.6-rc4-sam9260/arch/arm/mach-at91/board-sam9260ek.c
+diff -uNr linux-3.6-rc4/arch/arm/mach-at91/board-sam9260ek.c linux-3.6-rc4_4SAM9260/arch/arm/mach-at91/board-sam9260ek.c
 --- linux-3.6-rc4/arch/arm/mach-at91/board-sam9260ek.c	2012-09-02 01:39:58.000000000 +0800
-+++ linux-3.6-rc4-sam9260/arch/arm/mach-at91/board-sam9260ek.c	2012-10-18 16:39:33.131381366 +0800
-@@ -150,16 +150,51 @@
++++ linux-3.6-rc4_4SAM9260/arch/arm/mach-at91/board-sam9260ek.c	2012-10-19 16:16:12.316391781 +0800
+@@ -51,6 +51,73 @@
+ #include "generic.h"
+ 
+ 
++/* DM9000 support add by WENJING 2012-10-19 15:35:44 */
++#include <linux/dm9000.h>
++
++#if defined(CONFIG_DM9000) || defined(CONFIG_DM9000_MODULE)
++static struct resource at91sam9260_dm9000_resource[] = {
++        [0] = {
++                .start  = AT91_CHIPSELECT_4,
++                .end    = AT91_CHIPSELECT_4 + 3,
++                .flags  = IORESOURCE_MEM
++        },
++        [1] = {
++                .start  = AT91_CHIPSELECT_4 + 0x44,
++                .end    = AT91_CHIPSELECT_4 + 0xFF,
++                .flags  = IORESOURCE_MEM
++        },
++        [2] = {
++                .start  = AT91_PIN_PC15,
++                .end    = AT91_PIN_PC15,
++                .flags  = IORESOURCE_IRQ
++        }
++};
++
++static struct dm9000_plat_data dm9000_platdata = {
++        .flags          = DM9000_PLATF_16BITONLY,
++};
++
++static struct platform_device at91sam9260_dm9000_device = {
++        .name           = "dm9000",
++        .id             = 0,
++        .num_resources  = ARRAY_SIZE(at91sam9260_dm9000_resource),
++        .resource       = at91sam9260_dm9000_resource,
++        .dev            = {
++                .platform_data  = &dm9000_platdata,
++        }
++};
++
++static inline void at91_sys_write(unsigned int reg_offset, unsigned long value)
++{
++    void __iomem *addr = (void __iomem *)AT91_VA_BASE_SYS;
++
++    __raw_writel(value, addr + reg_offset);
++}
++
++static void __init ek_add_device_dm9000(void)
++{
++        /*
++         * Configure Chip-Select 2 on SMC for the DM9000.
++         * Note: These timings were calculated for MASTER_CLOCK = 100000000
++         *  according to the DM9000 timings.
++         */
++#if 1 
++        at91_sys_write(AT91_SMC_SETUP__(4), AT91_SMC_NWESETUP_(2) | AT91_SMC_NCS_WRSETUP_(0) | AT91_SMC_NRDSETUP_(2) | AT91_SMC_NCS_RDSETUP_(0)); 
++        at91_sys_write(AT91_SMC_PULSE__(4), AT91_SMC_NWEPULSE_(4) | AT91_SMC_NCS_WRPULSE_(8) | AT91_SMC_NRDPULSE_(4) | AT91_SMC_NCS_RDPULSE_(8));
++        at91_sys_write(AT91_SMC_CYCLE__(4), AT91_SMC_NWECYCLE_(16) | AT91_SMC_NRDCYCLE_(16));
++        at91_sys_write(AT91_SMC_MODE__(4), AT91_SMC_READMODE | AT91_SMC_WRITEMODE | AT91_SMC_EXNWMODE_DISABLE | AT91_SMC_BAT_WRITE | AT91_SMC_DBW_16 | AT91_SMC_TDF_(1));
++#endif
++        /* Configure Interrupt pin as PC15, no pull-up */
++        at91_set_gpio_input(AT91_PIN_PC15, 0);
++
++        /* Configure NCS4 pin as cs, pull-up */
++        at91_set_A_periph(AT91_PIN_PC8, 1);
++
++        platform_device_register(&at91sam9260_dm9000_device);
++}
++#endif /* CONFIG_DM9000 */
++/* Add by WENJING 2012-10-19 15:36:56 END */
++
+ static void __init ek_init_early(void)
+ {
+ 	/* Initialize processor: 18.432 MHz crystal */
+@@ -150,16 +217,51 @@
   * NAND flash
   */
  static struct mtd_partition __initdata ek_nand_partition[] = {
@@ -63,8 +137,30 @@ diff -uNr linux-3.6-rc4/arch/arm/mach-at91/board-sam9260ek.c linux-3.6-rc4-sam92
  };
  
  static struct atmel_nand_data __initdata ek_nand_data = {
-@@ -247,10 +282,14 @@
+@@ -214,9 +316,9 @@
+ static struct at91_mmc_data __initdata ek_mmc_data = {
+ 	.slot_b		= 1,
+ 	.wire4		= 1,
+-	.det_pin	= -EINVAL,
+-	.wp_pin		= -EINVAL,
+-	.vcc_pin	= -EINVAL,
++	.det_pin	= AT91_PIN_PA6,     /*  Add by WENJING 2012-10-19 15:42:21 */
++	.wp_pin		= AT91_PIN_PA9,     /*  Add by WENJING 2012-10-19 15:42:21 */
++	.vcc_pin	= AT91_PIN_PB19,    /*  Add by WENJING 2012-10-19 15:42:21 */
  };
+ 
+ 
+@@ -240,17 +342,23 @@
+ /*
+  * I2C devices
+  */
++#if 0
+ static struct at24_platform_data at24c512 = {
+ 	.byte_len	= SZ_512K / 8,
+ 	.page_size	= 128,
+ 	.flags		= AT24_FLAG_ADDR16,
+ };
++#endif
  
  static struct i2c_board_info __initdata ek_i2c_devices[] = {
 -	{
@@ -82,9 +178,67 @@ diff -uNr linux-3.6-rc4/arch/arm/mach-at91/board-sam9260ek.c linux-3.6-rc4-sam92
  	/* more devices can be added using expansion connectors */
  };
  
-diff -uNr linux-3.6-rc4/build_kernel.sh linux-3.6-rc4-sam9260/build_kernel.sh
+@@ -317,6 +425,12 @@
+ 
+ 	/* USART1 on ttyS2. (Rx, Tx, RTS, CTS) */
+ 	at91_register_uart(AT91SAM9260_ID_US1, 2, ATMEL_UART_CTS | ATMEL_UART_RTS);
++    /* This 4 UART port add by WENJING 2012-10-19 15:39:13 */
++	at91_register_uart(AT91SAM9260_ID_US2, 3, ATMEL_UART_CTS | ATMEL_UART_RTS);
++	at91_register_uart(AT91SAM9260_ID_US3, 4, ATMEL_UART_CTS | ATMEL_UART_RTS);
++	at91_register_uart(AT91SAM9260_ID_US4, 5, ATMEL_UART_CTS | ATMEL_UART_RTS);
++	at91_register_uart(AT91SAM9260_ID_US5, 6, ATMEL_UART_CTS | ATMEL_UART_RTS);
++    /*Add end*/
+ 	at91_add_device_serial();
+ 	/* USB Host */
+ 	at91_add_device_usbh(&ek_usbh_data);
+@@ -334,6 +448,7 @@
+ 	at91_add_device_i2c(ek_i2c_devices, ARRAY_SIZE(ek_i2c_devices));
+ 	/* SSC (to AT73C213) */
+ 	at73c213_set_clk(&at73c213_data);
++    ek_add_device_dm9000(); /* Add dm9000 driver by WENJING 2012-10-19 15:43:36 */
+ 	at91_add_device_ssc(AT91SAM9260_ID_SSC, ATMEL_SSC_TX);
+ 	/* LEDs */
+ 	at91_gpio_leds(ek_leds, ARRAY_SIZE(ek_leds));
+diff -uNr linux-3.6-rc4/arch/arm/mach-at91/include/mach/at91sam9_smc.h linux-3.6-rc4_4SAM9260/arch/arm/mach-at91/include/mach/at91sam9_smc.h
+--- linux-3.6-rc4/arch/arm/mach-at91/include/mach/at91sam9_smc.h	2012-09-02 01:39:58.000000000 +0800
++++ linux-3.6-rc4_4SAM9260/arch/arm/mach-at91/include/mach/at91sam9_smc.h	2012-10-19 16:16:28.489631279 +0800
+@@ -47,7 +47,10 @@
+ extern void sam9_smc_write_mode(int id, int cs, struct sam9_smc_config *config);
+ #endif
+ 
++#define AT91_SMC0   (0xffffe400 - AT91_BASE_SYS)
++
+ #define AT91_SMC_SETUP		0x00				/* Setup Register for CS n */
++#define AT91_SMC_SETUP__(n)   (AT91_SMC + 0x00 + ((n)*0x10))  /*  Setup Register for CS n */
+ #define		AT91_SMC_NWESETUP	(0x3f << 0)			/* NWE Setup Length */
+ #define			AT91_SMC_NWESETUP_(x)	((x) << 0)
+ #define		AT91_SMC_NCS_WRSETUP	(0x3f << 8)			/* NCS Setup Length in Write Access */
+@@ -58,6 +61,7 @@
+ #define			AT91_SMC_NCS_RDSETUP_(x)	((x) << 24)
+ 
+ #define AT91_SMC_PULSE		0x04				/* Pulse Register for CS n */
++#define AT91_SMC_PULSE__(n)   (AT91_SMC + 0x04 + ((n)*0x10))  /*  Pulse Register for CS n */
+ #define		AT91_SMC_NWEPULSE	(0x7f <<  0)			/* NWE Pulse Length */
+ #define			AT91_SMC_NWEPULSE_(x)	((x) << 0)
+ #define		AT91_SMC_NCS_WRPULSE	(0x7f <<  8)			/* NCS Pulse Length in Write Access */
+@@ -68,12 +72,14 @@
+ #define			AT91_SMC_NCS_RDPULSE_(x)((x) << 24)
+ 
+ #define AT91_SMC_CYCLE		0x08				/* Cycle Register for CS n */
++#define AT91_SMC_CYCLE__(n)   (AT91_SMC + 0x08 + ((n)*0x10))  /*  Cycle Register for CS n */
+ #define		AT91_SMC_NWECYCLE	(0x1ff << 0 )			/* Total Write Cycle Length */
+ #define			AT91_SMC_NWECYCLE_(x)	((x) << 0)
+ #define		AT91_SMC_NRDCYCLE	(0x1ff << 16)			/* Total Read Cycle Length */
+ #define			AT91_SMC_NRDCYCLE_(x)	((x) << 16)
+ 
+ #define AT91_SMC_MODE		0x0c				/* Mode Register for CS n */
++#define AT91_SMC_MODE__(n)    (AT91_SMC + 0x0c + ((n)*0x10))  /*  Mode Register for CS n */
+ #define		AT91_SMC_READMODE	(1 <<  0)			/* Read Mode */
+ #define		AT91_SMC_WRITEMODE	(1 <<  1)			/* Write Mode */
+ #define		AT91_SMC_EXNWMODE	(3 <<  4)			/* NWAIT Mode */
+diff -uNr linux-3.6-rc4/build_kernel.sh linux-3.6-rc4_4SAM9260/build_kernel.sh
 --- linux-3.6-rc4/build_kernel.sh	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.6-rc4-sam9260/build_kernel.sh	2012-09-14 16:52:46.167605096 +0800
++++ linux-3.6-rc4_4SAM9260/build_kernel.sh	2012-10-19 16:34:49.179061667 +0800
 @@ -0,0 +1,10 @@
 +#!/bin/sh
 +
@@ -93,12 +247,26 @@ diff -uNr linux-3.6-rc4/build_kernel.sh linux-3.6-rc4-sam9260/build_kernel.sh
 +'cp' -a arch/arm/boot/zImage .
 +#/home/wenjing/SAM9260_NEW/uboot/u-boot-2012.07/tools/mkimage -A arm -O linux -T kernel -C none -a 20008000 -e 20008000 -n "Linux Kernel" -d zImage uImage.gz
 +
-+mkimage -A arm -O linux -T kernel -C none -a 20008000 -e 20008000 -n "Linux Kernel" -d zImage uImage.gz
++~/.svn_tig/DEV05-SAM9260/bin/mkimage -A arm -O linux -T kernel -C none -a 20008000 -e 20008000 -n "Linux Kernel" -d zImage uImage.gz
 +'cp' -a uImage.gz /tftp/0
 +
-diff -uNr linux-3.6-rc4/Makefile linux-3.6-rc4-sam9260/Makefile
+diff -uNr linux-3.6-rc4/drivers/net/ethernet/davicom/dm9000.h linux-3.6-rc4_4SAM9260/drivers/net/ethernet/davicom/dm9000.h
+--- linux-3.6-rc4/drivers/net/ethernet/davicom/dm9000.h	2012-09-02 01:39:58.000000000 +0800
++++ linux-3.6-rc4_4SAM9260/drivers/net/ethernet/davicom/dm9000.h	2012-10-19 16:37:07.739391645 +0800
+@@ -5,7 +5,9 @@
+ #ifndef _DM9000X_H_
+ #define _DM9000X_H_
+ 
+-#define DM9000_ID		0x90000A46
++/* We got the ID 0x2b09292b from running kernel msg for this SAM9260 board, Change by WENJING 2012-10-19 16:37:03 */
++//#define DM9000_ID		0x90000A46
++#define DM9000_ID		0x2b09292b
+ 
+ /* although the registers are 16 bit, they are 32-bit aligned.
+  */
+diff -uNr linux-3.6-rc4/Makefile linux-3.6-rc4_4SAM9260/Makefile
 --- linux-3.6-rc4/Makefile	2012-09-02 01:39:58.000000000 +0800
-+++ linux-3.6-rc4-sam9260/Makefile	2012-10-18 16:39:54.861391716 +0800
++++ linux-3.6-rc4_4SAM9260/Makefile	2012-10-18 16:39:54.861391716 +0800
 @@ -192,8 +192,10 @@
  # Default value for CROSS_COMPILE is not to prefix executables
  # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
@@ -112,9 +280,9 @@ diff -uNr linux-3.6-rc4/Makefile linux-3.6-rc4-sam9260/Makefile
  
  # Architecture as present in compile.h
  UTS_MACHINE 	:= $(ARCH)
-diff -uNr linux-3.6-rc4/scripts/dtc/dtc-lexer.lex.c linux-3.6-rc4-sam9260/scripts/dtc/dtc-lexer.lex.c
+diff -uNr linux-3.6-rc4/scripts/dtc/dtc-lexer.lex.c linux-3.6-rc4_4SAM9260/scripts/dtc/dtc-lexer.lex.c
 --- linux-3.6-rc4/scripts/dtc/dtc-lexer.lex.c	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.6-rc4-sam9260/scripts/dtc/dtc-lexer.lex.c	2012-09-19 16:38:33.392840595 +0800
++++ linux-3.6-rc4_4SAM9260/scripts/dtc/dtc-lexer.lex.c	2012-09-19 16:38:33.392840595 +0800
 @@ -0,0 +1,1976 @@
 +
 +#line 3 "scripts/dtc/dtc-lexer.lex.c_shipped"
@@ -2092,9 +2260,9 @@ diff -uNr linux-3.6-rc4/scripts/dtc/dtc-lexer.lex.c linux-3.6-rc4-sam9260/script
 +	return 1;
 +}
 +
-diff -uNr linux-3.6-rc4/scripts/dtc/dtc-parser.tab.c linux-3.6-rc4-sam9260/scripts/dtc/dtc-parser.tab.c
+diff -uNr linux-3.6-rc4/scripts/dtc/dtc-parser.tab.c linux-3.6-rc4_4SAM9260/scripts/dtc/dtc-parser.tab.c
 --- linux-3.6-rc4/scripts/dtc/dtc-parser.tab.c	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.6-rc4-sam9260/scripts/dtc/dtc-parser.tab.c	2012-09-19 16:38:33.658527195 +0800
++++ linux-3.6-rc4_4SAM9260/scripts/dtc/dtc-parser.tab.c	2012-09-19 16:38:33.658527195 +0800
 @@ -0,0 +1,1946 @@
 +/* A Bison parser, made by GNU Bison 2.4.3.  */
 +
@@ -4042,9 +4210,9 @@ diff -uNr linux-3.6-rc4/scripts/dtc/dtc-parser.tab.c linux-3.6-rc4-sam9260/scrip
 +	return val;
 +}
 +
-diff -uNr linux-3.6-rc4/scripts/dtc/dtc-parser.tab.h linux-3.6-rc4-sam9260/scripts/dtc/dtc-parser.tab.h
+diff -uNr linux-3.6-rc4/scripts/dtc/dtc-parser.tab.h linux-3.6-rc4_4SAM9260/scripts/dtc/dtc-parser.tab.h
 --- linux-3.6-rc4/scripts/dtc/dtc-parser.tab.h	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.6-rc4-sam9260/scripts/dtc/dtc-parser.tab.h	2012-09-19 16:38:33.394830168 +0800
++++ linux-3.6-rc4_4SAM9260/scripts/dtc/dtc-parser.tab.h	2012-09-19 16:38:33.394830168 +0800
 @@ -0,0 +1,86 @@
 +/* A Bison parser, made by GNU Bison 2.4.3.  */
 +
@@ -4132,4 +4300,3 @@ diff -uNr linux-3.6-rc4/scripts/dtc/dtc-parser.tab.h linux-3.6-rc4-sam9260/scrip
 +extern YYSTYPE yylval;
 +
 +
-Binary files linux-3.6-rc4/zImage and linux-3.6-rc4-sam9260/zImage differ

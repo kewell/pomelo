@@ -71,6 +71,7 @@ echo "+----------------------------------------------------------"
 
 cd ${KER_SRC}
 rm -f uImage*.gz
+rm -f zImage 
 rm -f cscope.*
 rm -f tags
 rm -f svnrev.h
