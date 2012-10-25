@@ -34,7 +34,7 @@ module_param(dev_minor, int, S_IRUGO);
 static struct mutex     mutex; /* Used to lock g_ucRing */
 static unsigned char    g_ucRing = RING_NONE;   /* 0x01 Means SMS, 0X02 Means Incoming call */
 
-
+#ifdef IRQ_FAIL
 //only check in uc864e
 static irqreturn_t catchRing_irq (int irq, void *dev_id)
 {
@@ -74,6 +74,7 @@ static irqreturn_t catchRing_irq (int irq, void *dev_id)
 	}
 	return IRQ_HANDLED;
 }
+#endif
 
 static int gprs_open(struct inode *inode, struct file *filp)
 {
@@ -85,20 +86,22 @@ static int gprs_open(struct inode *inode, struct file *filp)
     gprs_hw_init(index);
 
 	mutex_init(&mutex);
-    
+#ifdef IRQ_FAIL
     if (request_irq (GPRS_RI_PIN, catchRing_irq, IRQ_TYPE_EDGE_BOTH | IRQF_DISABLED, "gprs_ring", NULL))
     {
 		printk(KERN_WARNING "Request GPRS RING irq failed\n" );
 		return -ENODEV;
     }
-
+#endif
     dbg_print("Open %s%d <-> \"%s\"\n", DEV_NAME, index, support_gprs[index].name);
     return 0;                   /* success */
 }
 
 static int gprs_release(struct inode *inode, struct file *file)
 {
+#ifdef IRQ_FAIL
 	free_irq (GPRS_RI_PIN, NULL);
+#endif
     return 0;
 }
 

@@ -5,3 +5,60 @@ L1/L2      ttyS1       gprs         ttyUC864E0/ttyS1   ttyUC864E1   ttyS2
 L3         ttyS2       gprs         ttyUSB0/ttyS2      ttyUSB1      ttyS1
 N3                     gprs         ttyUSB2/ttyUSB0    ttyUSB1
 ======================================================================================================================
+
+
+--------------------HUAWEI GTM900B----------------------------------------------
+at+ipr?
+
++IPR: 115200
+
+OK
+ati
+
+HUAWEI
+GTM900
+
+
+OK
+at+cgmr
+
+HW REVISION: C
+SW REVISION: 01.208
+
+OK
+at+cgsn
+
+G26RAB1941004969
+
+OK
+at+cgmm
+
+GTM900B
+
+OK
+--------------------HUAWEI GTM900C----------------------------------------------
+at+ipr?
+
++IPR: 115200
+
+OK
+ati
+
+HUAWEI
+GTM900C
+
+
+OK
+at+cgmr
+
+HW REVISION: B
+SW REVISION: 01.104
+
+OK
+at+cgsn
+
+Q89KAA1061109301
+
+OK
+--------------------------------------------------------------------------------
+
