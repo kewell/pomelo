@@ -1,4 +1,3 @@
-
 git init
 touch README 
 git commit -m "introduce note"
@@ -24,13 +23,6 @@ title win2003
 
 [root@centos6 ~]# mount
 /dev/mapper/ddf1_4c53492020202020808627c3000000004711471100001450p7 on / type ext4 (rw)
-proc on /proc type proc (rw)
-sysfs on /sys type sysfs (rw)
-devpts on /dev/pts type devpts (rw,gid=5,mode=620)
-tmpfs on /dev/shm type tmpfs (rw)
-none on /proc/sys/fs/binfmt_misc type binfmt_misc (rw)
-sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw)
-nfsd on /proc/fs/nfsd type nfsd (rw)
 
 
   Name     Flags    Part Type    FS Type                  [Label]        Size (MB)
