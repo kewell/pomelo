@@ -36,6 +36,10 @@ var hq_str_sz0="||||,9.57,9.54,9.79,9.84,9.43,9.79,9.80,73317197,711198597.82,64
 #define USEFUL_ID           502
 #define DEBUG_FLAG          "--outa"
 
+#define MIN_BUFF_LEN		64
+#define MID_BUFF_LEN		256
+#define MAX_BUFF_LEN		2048
+
 unsigned char g_ucDebug = 1;/////////////////////////////
 unsigned char g_ucLineCnt = 0;
 unsigned char g_ucMaxCnt = 10;
@@ -52,8 +56,8 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
     unsigned int i = 0, len = 0;
 
 #ifdef DEBUG
-    printf("%s\n", pcData);
-    printf("%d\n", __LINE__);
+	printf("%s\n", pcData);
+	printf("%d\n", __LINE__);
 #endif
 
     pcName = (char *)malloc(NAMES_LEN);
@@ -82,7 +86,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
         }
 
         len = pcNext - pcTmp;
-
+        
         if (NULL != pcTmp && strlen(pcTmp) > len)
             strncpy(aPcVal[i], pcTmp, len);
         else
@@ -114,24 +118,24 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
     if(1 == g_ucDebug)
     {
         printf("%s %5.2f,%5.2f,%5.2f %5s %5s %5s %-2.0f\n", 
-                pcName, 
-                fTmpRate,
-                ((val[3] / val[1]) - 1) * 100,
-                ((val[4] / val[1]) - 1) * 100,
-                aPcVal[2],
-                aPcVal[3],
-                aPcVal[4],
-                (g_ucIsSZA) ? val[8] : 0);
+            pcName, 
+            fTmpRate,
+            ((val[3] / val[1]) - 1) * 100,
+            ((val[4] / val[1]) - 1) * 100,
+            aPcVal[2],
+            aPcVal[3],
+            aPcVal[4],
+            (g_ucIsSZA) ? val[8] : 0);
     }
 
-    g_ucLineCnt++;
+	g_ucLineCnt++;
 
     if (g_ucIsSZA)
     {
         g_fLastDeal = val[8];
-        g_ucIsSZA = 0;
+		g_ucIsSZA = 0;
     }
-
+    
     if (g_ucMaxCnt == g_ucLineCnt)
     {
         g_ucLineCnt = 0;
@@ -147,43 +151,43 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
 int main(int argc, char* argv[]) 
 {
     float fAlarmRate = 12.0;
-    int sleep = 0;
+	int sleep = 0;
+	
+	CInternetSession session("HttpClient");    
+	//char *url = "http://hq.sinajs.cn/list=sh000001";
+	char url[MID_BUFF_LEN];
+    
+	fstream f(URL_PATH, ios::in);
+	f.getline(url, MID_BUFF_LEN);
 
-    CInternetSession session("HttpClient");    
-    //char *url = "http://hq.sinajs.cn/list=sh000001";
-    char url[100];
-
-    fstream f(URL_PATH, ios::in);
-    f.getline(url, 100);
-
-    system("time /\T");
-
-    CHttpFile* pfile = (CHttpFile *)session.OpenURL(url);
+	system("time /\T");
+	
+	CHttpFile* pfile = (CHttpFile *)session.OpenURL(url);
     DWORD dwStatusCode;
-    pfile -> QueryInfoStatusCode(dwStatusCode); 
+    pfile->QueryInfoStatusCode(dwStatusCode); 
     if(dwStatusCode == HTTP_STATUS_OK)
     { 
         CString content;
         CString data;
-        char *pcData;
-        while (pfile -> ReadString(data))
+		char *pcData;
+        while (pfile->ReadString(data))
         {
             content += data + "\r\n";
 #ifdef DEBUG
-            printf(" %s\n " ,(LPCTSTR)data);
+			printf(" %s\n " ,(LPCTSTR)data);
 #endif			
-            pcData = (LPSTR)(LPCTSTR)data;
+			pcData = (LPSTR)(LPCTSTR)data;
             analysia_each_stk(pcData, fAlarmRate);
         }
         content.TrimRight(); 
     }
 
-    if (2 == argc && 0 == strcmp("S", argv[1]))
-    {
-        scanf("%d", &sleep);
-    }
+	if (2 == argc && 0 == strcmp("S", argv[1]))
+	{
+		scanf("%d", &sleep);
+	}
 
-    pfile -> Close();
+    pfile->Close();
     delete pfile; 
     session.Close();	
     return 0 ; 

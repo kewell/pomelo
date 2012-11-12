@@ -1,0 +1,172 @@
+
+[    0.000000] Linux version 3.0.0 (wenjing@centos6.localdomain) (gcc version 4.3.5 (Buildroot 2011.02) ) SVN520 Mon Sep 24 11:29:16 CST 2012
+[    0.000000] CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=00053177
+[    0.000000] CPU: VIVT data cache, VIVT instruction cache
+[    0.000000] Machine: Atmel AT91SAM9260-EK
+[    0.000000] Memory policy: ECC disabled, Data cache writeback
+[    0.000000] On node 0 totalpages: 16384
+[    0.000000] free_area_init_node: node 0, pgdat c03693a0, node_mem_map c0397000
+[    0.000000]   Normal zone: 128 pages used for memmap
+[    0.000000]   Normal zone: 0 pages reserved
+[    0.000000]   Normal zone: 16256 pages, LIFO batch:3
+[    0.000000] Clocks: CPU 198 MHz, master 99 MHz, main 18.432 MHz
+[    0.000000] pcpu-alloc: s0 r0 d32768 u32768 alloc=1*32768
+[    0.000000] pcpu-alloc: [0] 0 
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 16256
+[    0.000000] Kernel command line: console=ttyS0,115200 initrd=0x21100040,5242880 root=/dev/ram0 rw time
+[    0.000000] PID hash table entries: 256 (order: -2, 1024 bytes)
+[    0.000000] Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+[    0.000000] Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Memory: 64MB = 64MB total
+[    0.000000] Memory: 56132k/56132k available, 9404k reserved, 0K highmem
+[    0.000000] Virtual kernel memory layout:
+[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+[    0.000000]     fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+[    0.000000]     DMA     : 0xffc00000 - 0xffe00000   (   2 MB)
+[    0.000000]     vmalloc : 0xc4800000 - 0xfee00000   ( 934 MB)
+[    0.000000]     lowmem  : 0xc0000000 - 0xc4000000   (  64 MB)
+[    0.000000]     modules : 0xbf000000 - 0xc0000000   (  16 MB)
+[    0.000000]       .init : 0xc0008000 - 0xc0026000   ( 120 kB)
+[    0.000000]       .text : 0xc0026000 - 0xc0347258   (3205 kB)
+[    0.000000]       .data : 0xc0348000 - 0xc0369a20   ( 135 kB)
+[    0.000000]        .bss : 0xc0369a44 - 0xc03969e8   ( 180 kB)
+[    0.000000] NR_IRQS:192
+[    0.000000] AT91: 96 gpio irqs in 3 banks
+[    0.000000] Console: colour dummy device 80x30
+[    0.000000] console [ttyS0] enabled
+[    0.160000] Calibrating delay loop... 98.71 BogoMIPS (lpj=493568)
+[    0.260000] pid_max: default: 32768 minimum: 301
+[    0.290000] Mount-cache hash table entries: 512
+[    0.310000] CPU: Testing write buffer coherency: ok
+[    0.350000] NET: Registered protocol family 16
+[    0.370000] AT91: Power Management
+[    0.380000] AT91: Starting after general reset
+[    0.380000] atmel_tcb: probe of atmel_tcb.1 failed with error -22
+[    0.440000] bio: create slab <bio-0> at 0
+[    0.450000] SCSI subsystem initialized
+[    0.460000] usbcore: registered new interface driver usbfs
+[    0.460000] usbcore: registered new interface driver hub
+[    0.470000] usbcore: registered new device driver usb
+[    0.480000] i2c-gpio i2c-gpio: using pins 55 (SDA) and 56 (SCL)
+[    0.490000] Switching to clocksource pit
+[    0.570000] NET: Registered protocol family 2
+[    0.570000] IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.580000] TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+[    0.590000] TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.590000] TCP: Hash tables configured (established 2048 bind 2048)
+[    0.600000] TCP reno registered
+[    0.600000] UDP hash table entries: 256 (order: 0, 4096 bytes)
+[    0.610000] UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+[    0.620000] NET: Registered protocol family 1
+[    0.620000] RPC: Registered named UNIX socket transport module.
+[    0.630000] RPC: Registered udp transport module.
+[    0.630000] RPC: Registered tcp transport module.
+[    0.640000] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    0.640000] Trying to unpack rootfs image as initramfs...
+[    0.650000] rootfs image is not initramfs (no cpio magic); looks like an initrd
+[    0.740000] Freeing initrd memory: 5120K
+[    0.740000] NetWinder Floating Point Emulator V0.97 (double precision)
+[    0.760000] JFFS2 version 2.2. (NAND) ? 2001-2006 Red Hat, Inc.
+[    0.760000] msgmni has been set to 119
+[    0.770000] io scheduler noop registered (default)
+[    0.800000] atmel_usart.0: ttyS0 at MMIO 0xfefff200 (irq = 1) is a ATMEL_SERIAL
+[    0.810000] atmel_usart.1: ttyS1 at MMIO 0xfffb0000 (irq = 6) is a ATMEL_SERIAL
+[    0.820000] atmel_usart.2: ttyS2 at MMIO 0xfffb4000 (irq = 7) is a ATMEL_SERIAL
+[    0.830000] atmel_usart.3: ttyS3 at MMIO 0xfffb8000 (irq = 8) is a ATMEL_SERIAL
+[    0.840000] atmel_usart.4: ttyS4 at MMIO 0xfffd0000 (irq = 23) is a ATMEL_SERIAL
+[    0.850000] atmel_usart.5: ttyS5 at MMIO 0xfffd4000 (irq = 24) is a ATMEL_SERIAL
+[    0.860000] atmel_usart.6: ttyS6 at MMIO 0xfffd8000 (irq = 25) is a ATMEL_SERIAL
+[    0.870000] brd: module loaded
+[    0.870000] ssc ssc.0: Atmel SSC device at 0xc4888000 (irq 14)
+[    0.880000] at24 0-0050: 256 byte 24c512 EEPROM, writable, 8 bytes/write
+[    0.910000] atmel_nand atmel_nand: No DMA support for NAND access.
+[    0.910000] NAND device: Manufacturer ID: 0xec, Chip ID: 0xda (Samsung NAND 256MiB 3,3V 8-bit)
+[    0.920000] Scanning device for bad blocks
+[    0.950000] Bad eraseblock 198 at 0x0000018c0000
+[    1.050000] Bad eraseblock 1213 at 0x0000097a0000
+[    1.110000] Bad eraseblock 1869 at 0x00000e9a0000
+[    1.130000] Creating 10 MTD partitions on "NAND 256MiB 3,3V 8-bit":
+[    1.140000] 0x000000020000-0x000000060000 : "bootloader------256KB"
+[    1.150000] 0x000000060000-0x000000080000 : "boot ENV--------128KB"
+[    1.160000] 0x000000080000-0x0000000a0000 : "boot ENV BAK----128KB"
+[    1.180000] 0x000000200000-0x000000700000 : "linux kernel----5MB"
+[    1.190000] 0x000000700000-0x000001100000 : "filesystem------10MB"
+[    1.200000] 0x000001100000-0x000001600000 : "backup_kernel---5MB"
+[    1.210000] 0x000001600000-0x000002a00000 : "backup_fs-------20MB"
+[    1.220000] 0x000002a00000-0x000004800000 : "apps------------30MB"
+[    1.230000] 0x000004800000-0x000004d00000 : "info------------5MB"
+[    1.250000] 0x000004d00000-0x000008000000 : "data------------51M"
+[    1.260000] macb macb: invalid hw address, using random
+[    1.270000] MACB_mii_bus: probed
+[    1.280000] eth0: Atmel MACB at 0xfffc4000 irq 21 (82:10:07:1e:64:77)
+[    1.280000] eth0: attached PHY driver [Generic PHY] (mii_bus:phy_addr=ffffffff:00, irq=-1)
+[    1.290000] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    1.300000] at91_ohci at91_ohci: AT91 OHCI
+[    1.300000] at91_ohci at91_ohci: new USB bus registered, assigned bus number 1
+[    1.310000] at91_ohci at91_ohci: irq 20, io mem 0x00500000
+[    1.320000] line: 380
+[    1.320000] line: 382
+[    1.380000] hub 1-0:1.0: USB hub found
+[    1.390000] hub 1-0:1.0: 2 ports detected
+[    1.390000] Initializing USB Mass Storage driver...
+[    1.400000] usbcore: registered new interface driver usb-storage
+[    1.400000] USB Mass Storage support registered.
+[    1.410000] rtc-ds1307: probe of 0-0032 failed with error -5
+[    1.420000] i2c /dev entries driver
+[    1.420000] TCP cubic registered
+[    1.430000] NET: Registered protocol family 17
+[    1.430000] Registering the dns_resolver key type
+[    1.440000] drivers/rtc/hctosys.c: unable to open rtc device (rtc0)
+[    1.450000] RAMDISK: gzip image found at block 0
+[    3.560000] VFS: Mounted root (ext2 filesystem) on device 1:0.
+[    3.560000] Freeing init memory: 120K
+[    4.960000] Empty flash at 0x0048a8c0 ends at 0x0048b000
+[    4.980000] Empty flash at 0x0048cba4 ends at 0x0048d000
+[    5.000000] Empty flash at 0x0048e464 ends at 0x0048e800
+[    5.050000] Empty flash at 0x00a4b85c ends at 0x00a4c000
+[    5.060000] Empty flash at 0x00a4de58 ends at 0x00a4e000
+[    5.080000] Empty flash at 0x00a54c74 ends at 0x00a55000
+[    5.090000] Empty flash at 0x00a566e8 ends at 0x00a56800
+[    5.100000] Empty flash at 0x00a57cbc ends at 0x00a58000
+[    5.150000] Empty flash at 0x00f67810 ends at 0x00f68000
+[    5.400000] UBI: attaching mtd9 to ubi9
+[    5.410000] UBI: physical eraseblock size:   131072 bytes (128 KiB)
+[    5.410000] UBI: logical eraseblock size:    129024 bytes
+[    5.420000] UBI: smallest flash I/O unit:    2048
+[    5.420000] UBI: sub-page size:              512
+[    5.430000] UBI: VID header offset:          512 (aligned 512)
+[    5.440000] UBI: data offset:                2048
+[    5.530000] UBI: max. sequence number:       1478
+[    5.550000] UBI: attached mtd9 to ubi9
+[    5.560000] UBI: MTD device name:            "data------------51M"
+[    5.560000] UBI: MTD device size:            51 MiB
+[    5.570000] UBI: number of good PEBs:        408
+[    5.570000] UBI: number of bad PEBs:         0
+[    5.580000] UBI: number of corrupted PEBs:   0
+[    5.580000] UBI: max. allowed volumes:       128
+[    5.590000] UBI: wear-leveling threshold:    4096
+[    5.590000] UBI: number of internal volumes: 1
+[    5.600000] UBI: number of user volumes:     1
+[    5.600000] UBI: available PEBs:             2
+[    5.610000] UBI: total number of reserved PEBs: 406
+[    5.610000] UBI: number of PEBs reserved for bad PEB handling: 4
+[    5.620000] UBI: max/mean erase counter: 7/4
+[    5.620000] UBI: image sequence number:  148505764
+[    5.630000] UBI: background thread "ubi_bgt9d" started, PID 361
+[    5.700000] AT91 button driver version 1.0.505M <Oct 12 2012> initiliazed.
+[    5.770000] AT91 gprs driver version 1.0.505M <Oct 12 2012> initiliazed for module 590.
+[    5.810000] AT91 beep driver version 1.0.505M <Oct 12 2012> initiliazed.
+[    5.900000] AT91 adc driver version 1.0.505M <Oct 12 2012> initiliazed.
+[    5.940000] AT91 led driver version 1.0.505M <Oct 12 2012> initiliazed.
+[    6.010000] AT91 lcd driver version 1.0.505M <Oct 16 2012> initiliazed.
+[    6.070000] AT91 miscs driver version 1.0.505M <Oct 12 2012> initiliazed.
+[    6.170000] UBIFS: recovery needed
+[    6.280000] UBIFS: recovery completed
+[    6.280000] UBIFS: mounted UBI device 9, volume 0, name "data"
+[    6.290000] UBIFS: file system size:   50190336 bytes (49014 KiB, 47 MiB, 389 LEBs)
+[    6.300000] UBIFS: journal size:       2451456 bytes (2394 KiB, 2 MiB, 19 LEBs)
+[    6.300000] UBIFS: media format:       w4/r0 (latest is w4/r0)
+[    6.310000] UBIFS: default compressor: lzo
+[    6.310000] UBIFS: reserved for root:  2370612 bytes (2315 KiB)
+[    8.320000] eth0: link up (100/Full)
+# 
