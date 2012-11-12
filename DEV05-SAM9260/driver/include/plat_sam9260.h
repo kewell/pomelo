@@ -59,8 +59,5 @@
 /*Pin definition For Beep Driver*/
 #define BEEP_PIN                    AT91_PIN_PC2
 
-/* Pin definition for restore key driver */
-#define RESTR_KEY                   AT91_PIN_PB22
-#define RESTR_KEY_IRQ               50
-
 #endif                          /*End __PLAT_SAM9260_H */
+

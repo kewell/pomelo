@@ -7,7 +7,8 @@
  *        Version:  1.0.0(09/26/2012~)
  *         Author:  WENJING <WENJIGN0101@GMAIL.COM>
  *      ChangeLog:  1, Release initial version on "09/26/2012 09:37:59 AM"
- *                  2,
+ *                  2, Disable 3G module advanced request irq, 
+ *                     cuz it got some problems at pin GPRS_RI_PIN 2012-11-12 09:01:54 
  *                 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -34,7 +35,7 @@ module_param(dev_minor, int, S_IRUGO);
 static struct mutex     mutex; /* Used to lock g_ucRing */
 static unsigned char    g_ucRing = RING_NONE;   /* 0x01 Means SMS, 0X02 Means Incoming call */
 
-#ifdef IRQ_FAIL
+#ifdef CHECK_TELIT_3G_IRQ
 //only check in uc864e
 static irqreturn_t catchRing_irq (int irq, void *dev_id)
 {
@@ -86,7 +87,7 @@ static int gprs_open(struct inode *inode, struct file *filp)
     gprs_hw_init(index);
 
 	mutex_init(&mutex);
-#ifdef IRQ_FAIL
+#ifdef CHECK_TELIT_3G_IRQ
     if (request_irq (GPRS_RI_PIN, catchRing_irq, IRQ_TYPE_EDGE_BOTH | IRQF_DISABLED, "gprs_ring", NULL))
     {
 		printk(KERN_WARNING "Request GPRS RING irq failed\n" );
@@ -99,7 +100,7 @@ static int gprs_open(struct inode *inode, struct file *filp)
 
 static int gprs_release(struct inode *inode, struct file *file)
 {
-#ifdef IRQ_FAIL
+#ifdef CHECK_TELIT_3G_IRQ
 	free_irq (GPRS_RI_PIN, NULL);
 #endif
     return 0;

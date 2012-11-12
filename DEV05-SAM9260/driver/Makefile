@@ -18,7 +18,7 @@ EXTRA_CFLAGS+=-D__KERNEL__
 
 obj-m := dev_led.o
 obj-m += dev_beep.o
-obj-m += dev_detect.o
+#obj-m += dev_detect.o
 obj-m += dev_gprs.o
 dev_gprs-objs  :=  dev_gprs_main.o gprs_lowlevel.o
 

@@ -18,7 +18,7 @@
 #ifndef __SYS_INCLUDE_H
 #define __SYS_INCLUDE_H
 
-#include <../arch/arm/include/asm/io.h>
+#include <linux/io.h>
 
 #include <linux/version.h>
 #include <linux/kernel.h>

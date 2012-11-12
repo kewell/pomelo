@@ -64,16 +64,11 @@
 #define PWM                         2
 #define INTERRUPT                   3
 
-/* Restore key */
-#define RESTR_KEY_DOWN              0
-#define RESTR_KEY_UP                1
-
 /* LED driver */
 #define SYS_RUNLED                  0   /*First LED always is the system running LED */
 
 /*===========================================================================
  *===========================================================================*/
-
 #define DEV_LED_NAME             "led"
 #define DEV_LED_MAJOR            203
 
