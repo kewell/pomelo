@@ -25,14 +25,16 @@ var hq_str_sz0="||||,9.57,9.54,9.79,9.84,9.43,9.79,9.80,73317197,711198597.82,64
 #define FILE_OUTP           "/dev/pts/1"
 #define USEFUL_ID           502
 #define DEBUG_FLAG          "--outa"
+#define DEBUG_ALL           "--d"
 
 unsigned char g_ucDebug = 0;
 unsigned char g_ucLineCnt = 0;
 unsigned char g_ucMaxCnt = 10;
 float g_fLastDeal = 0;
 unsigned char g_ucIsSZA = 1;
+unsigned char g_ucDebugAll = 0;
 
-void analysia_each_stk (char *pcData, float fAlarmRate)
+void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
 {
     char *pcName, *pcTmp, *pcNext;
     char *aPcVal[ALL_DATA_LEN];
@@ -110,7 +112,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
 
     g_ucLineCnt++;
 
-    if(!g_ucDebug && (g_ucIsSZA || fTmpRate > fAlarmRate || fTmpRate < (0 - fAlarmRate)))
+    if(g_ucDebugAll) 
     {
         pts = open(FILE_OUTP, O_RDWR);
 
@@ -118,7 +120,34 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
         {
             pcSend = (char *)malloc(EACH_MAX_LEN);
             memset(pcSend, 0, EACH_MAX_LEN);
-                
+
+            if (g_ucIsSZA)
+            {
+                sprintf(pcSend, "\n%2.0f%s%.1f", val[8] - (isFirst) ? val[8] : g_fLastDeal, (fTmpRate >= 0.0) ? "+" : "", fTmpRate);
+            }
+            else
+            {
+                if(isFirst)
+                    sprintf(pcSend, "0%s", pcName);
+                else
+                    sprintf(pcSend, "%s%.1f", (fTmpRate >= 0.0) ? "+" : "", fTmpRate);
+            }
+
+            ret = write(pts, pcSend, strlen(pcSend));
+            
+            free(pcSend);
+            close(pts);
+        }
+    }
+    else if(!g_ucDebug && (g_ucIsSZA || fTmpRate > fAlarmRate || fTmpRate < (0 - fAlarmRate)))
+    {
+        pts = open(FILE_OUTP, O_RDWR);
+
+        if(0 < pts)
+        {
+            pcSend = (char *)malloc(EACH_MAX_LEN);
+            memset(pcSend, 0, EACH_MAX_LEN);
+#if 0
             if (g_ucIsSZA)
             {
                 sprintf(pcSend, "\n%.0f:%.1f|", val[8] - g_fLastDeal, fTmpRate);
@@ -127,7 +156,15 @@ void analysia_each_stk (char *pcData, float fAlarmRate)
             {
                 sprintf(pcSend, "%s:%.1f|", pcName, fTmpRate);
             }
-
+#endif
+            if (g_ucIsSZA)
+            {
+                sprintf(pcSend, "\n%2.0f:%s%.1f|", val[8] - g_fLastDeal, (fTmpRate >= 0.0) ? "+" : "", fTmpRate);
+            }
+            else
+            {
+                sprintf(pcSend, "%s:%s%.1f|", pcName, (fTmpRate >= 0.0) ? "+" : "", fTmpRate);
+            }
             ret = write(pts, pcSend, strlen(pcSend));
             
             free(pcSend);
@@ -159,6 +196,7 @@ int main (int argc, char **argv)
     size_t len = 0;
     float fAlarmRate = 12.0;
     int iRunCnt = 1;
+    unsigned char isFirst = 1;
 
     if (2 != argc || USEFUL_ID != getuid() || USEFUL_ID != geteuid() || 0 != strcmp(FILE_OUTP, ttyname(0)))
     {
@@ -179,6 +217,11 @@ int main (int argc, char **argv)
         else if (0 == strcmp(argv[1], DEBUG_FLAG))
         {
             g_ucDebug = 1;
+        }
+        else if (0 == strcmp(argv[1], DEBUG_ALL))
+        {
+            g_ucDebugAll = 1;
+            iRunCnt= LOOP_TIME;
         }
         else
         {
@@ -201,11 +244,16 @@ int main (int argc, char **argv)
                 {
                     if (NULL != eachData)
                     {
-                        analysia_each_stk(eachData, fAlarmRate);
+                        analysia_each_stk(eachData, fAlarmRate, isFirst);
                         g_ucIsSZA = 0;
                     }
                 }
             }    
+        }
+
+        if (1 == isFirst)
+        {
+            isFirst = 0;
         }
 
         if (out)
