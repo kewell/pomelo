@@ -20,7 +20,6 @@ title win2003
         rootnoverify (hd0,0)
         chainloader +1
 
-
 [root@centos6 ~]# mount
 /dev/mapper/ddf1_4c53492020202020808627c3000000004711471100001450p7 on / type ext4 (rw)
 
