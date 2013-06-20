@@ -1,3 +1,0 @@
-#Wed Dec 15 10:14:17 CST 2010
-eclipse.preferences.version=1
-environment/project/cdt.managedbuild.config.gnu.lib.debug.575219957=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\r\n<environment append\="true" appendContributed\="true">\r\n<variable delimiter\=";" name\="CYGWIN" operation\="append" value\="nodosfilewarning"/>\r\n<variable delimiter\=";" name\="PATH" operation\="append" value\="C\:\\cygwin\\opt\\toolchain-uclibc\\usr\\bin;C\:\\cygwin\\bin"/>\r\n</environment>\r\n
