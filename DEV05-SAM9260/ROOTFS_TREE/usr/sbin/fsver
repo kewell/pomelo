@@ -1,5 +1,0 @@
-#!/bin/sh
-
-file=/etc/fs.fcfg
-awk '{split ($0,x,"="); print x[2];}' $file
-exit 0

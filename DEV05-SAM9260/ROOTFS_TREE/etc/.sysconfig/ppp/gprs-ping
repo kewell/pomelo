@@ -1,9 +1,0 @@
-#!/bin/sh
-#
-
-if (ping -c 5 "$1" | awk '{if ($0 ~ "packet loss"){split ($0, x, ", ");split (x[3], y, "%");if (80 > y[1]) {ret = 1;exit (0);}}}END{if (1 != ret) exit (1);}')
-then
-	exit 0
-else
-	exit 1
-fi
