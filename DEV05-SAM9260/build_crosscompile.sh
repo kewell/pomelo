@@ -6,10 +6,13 @@ TARGET_SRC="buildroot-2012.08.tar.bz2"
 if [ ! -f ${TARGET_SRC} ];then
 
     which wget
-
-    if [ ! $? -eq 0];then
-        echo "Sorry cannot find wget command, please install first"
-        exit
+    if [ ! $? -eq 0 ];then
+        yum -y install wget 
+        which wget
+        if [ ! $? -eq 0 ];then
+            echo "Sorry cannot find wget command, please install first"
+            exit
+        fi
     fi
 
     wget -c http://buildroot.uclibc.org/downloads/${TARGET_SRC}
@@ -27,6 +30,17 @@ if [ ! -d ${TARGET} ];then
     echo "Sorry seems file broken, uncompress failed"
     exit
 fi
+
+which makeinfo
+if [ ! $? -eq 0 ];then
+    yum -y install texinfo
+    which makeinfo
+    if [ ! $? -eq 0 ];then
+        echo "Sorry cannot find makeinfo command, please install first"
+        exit
+    fi
+fi
+
 
 cp ${TARGET}_4SAM9260.config ${TARGET}/.config -a
 
