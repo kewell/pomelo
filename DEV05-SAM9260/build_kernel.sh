@@ -16,7 +16,7 @@ if [ ! -d ${TARGET} ];then
 
         which wget
 
-        if [ ! $? -eq 0];then
+        if [ ! $? -eq 0 ];then
             echo "Sorry cannot find wget command, please install first"
             exit
         fi
