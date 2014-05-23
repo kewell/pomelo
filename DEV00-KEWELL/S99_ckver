@@ -1,0 +1,258 @@
+#!/bin/sh
+
+SUM_NAME="sum"
+AUTO_RUN_NAME="autorun"
+LOC_SUM="/etc/${SUM_NAME}"
+TMP_SUM="/dev/${SUM_NAME}"
+USB_PATH="/media/usb"
+UPGRADE_SERVER=""
+NTPSERVER_IP=""
+FILE_PATH=""
+REBOOT_FLAG=0
+
+ER_NAME="flash_eraseall"
+WR_NAME="nandwrite"
+FS_NAME="NRFS.EXT2.GZ"
+UB_NAME="U-BOOT.BIN"
+LG_NAME="LOGO.BIN"
+OS_NAME="UIMAGE.GZ"
+
+UPGRADE_LOG=/etc/system.log
+
+CHECK_SVR_PRI=192.168.1.138
+CHECK_SVR_SEC=10.4.6.138
+network_cfg="/etc/sysconfig/network.cfg"
+
+CARD_ID=`ifconfig eth0|grep "inet addr:"|awk -F':| ' '{print $13}'`_`ifconfig eth0 |grep "HWaddr" |awk '{print $NF}'`
+
+for i in $(seq 1 10);do dmesg|grep "Link is Up">/dev/null;if [ 0 -ne $? ];then usleep 300000;echo wait_${i};fi;done
+
+erase_write ()
+{
+    if [ $# -ne 2 -o ! -e $2 ];then 
+        return 1
+    fi
+
+    if [ "" != ${UPGRADE_SERVER} ];then
+        if [ ! -s ${WR_NAME} ] || [ ! -s ${ER_NAME} ];then
+            tftp -gr ${ER_NAME} ${UPGRADE_SERVER}
+            tftp -gr ${WR_NAME} ${UPGRADE_SERVER}
+        fi
+    fi
+
+    chmod +x  ${FILE_PATH}/${ER_NAME}  ${FILE_PATH}/${WR_NAME} 
+
+    if [ $1 = "${FS_NAME}" ];then
+        ${FILE_PATH}/${ER_NAME} /dev/mtd3 0 40 && ${FILE_PATH}/${WR_NAME} -p /dev/mtd3 $2
+
+        if [ $? -eq 0 ];then
+            sed '/FS=/d' ${LOC_SUM} > ${TMP_SUM} && cksum $2 | awk '{print "FS="$1}' >> ${TMP_SUM}
+        fi
+
+    elif [ $1 = "${OS_NAME}" ];then
+        ${FILE_PATH}/${ER_NAME} /dev/mtd1 0 40 && ${FILE_PATH}/${WR_NAME} -p /dev/mtd1 $2
+
+        if [ $? -eq 0 ];then
+            sed '/OS=/d' ${LOC_SUM} > ${TMP_SUM} && cksum $2 | awk '{print "OS="$1}' >> ${TMP_SUM}
+        fi
+    elif [ $1 = "${UB_NAME}" ];then
+        ${FILE_PATH}/${ER_NAME} /dev/mtd0 0 2 && ${FILE_PATH}/${WR_NAME} -p /dev/mtd0 $2
+
+        if [ $? -eq 0 ];then
+            sed '/UB=/d' ${LOC_SUM} > ${TMP_SUM} && cksum $2 | awk '{print "UB="$1}' >> ${TMP_SUM}
+        fi
+    elif [ $1 = "${LG_NAME}" ];then
+        ${FILE_PATH}/${ER_NAME} /dev/mtd2 0 2 && ${FILE_PATH}/${WR_NAME} -p /dev/mtd2 $2
+
+        if [ $? -eq 0 ];then
+            sed '/LG=/d' ${LOC_SUM} > ${TMP_SUM} && cksum $2 | awk '{print "LG="$1}' >> ${TMP_SUM}
+        fi
+    fi
+
+    unlock info && mv ${TMP_SUM} ${LOC_SUM}
+    lock info
+    return 0
+}
+
+upgrade_check()
+{
+    if [ $# -eq 2 -a "NET" = $1 -a -n "$2" ];then
+
+        UPGRADE_SERVER=$2
+        #Block by WENJING 2014-04-11 16:30:41 
+        tftp -gr ${SUM_NAME} ${UPGRADE_SERVER}
+
+        tftp -pr ${CARD_ID} ${UPGRADE_SERVER}
+        tftp -gr ${AUTO_RUN_NAME} ${UPGRADE_SERVER}
+
+        FILE_PATH="."
+
+    elif [ $1 = "USB" ];then 
+
+        FILE_PATH=${USB_PATH}
+
+    else
+        return 0
+    fi
+
+    SRV_SUM=${FILE_PATH}/${SUM_NAME}
+    AUTO_RUN=${FILE_PATH}/${AUTO_RUN_NAME}
+
+    UB_FILE=${FILE_PATH}/${UB_NAME}
+    LG_FILE=${FILE_PATH}/${LG_NAME}
+    FS_FILE=${FILE_PATH}/${FS_NAME}
+    OS_FILE=${FILE_PATH}/${OS_NAME}
+
+    if [ -s ${AUTO_RUN} ];then
+        /bin/sh ${AUTO_RUN}
+    fi
+
+    if [ -s ${SRV_SUM} ];then
+
+        SRV_UB="$(awk -F "=" '/UB/{print $2}' ${SRV_SUM})"
+        SRV_LG="$(awk -F "=" '/LG/{print $2}' ${SRV_SUM})"
+        SRV_FS="$(awk -F "=" '/FS/{print $2}' ${SRV_SUM})"
+        SRV_OS="$(awk -F "=" '/OS/{print $2}' ${SRV_SUM})"
+
+        if [ -s ${LOC_SUM} ];then
+            LOC_LG="$(awk -F "=" '/LG/{print $2}' ${LOC_SUM})"
+            LOC_UB="$(awk -F "=" '/UB/{print $2}' ${LOC_SUM})"
+            LOC_FS="$(awk -F "=" '/FS/{print $2}' ${LOC_SUM})"
+            LOC_OS="$(awk -F "=" '/OS/{print $2}' ${LOC_SUM})"
+        else
+            unlock info;echo FS= >> ${LOC_SUM};echo OS= >> ${LOC_SUM};echo UB= >> ${LOC_SUM};echo LG= >> ${LOC_SUM};lock info
+        fi
+
+        if [ "" != "${SRV_LG}" -a "${LOC_LG}" != "${SRV_LG}" ];then
+
+            if [ "" != ${UPGRADE_SERVER} ];then
+                tftp -gr ${LG_NAME} ${UPGRADE_SERVER}
+            fi
+
+            if [ -s ${LG_FILE} -a "${SRV_LG}" = "$(cksum ${LG_FILE} | awk '{print $1}')" ];then
+                erase_write ${LG_NAME} ${LG_FILE}
+                rm -rf ${LG_FILE}
+
+                if [ $? -eq 0 ];then
+                    REBOOT_FLAG=0
+                    unlock apps && echo "$(date) : LG upgrade From $1 ${UPGRADE_SERVER} Success" >> ${UPGRADE_LOG}
+                    lock apps
+                else
+                    unlock apps && echo "$(date) : LG upgrade From $1 ${UPGRADE_SERVER} Failed" >> ${UPGRADE_LOG}
+                    lock apps
+
+                fi
+            fi
+        fi
+
+        if [ "" != "${SRV_UB}" -a "${LOC_UB}" != "${SRV_UB}" ];then
+
+            if [ "" != ${UPGRADE_SERVER} ];then
+                tftp -gr ${UB_NAME} ${UPGRADE_SERVER}
+            fi
+
+            if [ -s ${UB_FILE} -a "${SRV_UB}" = "$(cksum ${UB_FILE} | awk '{print $1}')" ];then
+                erase_write ${UB_NAME} ${UB_FILE}
+                rm -rf ${UB_FILE}
+
+                if [ $? -eq 0 ];then
+                    REBOOT_FLAG=1
+                    unlock apps && echo "$(date) : UB upgrade From $1 ${UPGRADE_SERVER} Success" >> ${UPGRADE_LOG}
+                    lock apps
+                else
+                    unlock apps && echo "$(date) : UB upgrade From $1 ${UPGRADE_SERVER} Failed" >> ${UPGRADE_LOG}
+                    lock apps
+
+                fi
+            fi
+        fi
+
+        if [ "" != "${SRV_FS}" -a "${LOC_FS}" != "${SRV_FS}" ];then
+
+            if [ "" != ${UPGRADE_SERVER} ];then
+                tftp -gr $FS_NAME ${UPGRADE_SERVER}
+            fi
+
+            if [ -s ${FS_FILE} -a "${SRV_FS}" = "$(cksum ${FS_FILE} | awk '{print $1}')" ];then
+                erase_write ${FS_NAME} ${FS_FILE}
+                rm -rf ${FS_FILE}
+
+                if [ $? -eq 0 ];then
+                    REBOOT_FLAG=1
+                    unlock apps && echo "$(date) : FS upgrade From $1 ${UPGRADE_SERVER} Success" >> ${UPGRADE_LOG}
+                    lock apps
+                else
+                    unlock apps && echo "$(date) : FS upgrade From $1 ${UPGRADE_SERVER} Failed" >> ${UPGRADE_LOG}
+                    lock apps
+
+                fi
+            fi
+        fi
+
+        if [ "" != "${SRV_OS}" -a "${LOC_OS}" != "${SRV_OS}" ];then
+
+            if [ "" != ${UPGRADE_SERVER} ];then
+                tftp -gr $OS_NAME ${UPGRADE_SERVER}
+            fi
+
+            if [ -s ${OS_FILE} -a "${SRV_OS}" = "$(cksum ${OS_FILE} | awk '{print $1}')" ];then
+                erase_write ${OS_NAME} ${OS_FILE}
+                rm -rf ${OS_FILE}
+
+                if [ $? -eq 0 ];then
+                    REBOOT_FLAG=1
+                    unlock apps && echo "$(date) : OS upgrade From $1 ${UPGRADE_SERVER} Success" >> ${UPGRADE_LOG}
+                    lock apps
+                else
+                    unlock apps && echo "$(date) : OS upgrade From $1 ${UPGRADE_SERVER} Failed" >> ${UPGRADE_LOG}
+                    lock apps
+
+                fi
+            fi
+        fi
+
+        if [ ${REBOOT_FLAG} -eq 1 ];then
+
+:<<BLOCK_BY_WENJING
+            comport -ioctl /dev/led 1073831970 0
+            comport -ioctl /dev/led 1073831970 1
+            comport -ioctl /dev/led 1073831970 2
+            comport -ioctl /dev/beep 24599 0;usleep 100000;comport -ioctl /dev/beep 24600 0;usleep 300000
+            comport -ioctl /dev/beep 24599 0;usleep 100000;comport -ioctl /dev/beep 24600 0;usleep 300000
+            comport -ioctl /dev/beep 24599 0;usleep 100000;comport -ioctl /dev/beep 24600 0
+BLOCK_BY_WENJING
+            
+            reboot
+        fi
+
+    fi
+}
+
+USB_EXIST=`dmesg  | grep "usb-storage" | wc -l`
+
+cd /dev
+touch ${CARD_ID}
+
+if [ ${USB_EXIST} -gt 1 ];then
+    #sleep 5
+
+    df | grep ${USB_PATH}
+
+    if [ $? -eq 0 ];then
+        upgrade_check USB
+    fi
+fi
+
+if [ -s ${network_cfg} ];then
+    CHECK_SVR_PRI=`cat ${network_cfg} | grep "check.pri.addr" | awk -F'=' '{print $2}'`
+    CHECK_SVR_SEC=`cat ${network_cfg} | grep "check.sec.addr" | awk -F'=' '{print $2}'`
+fi
+
+if [ 1 -eq `ping -c 1 -s 64 -W 1 -w 1 -q ${CHECK_SVR_PRI} | grep "received, 0%" | wc -l` ];then
+    upgrade_check NET ${CHECK_SVR_PRI}
+elif [ 1 -eq `ping -c 1 -s 64 -W 1 -w 1 -q ${CHECK_SVR_SEC} | grep "received, 0%" | wc -l` ];then
+    upgrade_check NET ${CHECK_SVR_SEC}
+fi
+
+cd -
+
