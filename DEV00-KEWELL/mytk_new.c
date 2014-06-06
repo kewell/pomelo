@@ -28,7 +28,8 @@ S: 20  21     22    23     24   25    26    27   28    29
 #define ALL_DATA_LEN        30 
 #define OUT_PUT "/tmp/.data2.list"
 #define EACH_MAX_LEN        20
-#define WAIT_SEC            8
+int g_dozeSec = 10;
+int iRunCnt = 1;
 #define LOOP_TIME           240
 #define FILE_OUTP           "/dev/pts/1"
 #define USEFUL_ID           0 
@@ -41,6 +42,38 @@ unsigned char g_ucMaxCnt = 10;
 float g_fLastDeal = 0;
 unsigned char g_ucIsSZA = 1;
 unsigned char g_ucDebugAll = 0;
+
+#define ASCII_0_VAL         0x30
+void updateTimeDoze()
+{
+    FILE *pstTmpFile;
+    int readCnt = -1;
+    unsigned char aReadData[2] = {0,0};
+
+    pstTmpFile = fopen("/var/www/icons/.dozeTime", "r");
+    if (NULL != pstTmpFile)
+    {
+        readCnt = fread(aReadData, 1, 2, pstTmpFile);
+
+        if (0 < readCnt)
+        {
+            if (aReadData[0]>0x2F && aReadData[0]<0x3A)
+                aReadData[0] -= ASCII_0_VAL;
+            else
+                aReadData[0] = 0;
+        }
+        if (1 < readCnt)
+        {
+            if (aReadData[1]>0x2F && aReadData[1]<0x3A)
+                aReadData[1] -= ASCII_0_VAL;
+            else
+                aReadData[1] = 0;
+        }
+        g_dozeSec = (aReadData[0] * ((0 == aReadData[1]) ? ((1 < readCnt)?10:1) : 10) + aReadData[1]);
+    }
+    printf("DozeSecTime is %d Sec\n", g_dozeSec);
+}
+
 
 void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
 {
@@ -168,7 +201,18 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
 
                 if(isFirst)
                 {
-                    sprintf(pcSend, " %s", pcName);
+                    if (0 == strcmp(pcName, "001"))
+                    {
+                        sprintf(pcSend, "%s", "    ");
+                    }
+                    else if (0 == strcmp(pcName, "005") || 0 == strcmp(pcName, "006"))
+                    {
+                        sprintf(pcSend, " %s", pcName);
+                    }
+                    else
+                    {
+                        sprintf(pcSend, " %s       ", pcName);
+                    }
                 }
                 else
                 {
@@ -245,7 +289,6 @@ int main (int argc, char **argv)
     char *eachData = NULL;
     size_t len = 0;
     float fAlarmRate = 12.0;
-    int iRunCnt = 1;
     unsigned char isFirst = 1;
 
     //if (2 != argc || USEFUL_ID != getuid() || USEFUL_ID != geteuid() || 0 != strcmp(FILE_OUTP, ttyname(0)))
@@ -255,6 +298,7 @@ int main (int argc, char **argv)
         goto CleanUp;
     }
 
+    updateTimeDoze();
     if (2 == argc)
     {
         if (1 == strlen(argv[1]))
@@ -305,11 +349,6 @@ int main (int argc, char **argv)
             }    
         }
 
-        if (1 == isFirst)
-        {
-            isFirst = 0;
-        }
-
         if (out)
         {
             fclose(out);
@@ -318,9 +357,22 @@ int main (int argc, char **argv)
 
         if (iRunCnt > 0)
         {
-            sleep(WAIT_SEC);
+            if(0 == isFirst)
+            {
+                sleep(g_dozeSec);
+            }
             g_ucIsSZA = 1;
         }
+
+        if (0 == iRunCnt % 20)
+        {
+            isFirst = 1;
+        }
+        else
+        {
+            isFirst = 0;
+        }
+
     }
     exit(EXIT_SUCCESS);
 
