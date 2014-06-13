@@ -1,0 +1,35 @@
+[root@localhost pomelo]# git pull
+remote: Reusing existing pack: 1688, done.
+remote: Total 1688 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (1688/1688), 425.71 MiB | 69 KiB/s, done.
+Resolving deltas: 100% (579/579), done.
+From github.com:kewell/pomelo
+ * [new branch]      master     -> origin/master
+You asked me to pull without telling me which branch you
+want to merge with, and 'branch.master.merge' in
+your configuration file does not tell me, either. Please
+specify which branch you want to use on the command line and
+try again (e.g. 'git pull <repository> <refspec>').
+See git-pull(1) for details.
+
+If you often merge with the same branch, you may want to
+use something like the following in your configuration file:
+
+    [branch "master"]
+    remote = <nickname>
+    merge = <remote-ref>
+
+    [remote "<nickname>"]
+    url = <url>
+    fetch = <refspec>
+
+See git-config(1) for details.
+
+fix command:
+1222  git init
+1223  git remote add origin git@github.com:kewell/pomelo.git
+1227  git pull  ######################## NOTHING but got a SHIT WARN NOTE
+1230  vi SHIT
+1232  du -sh
+1257  git pull origin master
+1258  ls

@@ -126,7 +126,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
 #ifdef __DEBUG__
         printf("val[%d]=%s   ||| ", i, aPcVal[i]);
 #endif
-        if (5 > i || (i >= 9 && 1 == i % 2))
+        //if (5 > i || (i >= 8 && 1 == i % 2))
         {
             //val[i] = __strtof_internal(aPcVal[i], NULL, 0);
             val[i] = strtof(aPcVal[i], NULL);
@@ -158,10 +158,11 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
     float fTmpRate = (val[2] - val[1]) * 100 / val[1];
     float fAllBuy = (val[9] + val[11] + val[13] + val[15] + val[17]);
     float fAllSell = (val[19] + val[21] + val[23] + val[25] + val[27]);
+    float fAllMoney = val[8] / 10000000;
 
     if(1 == g_ucDebug)
     {
-        printf("%s %5.2f,%5.2f,%5.2f %-5.5s %-5.5s %-5.5s__%.0f/%.0f/%.0f/%.0f/%.0f__%.0f/%.0f/%.0f/%.0f/%.0f__%-2.0f\n", 
+        printf("%s %5.2f,%5.2f,%5.2f %-5.5s %-5.5s %-5.5s__%.0f/%.0f/%.0f/%.0f/%.0f__%.0f/%.0f/%.0f/%.0f/%.0f__%-2.0f___%.1f[KW]\n", 
                 pcName, 
                 fTmpRate,
                 ((val[3] - val[1]) * 100 / val[1]),
@@ -171,7 +172,8 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
                 aPcVal[4],
                 val[27]/100, val[25]/100, val[23]/100, val[21]/100, val[19]/100,  
                 val[9]/100, val[11]/100, val[13]/100, val[15]/100, val[17]/100,
-                (g_ucIsSZA) ? val[8] : ((fAllBuy - fAllSell)/100)
+                (g_ucIsSZA) ? val[8] : ((fAllBuy - fAllSell)/100),
+                fAllMoney
               );
     }
 
