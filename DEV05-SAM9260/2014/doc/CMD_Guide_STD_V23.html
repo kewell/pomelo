@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>/.100G/.KEWELL/pomelo/DEV05-SAM9260/NEW_BIN_2014/cmd_guide.txt.html</title>
+<meta name="Generator" content="Vim/7.2" />
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<style type="text/css">
+<!--
+pre { font-family: monospace; color: #ffffff; background-color: #000000; }
+body { font-family: monospace; color: #ffffff; background-color: #000000; }
+-->
+</style>
+</head>
+<body>
+<pre>
+
+BOOT
+&gt;
+
+U-Boot 1.3.4 (Jan 22 2009 - 11:54:13)
+
+DRAM:  64 MB
+NAND:  256 MiB
+DataFlash:AT45DB321
+Nb pages:   8192
+Page Size:    528
+Size= 4325376 bytes
+Logical address: 0xD0000000
+Area 0: D0000000 to D00041FF (RO) Bootstrap
+Area 1: D0004200 to D00083FF      Environment
+Area 2: D0008400 to D0041FFF (RO) U-Boot
+Area 3: D0042000 to D0251FFF      Kernel
+Area 4: D0252000 to D041FFFF      FS
+In:    serial
+Out:   serial
+Err:   serial
+Net:   macb0
+macb0: Starting autonegotiation...
+macb0: Autonegotiation complete
+macb0: link up, 100Mbps full-duplex (lpa: 0x45e1)
+Hit any key to stop autoboot:  0
+U-Boot&gt;
+U-Boot&gt;
+U-Boot&gt;
+U-Boot&gt;
+U-Boot&gt;
+U-Boot&gt;
+U-Boot&gt;
+U-Boot&gt;
+U-Boot&gt;
+U-Boot&gt;
+U-Boot&gt;
+U-Boot&gt; pri
+bootdelay=3
+baudrate=115200
+ethact=macb0
+ethaddr=00:00:22:3c:9d:13
+bootargs=loglevel=7 console=ttyS0,115200 initrd=0x21100000,5242880 root=/dev/ram0 rw time
+filesize=1D9D54
+fileaddr=21100000
+ipaddr=192.168.200.132
+serverip=192.168.200.138
+bootcmd=nand read 20000000 a0000 200000;nand read 21100000 5a0000 200000;bootm 20000000
+stdin=serial
+stdout=serial
+stderr=serial
+
+Environment size: 368/131067 bytes
+U-Boot&gt; nand erase a0000 a00000
+
+NAND erase: device 0 offset 0xa0000, size 0xa00000
+Erasing at 0xa80000 -- 100% complete.
+OK
+U-Boot&gt; tftp 20000000 2.6.22-STD-uImage_2014;tftp 21100000 2.6.22-NO6_rootfs_2014
+macb0: link up, 100Mbps full-duplex (lpa: 0x45e1)
+Using macb0 device
+TFTP from server 192.168.200.138; our IP address is 192.168.200.132
+Filename '2.6.22-STD-uImage_2014'.
+Load address: 0x20000000
+Loading: #################################################################
+         #####################################
+done
+Bytes transferred = 1486580 (16aef4 hex)
+macb0: link up, 100Mbps full-duplex (lpa: 0x45e1)
+Using macb0 device
+TFTP from server 192.168.200.138; our IP address is 192.168.200.132
+Filename '2.6.22-NO6_rootfs_2014'.
+Load address: 0x21100000
+Loading: #################################################################
+         #################################################################
+         #############################
+done
+Bytes transferred = 2330805 (2390b5 hex)
+U-Boot&gt; nand write 20000000 a0000 200000
+
+NAND write: device 0 offset 0xa0000, size 0x200000
+ 2097152 bytes written: OK
+U-Boot&gt; nand write 21100000 5a0000 300000
+
+NAND write: device 0 offset 0x5a0000, size 0x300000
+ 3145728 bytes written: OK
+U-Boot&gt; resetBOOT
+&gt;
+
+U-Boot 1.3.4 (Jan 22 2009 - 11:54:13)
+
+DRAM:  64 MB
+NAND:  256 MiB
+DataFlash:AT45DB321
+Nb pages:   8192
+Page Size:    528
+Size= 4325376 bytes
+Logical address: 0xD0000000
+Area 0: D0000000 to D00041FF (RO) Bootstrap
+Area 1: D0004200 to D00083FF      Environment
+Area 2: D0008400 to D0041FFF (RO) U-Boot
+Area 3: D0042000 to D0251FFF      Kernel
+Area 4: D0252000 to D041FFFF      FS
+In:    serial
+Out:   serial
+Err:   serial
+Net:   macb0
+macb0: Starting autonegotiation...
+macb0: Autonegotiation complete
+macb0: link up, 100Mbps full-duplex (lpa: 0x45e1)
+Hit any key to stop autoboot:  0
+
+NAND read: device 0 offset 0xa0000, size 0x200000
+ 2097152 bytes read: OK
+
+NAND read: device 0 offset 0x5a0000, size 0x200000
+ 2097152 bytes read: OK
+## Booting kernel from Legacy Image at 20000000 ...
+   Image Name:   Linux-2.6.22
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    1486516 Bytes =  1.4 MB
+   Load Address: 20008000
+   Entry Point:  20008000
+   Verifying Checksum ... OK
+   Loading Kernel Image ... OK
+OK
+
+Starting kernel ...
+
+Linux version 2.6.22 (root@localhost.localdomain) (gcc version 4.5.4 (Buildroot 2012.08) ) #1 Tue Aug 26 16:31:49 CST 2014
+CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=00053177
+Machine: Atmel AT91SAM9260-EK
+Memory policy: ECC disabled, Data cache writeback
+Clocks: CPU 198 MHz, master 99 MHz, main 18.432 MHz
+CPU0: D VIVT write-back cache
+CPU0: I cache: 8192 bytes, associativity 4, 32 byte lines, 64 sets
+CPU0: D cache: 8192 bytes, associativity 4, 32 byte lines, 64 sets
+Built 1 zonelists.  Total pages: 16256
+Kernel command line: loglevel=7 console=ttyS0,115200 initrd=0x21100000,5242880 root=/dev/ram0 rw time
+[    0.000000] AT91: 96 gpio irqs in 3 banks
+[    0.000000] PID hash table entries: 256 (order: 8, 1024 bytes)
+[    0.000000] Console: colour dummy device 80x30
+[    0.000000] Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+[    0.000000] Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Memory: 64MB = 64MB total
+[    0.000000] Memory: 56716KB available (2664K code, 240K data, 116K init)
+[    0.200000] Mount-cache hash table entries: 512
+[    0.200000] CPU: Testing write buffer coherency: ok
+[    0.210000] NET: Registered protocol family 16
+[    0.240000] SCSI subsystem initialized
+[    0.250000] usbcore: registered new interface driver usbfs
+[    0.250000] usbcore: registered new interface driver hub
+[    0.260000] usbcore: registered new device driver usb
+[    0.270000] NET: Registered protocol family 2
+[    0.370000] IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.370000] TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+[    0.380000] TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.390000] TCP: Hash tables configured (established 2048 bind 2048)
+[    0.390000] TCP reno registered
+[    0.500000] Freeing initrd memory: 5120K
+[    0.500000] NetWinder Floating Point Emulator V0.97 (double precision)
+[    0.510000] JFFS2 version 2.2. (NAND) © 2001-2006 Red Hat, Inc.
+[    0.520000] io scheduler noop registered
+[    0.520000] io scheduler anticipatory registered (default)
+[    0.550000] atmel_usart.0: ttyS0 at MMIO 0xfefff200 (irq = 1) is a ATMEL_SERIAL
+[    0.550000] atmel_usart.1: ttyS1 at MMIO 0xfffb0000 (irq = 6) is a ATMEL_SERIAL
+[    0.560000] atmel_usart.2: ttyS2 at MMIO 0xfffb4000 (irq = 7) is a ATMEL_SERIAL
+[    0.570000] atmel_usart.3: ttyS3 at MMIO 0xfffb8000 (irq = 8) is a ATMEL_SERIAL
+[    0.580000] atmel_usart.4: ttyS4 at MMIO 0xfffd0000 (irq = 23) is a ATMEL_SERIAL
+[    0.590000] atmel_usart.5: ttyS5 at MMIO 0xfffd4000 (irq = 24) is a ATMEL_SERIAL
+[    0.600000] RAMDISK driver initialized: 1 RAM disks of 16384K size 1024 blocksize
+[    0.610000] loop: module loaded
+[    0.610000] usbcore: registered new interface driver ub
+[    0.620000] PPP generic driver version 2.4.2
+[    0.620000] PPP Deflate Compression module registered
+[    0.630000] PPP BSD Compression module registered
+[    0.630000] PPP MPPE Compression module registered
+[    0.640000] tun: Universal TUN/TAP device driver, 1.6
+[    0.640000] tun: (C) 1999-2004 Max Krasnyansky &lt;maxk@qualcomm.com&gt;
+[    0.650000] dm9000 Ethernet Driver
+[    1.170000] eth%d: Invalid ethernet MAC address.  Please set using ifconfig
+[    1.180000] eth0: dm9000 at c4856000,c485e044 IRQ 111 MAC: 00:00:00:00:00:00
+[    1.180000] macb macb: detected PHY at address 0 (ID 0181:b8a0)
+[    1.190000] eth1: Atmel MACB at 0xfffc4000 irq 21 (00:00:22:3c:9d:13)
+[    1.200000] Loading iSCSI transport class v2.0-724.
+[    1.210000] block2mtd: version $Revision: 1.30 $
+[    1.210000] NAND device: Manufacturer ID: 0xec, Chip ID: 0xda (Samsung NAND 256MiB 3,3V 8-bit)
+[    1.220000] Scanning device for bad blocks
+[    1.250000] Bad eraseblock 715 at 0x05960000
+[    1.260000] Bad eraseblock 799 at 0x063e0000
+[    1.270000] Bad eraseblock 1024 at 0x08000000
+[    1.270000] Bad eraseblock 1025 at 0x08020000
+[    1.280000] Bad eraseblock 1085 at 0x087a0000
+[    1.300000] Bad eraseblock 1512 at 0x0bd00000
+[    1.320000] Creating 9 MTD partitions on &quot;NAND 256MiB 3,3V 8-bit&quot;:
+[    1.330000] 0x00000000-0x00020000 : &quot;bootstrap - 128KB&quot;
+[    1.330000] 0x00020000-0x00060000 : &quot;uboot - 256KB&quot;
+[    1.340000] 0x00060000-0x00080000 : &quot;uboot env - 128KB&quot;
+[    1.350000] 0x00080000-0x000a0000 : &quot;uboot env swap - 128KB&quot;
+[    1.350000] 0x000a0000-0x005a0000 : &quot;kernel - 5MB&quot;
+[    1.360000] 0x005a0000-0x00aa0000 : &quot;fs - 5MB&quot;
+[    1.370000] 0x00aa0000-0x01ea0000 : &quot;apps - 20MB&quot;
+[    1.370000] 0x01ea0000-0x01fa0000 : &quot;info - 1MB&quot;
+[    1.380000] 0x01fa0000-0x0ffa0000 : &quot;data - 224MB&quot;
+[    1.390000] at91_ohci at91_ohci: AT91 OHCI
+[    1.400000] at91_ohci at91_ohci: new USB bus registered, assigned bus number 1
+[    1.400000] at91_ohci at91_ohci: irq 20, io mem 0x00500000
+[    1.470000] drivers/usb/core/hub.c ##idVendor = 0x0000,idProduct = 0x0000
+[    1.480000] usb usb1: configuration #1 chosen from 1 choice
+[    1.480000] hub 1-0:1.0: USB hub found
+[    1.490000] hub 1-0:1.0: 2 ports detected
+[    1.600000] Initializing USB Mass Storage driver...
+[    1.900000] usb 1-1: new full speed USB device using at91_ohci and address 2
+[    2.070000] drivers/usb/core/hub.c ##idVendor = 0x05e3,idProduct = 0x0608
+[    2.080000] usb 1-1: configuration #1 chosen from 1 choice
+[    2.090000] hub 1-1:1.0: USB hub found
+[    2.090000] hub 1-1:1.0: 4 ports detected
+[    2.520000] usb 1-2: new full speed USB device using at91_ohci and address 3
+[    2.700000] drivers/usb/core/hub.c ##idVendor = 0x1bc7,idProduct = 0x1003
+[    2.710000] usb 1-2: configuration #1 chosen from 1 choice
+[    2.730000] usbcore: registered new interface driver usb-storage
+[    2.740000] USB Mass Storage support registered.
+[    2.740000] usbcore: registered new interface driver usbserial
+[    2.750000] drivers/usb/serial/usb-serial.c: USB Serial Driver core
+[    2.760000] drivers/usb/serial/usb-serial.c: USB Serial support registered for GSM modem (1-port)
+[    2.760000] option 1-2:1.0: GSM modem (1-port) converter detected
+[    2.770000] usb 1-2: GSM modem (1-port) converter now attached to ttyUSB0
+[    2.780000] option 1-2:1.2: GSM modem (1-port) converter detected
+[    2.790000] usb 1-2: GSM modem (1-port) converter now attached to ttyUSB1
+[    2.790000] usbcore: registered new interface driver option
+[    2.800000] drivers/usb/serial/option.c: USB Driver for GSM modems: v0.7.1
+[    2.810000] mice: PS/2 mouse device common for all mice
+[    2.820000] rtc-simu rtc-simu.0: rtc core: registered gpio_rtc as rtc0
+[    2.830000] Netfilter messages via NETLINK v0.30.
+[    2.830000] nf_conntrack version 0.5.0 (512 buckets, 4096 max)
+[    2.840000] ctnetlink v0.93: registering with nfnetlink.
+[    2.840000] ip_tables: (C) 2000-2006 Netfilter Core Team
+[    2.850000] ClusterIP Version 0.8 loaded successfully
+[    2.850000] arp_tables: (C) 2002 David S. Miller
+[    2.860000] IPVS: Registered protocols (TCP, UDP, AH, ESP)
+[    2.870000] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    2.870000] IPVS: ipvs loaded.
+[    2.880000] IPVS: [rr] scheduler registered.
+[    2.880000] IPVS: [wrr] scheduler registered.
+[    2.880000] IPVS: [lc] scheduler registered.
+[    2.890000] IPVS: [wlc] scheduler registered.
+[    2.890000] IPVS: [lblc] scheduler registered.
+[    2.900000] IPVS: [lblcr] scheduler registered.
+[    2.900000] IPVS: [dh] scheduler registered.
+[    2.910000] IPVS: [sh] scheduler registered.
+[    2.910000] IPVS: [sed] scheduler registered.
+[    2.920000] IPVS: [nq] scheduler registered.
+[    2.920000] IPVS: ftp: loaded support on port[0] = 21
+[    2.920000] TCP cubic registered
+[    2.930000] NET: Registered protocol family 1
+[    2.930000] NET: Registered protocol family 17
+[    2.940000] Bridge firewalling registered
+[    2.940000] Ebtables v2.0 registered
+[    2.940000] ebt_ulog: not logging via ulog since somebody else already registered for PF_BRIDGE
+[    2.950000] ieee80211: 802.11 data/management/control stack, git-1.1.13
+[    2.960000] ieee80211: Copyright (C) 2004-2005 Intel Corporation &lt;jketreno@linux.intel.com&gt;
+[    2.980000] rtc-simu rtc-simu.0: setting the system clock to 2014-08-26 17:23:51 (1409073831)
+[    2.990000] RAMDISK: Compressed image found at block 0
+[    6.210000] VFS: Mounted root (ext2 filesystem).
+[    6.220000] Freeing init memory: 116K
+
+
+WARNING: Unauthorized access to this system is forbidden and will be prosecuted by law. By accessing this system, you agree that your actions may be monitored if unauthorized usage is suspected.
+
+Hello 2014,Aug
+
+netaccess login: root
+~ &gt;:
+~ &gt;: uname -a
+Linux netaccess 2.6.22 #1 Tue Aug 26 16:31:49 CST 2014 armv5tejl unknown
+~ &gt;:
+~ &gt;: fsver
+file system version 3.3.0 Build 0428V22 no-QC
+~ &gt;:
+~ &gt;: lsmod
+Module                  Size  Used by    Not tainted
+~ &gt;: unlock info
+~ &gt;: vi /info/install
+#!/bin/sh
+# register drivers
+insmod /usr/drivers/L350BeepDrv.ko
+insmod /usr/drivers/L350GTM900Drv.ko
+insmod /usr/drivers/L350LedDrv.ko
+insmod /usr/drivers/L350ModemDrv.ko
+insmod /usr/drivers/L350Rs485Drv.ko
+insmod /usr/drivers/uc864e_usb.ko
+#insmod /usr/drivers/rt2070ap.ko
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~ &gt;: sh /info/install
+[   58.520000] Beep driver registered
+[   58.580000] PSTN modem registered
+[   58.670000] uc864e usb #0 device now attached
+[   58.670000] usbcore: registered new interface driver uc864e_usb
+[   58.680000] uc864e usb driver registered
+~ &gt;:
+~ &gt;: lsmod
+Module                  Size  Used by    Not tainted
+uc864e_usb             10244  0
+L350Rs485Drv            1536  0
+L350ModemDrv            2208  0
+L350LedDrv              1696  0
+L350GTM900Drv           5508  0
+L350BeepDrv             2448  0
+~ &gt;:
+~ &gt;: comport -ioctl /dev/gprs 2 1
+[   81.220000] Request GPRS RING irq failed
+failed to open /dev/gprs. RetCode [0x05]
+Usage: comport -d &lt;device&gt; [-b &lt;baudrate&gt;][-s &lt;settings&gt;][-sc16][-ioctl &lt;driver port&gt; &lt;cmd&gt; &lt;arg&gt;][--help][--version]
+  -d         device name
+  -b         device baudrate (115200, 57600, 19200, 9600), default is 115200
+  -s         device settings (data bits, parity, stop bits, flow control), default is 8N1N
+              - data bits: 8, 7
+              - parity: N=None, O=Odd, E=Even, S=Space
+              - stop bits: 1, 0
+              - flow control: N=None, H=Hardware, S=Software, B=Both
+  -hex       display received data in hex format
+  -sc16      special configure for SC16 driver
+  -ioctl     ioctl system call (cmd &amp; arg only support int)
+  --help     help info
+  --version  version number
+~ &gt;: comport -ioctl /dev/gprs 1 1
+[  103.170000] Request GPRS RING irq failed
+failed to open /dev/gprs. RetCode [0x05]
+Usage: comport -d &lt;device&gt; [-b &lt;baudrate&gt;][-s &lt;settings&gt;][-sc16][-ioctl &lt;driver port&gt; &lt;cmd&gt; &lt;arg&gt;][--help][--version]
+  -d         device name
+  -b         device baudrate (115200, 57600, 19200, 9600), default is 115200
+  -s         device settings (data bits, parity, stop bits, flow control), default is 8N1N
+              - data bits: 8, 7
+              - parity: N=None, O=Odd, E=Even, S=Space
+              - stop bits: 1, 0
+              - flow control: N=None, H=Hardware, S=Software, B=Both
+  -hex       display received data in hex format
+  -sc16      special configure for SC16 driver
+  -ioctl     ioctl system call (cmd &amp; arg only support int)
+  --help     help info
+  --version  version number
+~ &gt;: comport -ioctl /dev/tty 1 1
+/dev/tty         /dev/ttyF0       /dev/ttyS4       /dev/ttyp2
+/dev/tty0        /dev/ttyP0       /dev/ttyS5       /dev/ttyp3
+/dev/tty1        /dev/ttyP1       /dev/ttyUC864E0  /dev/ttyp4
+/dev/tty2        /dev/ttyP2       /dev/ttyUC864E1  /dev/ttyp5
+/dev/tty3        /dev/ttyP3       /dev/ttyUC864E2  /dev/ttyp6
+/dev/tty4        /dev/ttyS0       /dev/ttyUSB0     /dev/ttyp7
+/dev/tty5        /dev/ttyS1       /dev/ttyUSB1     /dev/ttyp8
+/dev/tty6        /dev/ttyS2       /dev/ttyp0       /dev/ttyp9
+/dev/tty7        /dev/ttyS3       /dev/ttyp1
+~ &gt;: comport -ioctl /dev/tty 1 1
+/dev/tty         /dev/ttyF0       /dev/ttyS4       /dev/ttyp2
+/dev/tty0        /dev/ttyP0       /dev/ttyS5       /dev/ttyp3
+/dev/tty1        /dev/ttyP1       /dev/ttyUC864E0  /dev/ttyp4
+/dev/tty2        /dev/ttyP2       /dev/ttyUC864E1  /dev/ttyp5
+/dev/tty3        /dev/ttyP3       /dev/ttyUC864E2  /dev/ttyp6
+/dev/tty4        /dev/ttyS0       /dev/ttyUSB0     /dev/ttyp7
+/dev/tty5        /dev/ttyS1       /dev/ttyUSB1     /dev/ttyp8
+/dev/tty6        /dev/ttyS2       /dev/ttyp0       /dev/ttyp9
+/dev/tty7        /dev/ttyS3       /dev/ttyp1
+~ &gt;: comport -ioctl /dev/ttyUC864E1 2 1
+ioctl (/dev/ttyUC864E1, 2, 1) returned -1
+~ &gt;: [  133.440000] usb 1-2: USB disconnect, address 3
+[  133.450000] uc864e usb #0 failed to submit recv urb. error -19
+[  133.460000] option1 ttyUSB0: GSM modem (1-port) converter now disconnected from ttyUSB0
+[  133.480000] option 1-2:1.0: device disconnected
+[  133.520000] uc864e usb #0 device now detached
+[  133.550000] option1 ttyUSB1: GSM modem (1-port) converter now disconnected from ttyUSB1
+[  133.560000] option 1-2:1.2: device disconnected
+
+~ &gt;:
+~ &gt;: comport -ioctl /dev/ttyUC864E1 1 1
+[  144.040000] usb 1-2: new full speed USB device using at91_ohci and address 4
+[  144.190000] usb 1-2: device descriptor read/64, error -62
+[  144.440000] usb 1-2: device descriptor read/64, error -62
+[  144.690000] usb 1-2: new full speed USB device using at91_ohci and address 5
+ioctl (/dev/ttyUC864E1, 1, 1) returned 0
+~ &gt;: [  144.840000] usb 1-2: device descriptor read/64, error -62
+[  145.090000] usb 1-2: device descriptor read/64, error -62
+[  145.340000] usb 1-2: new full speed USB device using at91_ohci and address 6
+[  145.760000] usb 1-2: device not accepting address 6, error -62
+[  145.900000] usb 1-2: new full speed USB device using at91_ohci and address 7
+[  146.320000] usb 1-2: device not accepting address 7, error -62
+[  149.260000] usb 1-2: new full speed USB device using at91_ohci and address 8
+[  149.440000] drivers/usb/core/hub.c ##idVendor = 0x1bc7,idProduct = 0x1003
+[  149.450000] usb 1-2: configuration #1 chosen from 1 choice
+[  149.450000] option 1-2:1.0: GSM modem (1-port) converter detected
+[  149.470000] usb 1-2: GSM modem (1-port) converter now attached to ttyUSB0
+[  149.510000] uc864e usb #0 device now attached
+[  149.540000] option 1-2:1.2: GSM modem (1-port) converter detected
+[  149.550000] usb 1-2: GSM modem (1-port) converter now attached to ttyUSB1
+
+~ &gt;:
+~ &gt;: comport -d /dev/ttyUSB0
+aatt
+
+OK
+aattii
+
+332
+
+OK
+aattee00
+
+OK
+ati3
+
+Telit
+
+OK
+ati4
+
+UC864-E
+
+OK
+~ &gt;: cat /proc/cmdline
+loglevel=7 console=ttyS0,115200 initrd=0x21100000,5242880 root=/dev/ram0 rw time
+~ &gt;:
+~ &gt;:
+</pre>
+</body>
+</html>

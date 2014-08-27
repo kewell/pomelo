@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>/.100G/.KEWELL/pomelo/DEV05-SAM9260/NEW_BIN_2014/cmd_guide_LHGV22.c.html</title>
+<meta name="Generator" content="Vim/7.2" />
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<style type="text/css">
+<!--
+.Type { color: #00ff00; }
+.Error { color: #ffffff; background-color: #ff6060; font-weight: bold; }
+.PreProc { color: #ff40ff; }
+.Statement { color: #ffff00; }
+.Constant { color: #ffff00; }
+pre { font-family: monospace; color: #ffffff; background-color: #000000; }
+body { font-family: monospace; color: #ffffff; background-color: #000000; }
+.Comment { color: #00ffff; }
+-->
+</style>
+</head>
+<body>
+<pre>
+<span class="Comment">/*</span><span class="Comment">********************************************************************************</span>
+<span class="Comment"> *      Copyright:  (C) 2014 KEWELL</span>
+<span class="Comment"> *</span>
+<span class="Comment"> *       Filename:  cmd_guide_LHGV22.c</span>
+<span class="Comment"> *    Description:  This file </span>
+<span class="Comment"> *                 </span>
+<span class="Comment"> *        Version:  1.0.0(08/27/2014~)</span>
+<span class="Comment"> *         Author:  kewell &lt;emblinuxedu@163.com&gt;</span>
+<span class="Comment"> *      ChangeLog:  1, Release initial version on &quot;08/27/2014 09:22:03 AM&quot;</span>
+<span class="Comment"> *                  2,</span>
+<span class="Comment"> *                 </span>
+<span class="Comment"> * This program is free software; you can redistribute it and/or modify</span>
+<span class="Comment"> * it under the terms of the GNU General Public License version 2 as</span>
+<span class="Comment"> * published by the Free Software Foundation.</span>
+<span class="Comment"> *</span>
+<span class="Comment"> *******************************************************************************</span><span class="Comment">*/</span>
+
+
+U-Boot <span class="Constant">1.3.4</span> svn-<span class="Constant">4844</span> (Oct <span class="Constant">21</span> <span class="Constant">2010</span> - <span class="Constant">16</span>:<span class="Constant">54</span>:<span class="Constant">19</span>)
+U-Boot&gt;
+
+U-Boot <span class="Constant">1.3.4</span> svn-<span class="Constant">4844</span> (Oct <span class="Constant">21</span> <span class="Constant">2010</span> - <span class="Constant">16</span>:<span class="Constant">54</span>:<span class="Constant">19</span>)
+U-Boot&gt; pri
+bootdelay=<span class="Constant">0</span>
+baudrate=<span class="Constant">115200</span>
+bootargs=loglevel=<span class="Constant">7</span> console=ttyS0,<span class="Constant">115200</span> initrd=<span class="Constant">0x21100040</span>,<span class="Constant">5242880</span> root=/dev/ram0 rw time
+ethaddr=<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="Constant">21</span>:0c:2d:1a
+filesize=238AD6
+fileaddr=<span class="Constant">21100000</span>
+ipaddr=<span class="Constant">192.168.200.132</span>
+serverip=<span class="Constant">192.168.200.138</span>
+bootcmd=nand read <span class="Constant">20000000</span> a0000 <span class="Constant">0x16aef4</span>;nand read <span class="Constant">21100000</span> 5a0000 <span class="Constant">0x238ad6</span>;bootm <span class="Constant">20000000</span>
+<span class="Constant">stdin</span>=serial
+<span class="Constant">stdout</span>=serial
+<span class="Constant">stderr</span>=serial
+
+Environment size: <span class="Constant">359</span>/<span class="Constant">131067</span> bytes
+U-Boot&gt; tftp <span class="Constant">20000000</span> <span class="Constant">2.6.22</span>-LHG-uImage_2014;tftp <span class="Constant">21100000</span> <span class="Constant">2.6.22</span>-LHG_rootfs_2014
+dm9000 i/o: <span class="Constant">0x50000000</span>, id: <span class="Constant">0x90000a46</span>
+<span class="Statement">DM9000</span>: running in <span class="Constant">16</span> bit mode
+<span class="Statement">MAC</span>: <span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="Constant">21</span>:0c:2d:1a
+TFTP from server <span class="Constant">192.168.200.138</span>; our IP address is <span class="Constant">192.168.200.132</span>
+Filename '<span class="Constant">2.6.22</span>-LHG-uImage_2014'.
+Load address: <span class="Constant">0x20000000</span>
+<span class="Statement">Loading</span>: T #################################################################
+         #####################################
+done
+Bytes transferred = <span class="Constant">1486580</span> (16aef4 hex)
+dm9000 i/o: <span class="Constant">0x50000000</span>, id: <span class="Constant">0x90000a46</span>
+<span class="Statement">DM9000</span>: running in <span class="Constant">16</span> bit mode
+<span class="Statement">MAC</span>: <span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="Constant">21</span>:0c:2d:1a
+TFTP from server <span class="Constant">192.168.200.138</span>; our IP address is <span class="Constant">192.168.200.132</span>
+Filename '<span class="Constant">2.6.22</span>-LHG_rootfs_2014'.
+Load address: <span class="Constant">0x21100000</span>
+<span class="Statement">Loading</span>: T #################################################################
+         #################################################################
+         #############################
+done
+Bytes transferred = <span class="Constant">2332049</span> (<span class="Constant">239591</span> hex)
+U-Boot&gt; nand erase a0000 a00000;nand write <span class="Constant">20000000</span> a0000 <span class="Constant">200000</span>;nand write <span class="Constant">21100000</span> 5a0000 <span class="Constant">300000</span>
+
+NAND erase: device <span class="Constant">0</span> offset <span class="Constant">0xa0000</span>, size <span class="Constant">0xa00000</span>
+Erasing at <span class="Constant">0xa80000</span> -- <span class="Constant">100</span>% complete.
+OK
+
+NAND write: device <span class="Constant">0</span> offset <span class="Constant">0xa0000</span>, size <span class="Constant">0x200000</span>
+ <span class="Constant">2097152</span> bytes written: OK
+
+NAND write: device <span class="Constant">0</span> offset <span class="Constant">0x5a0000</span>, size <span class="Constant">0x300000</span>
+ <span class="Constant">3145728</span> bytes written: OK
+U-Boot&gt; pri
+bootdelay=<span class="Constant">0</span>
+baudrate=<span class="Constant">115200</span>
+bootargs=loglevel=<span class="Constant">7</span> console=ttyS0,<span class="Constant">115200</span> initrd=<span class="Constant">0x21100040</span>,<span class="Constant">5242880</span> root=/dev/ram0 rw time
+ethaddr=<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="Constant">21</span>:0c:2d:1a
+bootcmd=nand read <span class="Constant">20000000</span> a0000 <span class="Constant">0x16aef4</span>;nand read <span class="Constant">21100000</span> 5a0000 <span class="Constant">0x238ad6</span>;bootm <span class="Constant">20000000</span>
+<span class="Constant">stdin</span>=serial
+<span class="Constant">stdout</span>=serial
+<span class="Constant">stderr</span>=serial
+filesize=<span class="Constant">239591</span>
+fileaddr=<span class="Constant">21100000</span>
+ipaddr=<span class="Constant">192.168.200.132</span>
+serverip=<span class="Constant">192.168.200.138</span>
+
+Environment size: <span class="Constant">359</span>/<span class="Constant">131067</span> bytes
+U-Boot&gt; nand read <span class="Constant">20000000</span> a0000 <span class="Constant">0x16aef4</span>;nand read <span class="Constant">21100000</span> 5a0000 <span class="Constant">0x238ad6</span>;bootm <span class="Constant">20000000</span>
+
+NAND read: device <span class="Constant">0</span> offset <span class="Constant">0xa0000</span>, size <span class="Constant">0x16aef4</span>
+ <span class="Constant">1486580</span> bytes read: OK
+
+NAND read: device <span class="Constant">0</span> offset <span class="Constant">0x5a0000</span>, size <span class="Constant">0x238ad6</span>
+ <span class="Constant">2329302</span> bytes read: OK
+## Booting kernel from Legacy Image at <span class="Constant">20000000</span> ...
+   Image Name:   Linux-<span class="Constant">2.6.22</span>
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    <span class="Constant">1486516</span> Bytes =  <span class="Constant">1.4</span> MB
+   Load Address: <span class="Constant">20008000</span>
+   Entry Point:  <span class="Constant">20008000</span>
+   Verifying Checksum ... OK
+   Loading Kernel Image ... OK
+OK
+Erasing Nand...
+Erasing at <span class="Constant">0x60000</span> -- <span class="Constant">100</span>% complete.
+Writing to Nand... done
+
+Starting kernel ...
+
+Linux version <span class="Constant">2.6.22</span> (root@localhost.localdomain) (gcc version <span class="Constant">4.5.4</span> (Buildroot <span class="Constant">2012.08</span>) ) #<span class="Constant">1</span> Tue Aug <span class="Constant">26</span> <span class="Constant">16</span>:<span class="Constant">31</span>:<span class="Constant">49</span> CST <span class="Constant">2014</span>
+<span class="Statement">CPU</span>: ARM926EJ-S [<span class="Constant">41069265</span>] revision <span class="Constant">5</span> (ARMv5TEJ), cr=<span class="PreProc">0</span><span class="Constant">0053177</span>
+<span class="Statement">Machine</span>: Atmel AT91SAM9260-EK
+Memory policy: ECC disabled, Data cache writeback
+<span class="Statement">Clocks</span>: CPU <span class="Constant">198</span> MHz, master <span class="Constant">99</span> MHz, main <span class="Constant">18.432</span> MHz
+<span class="Statement">CPU0</span>: D VIVT write-back cache
+<span class="Statement">CPU0</span>: I cache: <span class="Constant">8192</span> bytes, associativity <span class="Constant">4</span>, <span class="Constant">32</span> byte lines, <span class="Constant">64</span> sets
+<span class="Statement">CPU0</span>: D cache: <span class="Constant">8192</span> bytes, associativity <span class="Constant">4</span>, <span class="Constant">32</span> byte lines, <span class="Constant">64</span> sets
+Built <span class="Constant">1</span> zonelists.  Total pages: <span class="Constant">16256</span>
+Kernel command line: loglevel=<span class="Constant">7</span> console=ttyS0,<span class="Constant">115200</span> initrd=<span class="Constant">0x21100040</span>,<span class="Constant">5242880</span> root=/dev/ram0 rw time
+[    <span class="Constant">0.000000</span>] AT91: <span class="Constant">96</span> gpio irqs in <span class="Constant">3</span> banks
+[    <span class="Constant">0.000000</span>] PID hash table entries: <span class="Constant">256</span> (order: <span class="Constant">8</span>, <span class="Constant">1024</span> bytes)
+[    <span class="Constant">0.000000</span>] Console: colour dummy device 80x30
+[    <span class="Constant">0.060000</span>] Dentry cache hash table entries: <span class="Constant">8192</span> (order: <span class="Constant">3</span>, <span class="Constant">32768</span> bytes)
+[    <span class="Constant">0.060000</span>] Inode-cache hash table entries: <span class="Constant">4096</span> (order: <span class="Constant">2</span>, <span class="Constant">16384</span> bytes)
+[    <span class="Constant">0.080000</span>] Memory: 64MB = 64MB total
+[    <span class="Constant">0.080000</span>] Memory: 56708KB available (2664K code, 240K data, 116K init)
+[    <span class="Constant">0.290000</span>] Mount-cache hash table entries: <span class="Constant">512</span>
+[    <span class="Constant">0.290000</span>] CPU: Testing write buffer coherency: ok
+[    <span class="Constant">0.300000</span>] NET: Registered protocol family <span class="Constant">16</span>
+[    <span class="Constant">0.330000</span>] SCSI subsystem initialized
+[    <span class="Constant">0.340000</span>] usbcore: registered new interface driver usbfs
+[    <span class="Constant">0.340000</span>] usbcore: registered new interface driver hub
+[    <span class="Constant">0.350000</span>] usbcore: registered new device driver usb
+[    <span class="Constant">0.360000</span>] NET: Registered protocol family <span class="Constant">2</span>
+[    <span class="Constant">0.460000</span>] IP route cache hash table entries: <span class="Constant">1024</span> (order: <span class="Constant">0</span>, <span class="Constant">4096</span> bytes)
+[    <span class="Constant">0.460000</span>] TCP established hash table entries: <span class="Constant">2048</span> (order: <span class="Constant">2</span>, <span class="Constant">16384</span> bytes)
+[    <span class="Constant">0.470000</span>] TCP bind hash table entries: <span class="Constant">2048</span> (order: <span class="Constant">1</span>, <span class="Constant">8192</span> bytes)
+[    <span class="Constant">0.480000</span>] TCP: Hash tables configured (established <span class="Constant">2048</span> bind <span class="Constant">2048</span>)
+[    <span class="Constant">0.480000</span>] TCP reno registered
+[    <span class="Constant">0.590000</span>] Freeing initrd memory: 5120K
+[    <span class="Constant">0.590000</span>] NetWinder Floating Point Emulator V0<span class="Constant">.97</span> (<span class="Type">double</span> precision)
+[    <span class="Constant">0.600000</span>] JFFS2 version <span class="Constant">2.2</span>. (NAND) © <span class="Constant">2001</span>-<span class="Constant">2006</span> Red Hat, Inc.
+[    <span class="Constant">0.610000</span>] io scheduler noop registered
+[    <span class="Constant">0.610000</span>] io scheduler anticipatory registered (<span class="Statement">default</span>)
+[    <span class="Constant">0.640000</span>] atmel_usart<span class="Constant">.0</span>: ttyS0 at MMIO <span class="Constant">0xfefff200</span> (irq = <span class="Constant">1</span>) is a ATMEL_SERIAL
+[    <span class="Constant">0.640000</span>] atmel_usart<span class="Constant">.1</span>: ttyS1 at MMIO <span class="Constant">0xfffb0000</span> (irq = <span class="Constant">6</span>) is a ATMEL_SERIAL
+[    <span class="Constant">0.650000</span>] atmel_usart<span class="Constant">.2</span>: ttyS2 at MMIO <span class="Constant">0xfffb4000</span> (irq = <span class="Constant">7</span>) is a ATMEL_SERIAL
+[    <span class="Constant">0.660000</span>] atmel_usart<span class="Constant">.3</span>: ttyS3 at MMIO <span class="Constant">0xfffb8000</span> (irq = <span class="Constant">8</span>) is a ATMEL_SERIAL
+[    <span class="Constant">0.670000</span>] atmel_usart<span class="Constant">.4</span>: ttyS4 at MMIO <span class="Constant">0xfffd0000</span> (irq = <span class="Constant">23</span>) is a ATMEL_SERIAL
+[    <span class="Constant">0.680000</span>] atmel_usart<span class="Constant">.5</span>: ttyS5 at MMIO <span class="Constant">0xfffd4000</span> (irq = <span class="Constant">24</span>) is a ATMEL_SERIAL
+[    <span class="Constant">0.690000</span>] RAMDISK driver initialized: <span class="Constant">1</span> RAM disks of 16384K size <span class="Constant">1024</span> blocksize
+[    <span class="Constant">0.700000</span>] loop: module loaded
+[    <span class="Constant">0.700000</span>] usbcore: registered new interface driver ub
+[    <span class="Constant">0.710000</span>] PPP generic driver version <span class="Constant">2.4.2</span>
+[    <span class="Constant">0.710000</span>] PPP Deflate Compression module registered
+[    <span class="Constant">0.720000</span>] PPP BSD Compression module registered
+[    <span class="Constant">0.720000</span>] PPP MPPE Compression module registered
+[    <span class="Constant">0.730000</span>] tun: Universal TUN/TAP device driver, <span class="Constant">1.6</span>
+[    <span class="Constant">0.730000</span>] tun: (C) <span class="Constant">1999</span>-<span class="Constant">2004</span> Max Krasnyansky &lt;maxk@qualcomm.com&gt;
+[    <span class="Constant">0.740000</span>] dm9000 Ethernet Driver
+[    <span class="Constant">1.260000</span>] eth0: dm9000 at c4856000,c485e044 IRQ <span class="Constant">111</span> MAC: <span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="Constant">21</span>:0c:2d:1a
+[    <span class="Constant">1.270000</span>] macb macb: detected PHY at address <span class="Constant">0</span> (ID <span class="Error">0181</span>:b8a0)
+[    <span class="Constant">1.270000</span>] eth1: Atmel MACB at <span class="Constant">0xfffc4000</span> irq <span class="Constant">21</span> (<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>)
+[    <span class="Constant">1.280000</span>] Loading iSCSI transport class v2<span class="Constant">.0</span>-<span class="Constant">724.</span>
+[    <span class="Constant">1.290000</span>] block2mtd: version $Revision: <span class="Constant">1.30</span> $
+[    <span class="Constant">1.290000</span>] NAND device: Manufacturer ID: <span class="Constant">0xec</span>, Chip ID: <span class="Constant">0xda</span> (Samsung NAND 256MiB <span class="Constant">3</span>,3V <span class="Constant">8</span>-bit)
+[    <span class="Constant">1.300000</span>] Scanning device <span class="Statement">for</span> bad blocks
+[    <span class="Constant">1.380000</span>] Creating <span class="Constant">9</span> MTD partitions on <span class="Constant">&quot;NAND 256MiB 3,3V 8-bit&quot;</span>:
+[    <span class="Constant">1.390000</span>] <span class="Constant">0x00000000</span>-<span class="Constant">0x00020000</span> : <span class="Constant">&quot;bootstrap - 128KB&quot;</span>
+[    <span class="Constant">1.400000</span>] <span class="Constant">0x00020000</span>-<span class="Constant">0x00060000</span> : <span class="Constant">&quot;uboot - 256KB&quot;</span>
+[    <span class="Constant">1.400000</span>] <span class="Constant">0x00060000</span>-<span class="Constant">0x00080000</span> : <span class="Constant">&quot;uboot env - 128KB&quot;</span>
+[    <span class="Constant">1.410000</span>] <span class="Constant">0x00080000</span>-<span class="Constant">0x000a0000</span> : <span class="Constant">&quot;uboot env swap - 128KB&quot;</span>
+[    <span class="Constant">1.420000</span>] <span class="Constant">0x000a0000</span>-<span class="Constant">0x005a0000</span> : <span class="Constant">&quot;kernel - 5MB&quot;</span>
+[    <span class="Constant">1.420000</span>] <span class="Constant">0x005a0000</span>-<span class="Constant">0x00aa0000</span> : <span class="Constant">&quot;fs - 5MB&quot;</span>
+[    <span class="Constant">1.430000</span>] <span class="Constant">0x00aa0000</span>-<span class="Constant">0x01ea0000</span> : <span class="Constant">&quot;apps - 20MB&quot;</span>
+[    <span class="Constant">1.440000</span>] <span class="Constant">0x01ea0000</span>-<span class="Constant">0x01fa0000</span> : <span class="Constant">&quot;info - 1MB&quot;</span>
+[    <span class="Constant">1.440000</span>] <span class="Constant">0x01fa0000</span>-<span class="Constant">0x0ffa0000</span> : <span class="Constant">&quot;data - 224MB&quot;</span>
+[    <span class="Constant">1.460000</span>] at91_ohci at91_ohci: AT91 OHCI
+[    <span class="Constant">1.460000</span>] at91_ohci at91_ohci: new USB bus registered, assigned bus number <span class="Constant">1</span>
+[    <span class="Constant">1.470000</span>] at91_ohci at91_ohci: irq <span class="Constant">20</span>, io mem <span class="Constant">0x00500000</span>
+[    <span class="Constant">1.530000</span>] drivers/usb/core/hub.c ##idVendor = <span class="Constant">0x0000</span>,idProduct = <span class="Constant">0x0000</span>
+[    <span class="Constant">1.540000</span>] usb usb1: configuration #<span class="Constant">1</span> chosen from <span class="Constant">1</span> choice
+[    <span class="Constant">1.540000</span>] hub <span class="Constant">1</span>-<span class="Constant">0</span>:<span class="Constant">1.0</span>: USB hub found
+[    <span class="Constant">1.550000</span>] hub <span class="Constant">1</span>-<span class="Constant">0</span>:<span class="Constant">1.0</span>: <span class="Constant">2</span> ports detected
+[    <span class="Constant">1.660000</span>] Initializing USB Mass Storage driver...
+[    <span class="Constant">1.660000</span>] usbcore: registered new interface driver usb-storage
+[    <span class="Constant">1.670000</span>] USB Mass Storage support registered.
+[    <span class="Constant">1.670000</span>] usbcore: registered new interface driver usbserial
+[    <span class="Constant">1.680000</span>] drivers/usb/serial/usb-serial.c: USB Serial Driver core
+[    <span class="Constant">1.690000</span>] drivers/usb/serial/usb-serial.c: USB Serial support registered <span class="Statement">for</span> GSM modem (<span class="Constant">1</span>-port)
+[    <span class="Constant">1.690000</span>] usbcore: registered new interface driver option
+[    <span class="Constant">1.700000</span>] drivers/usb/serial/option.c: USB Driver <span class="Statement">for</span> GSM modems: v0<span class="Constant">.7.1</span>
+[    <span class="Constant">1.710000</span>] mice: PS/<span class="Constant">2</span> mouse device common <span class="Statement">for</span> all mice
+[    <span class="Constant">1.720000</span>] rtc-simu rtc-simu<span class="Constant">.0</span>: rtc core: registered gpio_rtc as rtc0
+[    <span class="Constant">1.730000</span>] Netfilter messages via NETLINK v0<span class="Constant">.30</span>.
+[    <span class="Constant">1.730000</span>] nf_conntrack version <span class="Constant">0.5.0</span> (<span class="Constant">512</span> buckets, <span class="Constant">4096</span> max)
+[    <span class="Constant">1.740000</span>] ctnetlink v0<span class="Constant">.93</span>: registering with nfnetlink.
+[    <span class="Constant">1.750000</span>] ip_tables: (C) <span class="Constant">2000</span>-<span class="Constant">2006</span> Netfilter Core Team
+[    <span class="Constant">1.750000</span>] ClusterIP Version <span class="Constant">0.8</span> loaded successfully
+[    <span class="Constant">1.760000</span>] arp_tables: (C) <span class="Constant">2002</span> David S. Miller
+[    <span class="Constant">1.760000</span>] IPVS: Registered protocols (TCP, UDP, AH, ESP)
+[    <span class="Constant">1.770000</span>] IPVS: Connection hash table configured (size=<span class="Constant">4096</span>, memory=32Kbytes)
+[    <span class="Constant">1.770000</span>] IPVS: ipvs loaded.
+[    <span class="Constant">1.780000</span>] IPVS: [rr] scheduler registered.
+[    <span class="Constant">1.780000</span>] IPVS: [wrr] scheduler registered.
+[    <span class="Constant">1.790000</span>] IPVS: [lc] scheduler registered.
+[    <span class="Constant">1.790000</span>] IPVS: [wlc] scheduler registered.
+[    <span class="Constant">1.790000</span>] IPVS: [lblc] scheduler registered.
+[    <span class="Constant">1.800000</span>] IPVS: [lblcr] scheduler registered.
+[    <span class="Constant">1.800000</span>] IPVS: [dh] scheduler registered.
+[    <span class="Constant">1.810000</span>] IPVS: [sh] scheduler registered.
+[    <span class="Constant">1.810000</span>] IPVS: [sed] scheduler registered.
+[    <span class="Constant">1.820000</span>] IPVS: [nq] scheduler registered.
+[    <span class="Constant">1.820000</span>] IPVS: ftp: loaded support on port[<span class="Constant">0</span>] = <span class="Constant">21</span>
+[    <span class="Constant">1.830000</span>] TCP cubic registered
+[    <span class="Constant">1.830000</span>] NET: Registered protocol family <span class="Constant">1</span>
+[    <span class="Constant">1.830000</span>] NET: Registered protocol family <span class="Constant">17</span>
+[    <span class="Constant">1.840000</span>] Bridge firewalling registered
+[    <span class="Constant">1.840000</span>] Ebtables v2<span class="Constant">.0</span> registered
+[    <span class="Constant">1.850000</span>] ebt_ulog: not logging via ulog since somebody <span class="Statement">else</span> already registered <span class="Statement">for</span> PF_BRIDGE
+[    <span class="Constant">1.860000</span>] ieee80211: <span class="Constant">802.11</span> data/management/control stack, git-<span class="Constant">1.1.13</span>
+[    <span class="Constant">1.860000</span>] ieee80211: Copyright (C) <span class="Constant">2004</span>-<span class="Constant">2005</span> Intel Corporation &lt;jketreno@linux.intel.com&gt;
+[    <span class="Constant">1.880000</span>] rtc-simu rtc-simu<span class="Constant">.0</span>: setting the system clock to <span class="Constant">2000</span>-<span class="PreProc">0</span><span class="Constant">1</span>-<span class="PreProc">0</span><span class="Constant">1</span> <span class="PreProc">0</span><span class="Constant">0</span>:<span class="Error">09</span>:<span class="PreProc">0</span><span class="Constant">0</span> (<span class="Constant">946685340</span>)
+[    <span class="Constant">1.890000</span>] RAMDISK: Compressed image found at block <span class="Constant">0</span>
+[    <span class="Constant">5.100000</span>] VFS: Mounted root (ext2 filesystem).
+[    <span class="Constant">5.110000</span>] Freeing init memory: 116K
+
+
+<span class="Statement">WARNING</span>: Unauthorized access to this system is forbidden and will be prosecuted by law. By accessing this system, you agree that your actions may be monitored <span class="Statement">if</span> unauthorized usage is suspected.
+
+Hello <span class="Constant">2014</span>,Aug
+
+netaccess login: root
+~ &gt;:
+~ &gt;:
+~ &gt;:
+~ &gt;: ps
+  PID USER       VSZ STAT COMMAND
+    <span class="Constant">1</span> root      <span class="Constant">1236</span> S    init
+    <span class="Constant">2</span> root         <span class="Constant">0</span> SW&lt;  [kthreadd]
+    <span class="Constant">3</span> root         <span class="Constant">0</span> SWN  [ksoftirqd/<span class="Constant">0</span>]
+    <span class="Constant">4</span> root         <span class="Constant">0</span> SW&lt;  [events/<span class="Constant">0</span>]
+    <span class="Constant">5</span> root         <span class="Constant">0</span> SW&lt;  [khelper]
+   <span class="Constant">54</span> root         <span class="Constant">0</span> SW&lt;  [kblockd/<span class="Constant">0</span>]
+   <span class="Constant">57</span> root         <span class="Constant">0</span> SW&lt;  [khubd]
+   <span class="Constant">70</span> root         <span class="Constant">0</span> SW   [pdflush]
+   <span class="Constant">71</span> root         <span class="Constant">0</span> SW   [pdflush]
+   <span class="Constant">72</span> root         <span class="Constant">0</span> SW&lt;  [kswapd0]
+   <span class="Constant">73</span> root         <span class="Constant">0</span> SW&lt;  [aio/<span class="Constant">0</span>]
+  <span class="Constant">132</span> root         <span class="Constant">0</span> SW&lt;  [scsi_tgtd/<span class="Constant">0</span>]
+  <span class="Constant">135</span> root         <span class="Constant">0</span> SW&lt;  [mtdblockd]
+  <span class="Constant">180</span> root         <span class="Constant">0</span> SW&lt;  [kmmcd]
+  <span class="Constant">187</span> root       <span class="Constant">700</span> S &lt;  /usr/sbin/udevd --daemon
+  <span class="Constant">231</span> root      <span class="Constant">1240</span> S    -sh
+  <span class="Constant">232</span> root      <span class="Constant">1220</span> S    /sbin/syslogd -n
+  <span class="Constant">233</span> root      <span class="Constant">1216</span> S    /sbin/klogd -n
+  <span class="Constant">254</span> root      <span class="Constant">1224</span> R    ps
+~ &gt;:
+~ &gt;: lsmod
+Module                  Size  Used by    Not tainted
+~ &gt;:
+~ &gt;:
+~ &gt;: cd /usr/drivers/
+/usr/drivers &gt;: ls
+L350BeepDrv.ko    L350LedDrv.ko     L350Rs485Drv.ko   rt2070ap.ko
+L350GTM900Drv.ko  L350ModemDrv.ko   install           uc864e_usb.ko
+/usr/drivers &gt;: insmod L350GTM900Drv.ko
+/usr/drivers &gt;: insmod rt2070ap.ko
+[   <span class="Constant">36.720000</span>] Will set PB22 as lowlevel by KEWELL
+[   <span class="Constant">36.720000</span>] rtusb init ---&gt;
+[   <span class="Constant">37.030000</span>] usb <span class="Constant">1</span>-<span class="Constant">1</span>: new full speed USB device using at91_ohci and address <span class="Constant">2</span>
+[   <span class="Constant">37.230000</span>] drivers/usb/core/hub.c ##idVendor = <span class="Constant">0x148f</span>,idProduct = <span class="Constant">0x2070</span>
+[   <span class="Constant">37.250000</span>] usb <span class="Constant">1</span>-<span class="Constant">1</span>: configuration #<span class="Constant">1</span> chosen from <span class="Constant">1</span> choice
+[   <span class="Constant">37.340000</span>]
+[   <span class="Constant">37.340000</span>]
+[   <span class="Constant">37.340000</span>] === pAd = c4894000, size = <span class="Constant">449360</span> ===
+[   <span class="Constant">37.340000</span>]
+[   <span class="Constant">37.350000</span>] &lt;-- RTMPAllocAdapterBlock, Status=<span class="Constant">0</span>
+[   <span class="Constant">37.360000</span>] usbcore: registered new interface driver rt2870
+/usr/drivers &gt;:
+/usr/drivers &gt;: ifconfig  -a
+eth0      Link encap:Ethernet  HWaddr <span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="Constant">21</span>:0C:2D:1A
+          BROADCAST MULTICAST  MTU:<span class="Constant">1500</span>  Metric:<span class="Constant">1</span>
+          RX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> frame:<span class="Constant">0</span>
+          TX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> carrier:<span class="Constant">0</span>
+          <span class="Statement">collisions</span>:<span class="Constant">0</span> txqueuelen:<span class="Constant">1000</span>
+          RX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)  TX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)
+          Interrupt:<span class="Constant">111</span> Base address:<span class="Constant">0x6000</span>
+
+eth1      Link encap:Ethernet  HWaddr <span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>
+          BROADCAST MULTICAST  MTU:<span class="Constant">1500</span>  Metric:<span class="Constant">1</span>
+          RX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> frame:<span class="Constant">0</span>
+          TX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> carrier:<span class="Constant">0</span>
+          <span class="Statement">collisions</span>:<span class="Constant">0</span> txqueuelen:<span class="Constant">1000</span>
+          RX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)  TX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)
+          Interrupt:<span class="Constant">21</span> Base address:<span class="Constant">0x4000</span>
+
+lo        Link encap:Local Loopback
+          LOOPBACK  MTU:<span class="Constant">16436</span>  Metric:<span class="Constant">1</span>
+          RX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> frame:<span class="Constant">0</span>
+          TX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> carrier:<span class="Constant">0</span>
+          <span class="Statement">collisions</span>:<span class="Constant">0</span> txqueuelen:<span class="Constant">0</span>
+          RX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)  TX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)
+
+ra0       Link encap:Ethernet  HWaddr <span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>
+          BROADCAST MULTICAST  MTU:<span class="Constant">1500</span>  Metric:<span class="Constant">1</span>
+          RX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> frame:<span class="Constant">0</span>
+          TX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> carrier:<span class="Constant">0</span>
+          <span class="Statement">collisions</span>:<span class="Constant">0</span> txqueuelen:<span class="Constant">1000</span>
+          RX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)  TX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)
+
+/usr/drivers &gt;:
+/usr/drivers &gt;:
+/usr/drivers &gt;: uname  -a
+Linux netaccess <span class="Constant">2.6.22</span> #<span class="Constant">1</span> Tue Aug <span class="Constant">26</span> <span class="Constant">16</span>:<span class="Constant">31</span>:<span class="Constant">49</span> CST <span class="Constant">2014</span> armv5tejl unknown
+/usr/drivers &gt;:
+/usr/drivers &gt;: rmmod rt2070ap
+[   <span class="Constant">81.230000</span>] usbcore: deregistering interface driver rt2870
+[   <span class="Constant">81.230000</span>] rtusb_disconnect: unregister usbnet usb-at91-<span class="Constant">1</span>
+[   <span class="Constant">81.240000</span>] usb <span class="Constant">1</span>-<span class="Constant">1</span>: USB disconnect, address <span class="Constant">2</span>
+[   <span class="Constant">81.240000</span>] rtusb_disconnect: unregister_netdev(), dev-&gt;name=ra0!
+[   <span class="Constant">81.320000</span>]  RTUSB disconnect successfully
+[   <span class="Constant">81.350000</span>] &lt;--- rtusb exit
+/usr/drivers &gt;:
+/usr/drivers &gt;:
+/usr/drivers &gt;: ifconfig  -a
+eth0      Link encap:Ethernet  HWaddr <span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="Constant">21</span>:0C:2D:1A
+          BROADCAST MULTICAST  MTU:<span class="Constant">1500</span>  Metric:<span class="Constant">1</span>
+          RX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> frame:<span class="Constant">0</span>
+          TX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> carrier:<span class="Constant">0</span>
+          <span class="Statement">collisions</span>:<span class="Constant">0</span> txqueuelen:<span class="Constant">1000</span>
+          RX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)  TX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)
+          Interrupt:<span class="Constant">111</span> Base address:<span class="Constant">0x6000</span>
+
+eth1      Link encap:Ethernet  HWaddr <span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>
+          BROADCAST MULTICAST  MTU:<span class="Constant">1500</span>  Metric:<span class="Constant">1</span>
+          RX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> frame:<span class="Constant">0</span>
+          TX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> carrier:<span class="Constant">0</span>
+          <span class="Statement">collisions</span>:<span class="Constant">0</span> txqueuelen:<span class="Constant">1000</span>
+          RX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)  TX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)
+          Interrupt:<span class="Constant">21</span> Base address:<span class="Constant">0x4000</span>
+
+lo        Link encap:Local Loopback
+          LOOPBACK  MTU:<span class="Constant">16436</span>  Metric:<span class="Constant">1</span>
+          RX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> frame:<span class="Constant">0</span>
+          TX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> carrier:<span class="Constant">0</span>
+          <span class="Statement">collisions</span>:<span class="Constant">0</span> txqueuelen:<span class="Constant">0</span>
+          RX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)  TX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)
+
+/usr/drivers &gt;:
+/usr/drivers &gt;: comport -ioctl /dev/gprs <span class="Constant">1</span> <span class="Constant">1</span>
+ioctl (/dev/gprs, <span class="Constant">1</span>, <span class="Constant">1</span>) returned <span class="Constant">0</span>
+/usr/drivers &gt;:
+/usr/drivers &gt;: comport -d /dev/ttyS2
+aatt
+
+OK
+aattee00
+
+OK
+ati
+
+HUAWEI
+GTM900
+
+
+OK
+at+gmi
+
+HUAWEI
+
+OK
+at+gmm
+
+GTM900B
+
+OK
+
+
+OK
+/usr/drivers &gt;:
+</pre>
+</body>
+</html>

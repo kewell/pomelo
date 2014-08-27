@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>/.100G/.KEWELL/pomelo/DEV05-SAM9260/NEW_BIN_2014/ForV23_LHG_Version.c.html</title>
+<meta name="Generator" content="Vim/7.2" />
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<style type="text/css">
+<!--
+.Statement { color: #ffff00; }
+.PreProc { color: #ff40ff; }
+.Constant { color: #ffff00; }
+.Error { color: #ffffff; background-color: #ff6060; font-weight: bold; }
+pre { font-family: monospace; color: #ffffff; background-color: #000000; }
+body { font-family: monospace; color: #ffffff; background-color: #000000; }
+.Comment { color: #00ffff; }
+-->
+</style>
+</head>
+<body>
+<pre>
+<span class="Comment">/*</span><span class="Comment"> --------------------- OK  make sure use mkimage_STD for V23 LHG version  ------------------------------------------ </span><span class="Comment">*/</span>
+ot@localhost NEW_BIN_2014<span class="Error">]</span>#
+[root@localhost NEW_BIN_2014]# which mkimage
+/usr/local/sbin/mkimage
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]# ll /usr/local/sbin/mkimage*
+lrwxrwxrwx. <span class="Constant">1</span> root root    <span class="Constant">27</span> Aug <span class="Constant">26</span> <span class="Constant">16</span>:<span class="Constant">40</span> /usr/local/sbin/mkimage -&gt; /usr/local/sbin/mkimage_STD
+-rwxrwxrwx. <span class="Constant">1</span> root root <span class="Constant">36976</span> Jan <span class="Constant">17</span>  <span class="Constant">2011</span> /usr/local/sbin/mkimage_LHG
+-rwxr-xr-x. <span class="Constant">1</span> root root <span class="Constant">52520</span> Jan <span class="Constant">14</span>  <span class="Constant">2014</span> /usr/local/sbin/mkimage_STD
+[root@localhost NEW_BIN_2014]#
+
+<span class="Comment">/*</span><span class="Comment"> --------------------- OK  2.6.22-STD-uImage_2014 Start ------------------------------------------ </span><span class="Comment">*/</span>
+[root@localhost NEW_BIN_2014]# cd ~/linux-<span class="Constant">2.6</span>.22_9260
+[root@localhost linux-<span class="Constant">2.6</span>.22_9260]#
+[root@localhost linux-<span class="Constant">2.6</span>.22_9260]# make uImage
+
+[root@localhost linux-<span class="Constant">2.6</span>.22_9260]#
+[root@localhost linux-<span class="Constant">2.6</span>.22_9260]#
+[root@localhost linux-<span class="Constant">2.6</span>.22_9260]# ll arch/arm/boot/compressed/uImage
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">3544396</span> Aug <span class="Constant">19</span> <span class="Constant">11</span>:<span class="Constant">36</span> arch/arm/boot/compressed/uImage
+[root@localhost linux-<span class="Constant">2.6</span>.22_9260]#
+[root@localhost linux-<span class="Constant">2.6</span>.22_9260]#
+[root@localhost linux-<span class="Constant">2.6</span>.22_9260]# cp arch/arm/boot/compressed/uImage <span class="Constant">2.6.22</span>-STD-uImage_2014 -a
+<span class="Comment">/*</span><span class="Comment"> --------------------- OK  2.6.22-STD-uImage_2014 finish ------------------------------------------ </span><span class="Comment">*/</span>
+
+
+<span class="Comment">/*</span><span class="Comment"> --------------------- OK 2.6.22-NO6_rootfs_2014 Start ------------------------------------------ </span><span class="Comment">*/</span>
+[root@localhost linux-<span class="Constant">2.6</span>.22_9260]#
+[root@localhost linux-<span class="Constant">2.6</span>.22_9260]# cd -
+/root/<span class="Constant">9260</span>/NEW_BIN_2014
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]# ll
+total <span class="Constant">26564</span>
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1938958</span> Aug <span class="Constant">26</span> <span class="Constant">14</span>:<span class="Constant">39</span> <span class="Constant">2.6.22.1</span>-LHG-rootfs
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1494636</span> Aug <span class="Constant">26</span> <span class="Constant">14</span>:<span class="Constant">35</span> <span class="Constant">2.6.22.1</span>-LHG-uImage
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1940820</span> Aug <span class="Constant">26</span> <span class="Constant">15</span>:<span class="PreProc">0</span><span class="Constant">1</span> <span class="Constant">2.6.22.1</span>-NO64_roofs
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1494636</span> Jan <span class="Constant">21</span>  <span class="Constant">2014</span> <span class="Constant">2.6.22.1</span>-STD-uImage
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">2332049</span> Aug <span class="Constant">27</span> <span class="Error">09</span>:<span class="Constant">17</span> <span class="Constant">2.6.22</span>-LHG_rootfs_2014
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1486580</span> Aug <span class="Constant">26</span> <span class="Constant">16</span>:<span class="Constant">39</span> <span class="Constant">2.6.22</span>-LHG-uImage_2014
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">2334390</span> Aug <span class="Constant">27</span> <span class="Error">09</span>:<span class="Constant">16</span> <span class="Constant">2.6.22</span>-NO6_rootfs_2014
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1486580</span> Aug <span class="Constant">26</span> <span class="Constant">16</span>:<span class="Constant">40</span> <span class="Constant">2.6.22</span>-STD-uImage_2014
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1481140</span> Aug <span class="Constant">26</span> <span class="Constant">14</span>:<span class="Constant">21</span> <span class="Constant">3.6.0</span>-LHG-rootfs
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1862080</span> Jan <span class="Constant">21</span>  <span class="Constant">2014</span> <span class="Constant">3.6.0</span>-LHG-uImage
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1455118</span> Aug <span class="Constant">26</span> <span class="Constant">14</span>:<span class="Constant">51</span> <span class="Constant">3.6.0</span>-NO64_rootfs
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1862080</span> Jan <span class="Constant">21</span>  <span class="Constant">2014</span> <span class="Constant">3.6.0</span>-STD-uImage
+-rw-r--r--. <span class="Constant">1</span> root root   <span class="Constant">17981</span> Aug <span class="Constant">26</span> <span class="Constant">17</span>:<span class="Constant">39</span> cmd_guide.c
+-rw-r--r--. <span class="Constant">1</span> root root   <span class="Constant">15746</span> Aug <span class="Constant">27</span> <span class="Error">09</span>:<span class="Constant">22</span> cmd_guide_LHGV22.c
+-rw-r--r--. <span class="Constant">1</span> root root   <span class="Constant">39129</span> Aug <span class="Constant">27</span> <span class="Error">09</span>:<span class="Constant">23</span> cmd_guide_LHGV22.c.html
+-rw-r--r--. <span class="Constant">1</span> root root   <span class="Constant">18919</span> Aug <span class="Constant">26</span> <span class="Constant">17</span>:<span class="Constant">39</span> cmd_guide.txt.html
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">2331255</span> Aug <span class="Constant">27</span> <span class="Constant">14</span>:<span class="Constant">19</span> nrfs.ext2.gz
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">2332049</span> Aug <span class="Constant">27</span> <span class="Error">09</span>:<span class="Constant">17</span> nrfs.ext2.gz.ghlMgc
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1248439</span> Aug <span class="Constant">26</span> <span class="Constant">17</span>:<span class="Constant">22</span> nrfs.ext2.gz_noLogin_WHY
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]# df
+Filesystem           1K-blocks      Used Available Use% Mounted on
+/dev/mapper/VolGroup-lv_root
+                       <span class="Constant">5716804</span>   <span class="Constant">5613020</span>         <span class="Constant">0</span> <span class="Constant">100</span>% /
+tmpfs                   <span class="Constant">775520</span>         <span class="Constant">0</span>    <span class="Constant">775520</span>   <span class="Constant">0</span>% /dev/shm
+/dev/sda1               <span class="Constant">495844</span>     <span class="Constant">31544</span>    <span class="Constant">438700</span>   <span class="Constant">7</span>% /boot
+/dev/sdb1              <span class="Constant">8254240</span>   <span class="Constant">1170616</span>   <span class="Constant">6664332</span>  <span class="Constant">15</span>% /DISK
+/dev/sdc1            <span class="Constant">103210940</span>  <span class="Constant">17089704</span>  <span class="Constant">80878428</span>  <span class="Constant">18</span>% /.100G
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]# Ramdisk2fsStart
+<span class="Constant">16384</span>+<span class="Constant">0</span> records in
+<span class="Constant">16384</span>+<span class="Constant">0</span> records out
+<span class="Constant">16777216</span> bytes (<span class="Constant">17</span> MB) copied, <span class="Constant">0.218273</span> s, <span class="Constant">76.9</span> MB/s
+mke2fs <span class="Constant">1.41.12</span> (<span class="Constant">17</span>-May-<span class="Constant">2010</span>)
+fs_types <span class="Statement">for</span> mke2fs.conf resolution: 'ext2', 'small'
+Filesystem label=
+OS type: Linux
+Block size=<span class="Constant">1024</span> (log=<span class="Constant">0</span>)
+Fragment size=<span class="Constant">1024</span> (log=<span class="Constant">0</span>)
+Stride=<span class="Constant">0</span> blocks, Stripe width=<span class="Constant">0</span> blocks
+<span class="Constant">4096</span> inodes, <span class="Constant">16384</span> blocks
+<span class="Constant">0</span> blocks (<span class="Constant">0.00</span>%) reserved <span class="Statement">for</span> the super user
+First data block=<span class="Constant">1</span>
+Maximum filesystem blocks=<span class="Constant">16777216</span>
+<span class="Constant">2</span> block groups
+<span class="Constant">8192</span> blocks per group, <span class="Constant">8192</span> fragments per group
+<span class="Constant">2048</span> inodes per group
+Superblock backups stored on blocks:
+        <span class="Constant">8193</span>
+
+Writing inode tables: done
+Writing superblocks and filesystem accounting information: done
+
+This filesystem will be automatically checked every <span class="Constant">28</span> mounts or
+<span class="Constant">180</span> days, whichever comes first.  Use tune2fs -c or -i to override.
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]# df
+Filesystem           1K-blocks      Used Available Use% Mounted on
+/dev/mapper/VolGroup-lv_root
+                       <span class="Constant">5716804</span>   <span class="Constant">5613020</span>         <span class="Constant">0</span> <span class="Constant">100</span>% /
+tmpfs                   <span class="Constant">775520</span>         <span class="Constant">0</span>    <span class="Constant">775520</span>   <span class="Constant">0</span>% /dev/shm
+/dev/sda1               <span class="Constant">495844</span>     <span class="Constant">31544</span>    <span class="Constant">438700</span>   <span class="Constant">7</span>% /boot
+/dev/sdb1              <span class="Constant">8254240</span>   <span class="Constant">1170616</span>   <span class="Constant">6664332</span>  <span class="Constant">15</span>% /DISK
+/dev/sdc1            <span class="Constant">103210940</span>  <span class="Constant">17103868</span>  <span class="Constant">80864264</span>  <span class="Constant">18</span>% /.100G
+/.100G/.KEWELL/pomelo/DEV05-SAM9260/NEW_BIN_2014/nrfs.ext2
+                         <span class="Constant">15863</span>      <span class="Constant">5445</span>     <span class="Constant">10418</span>  <span class="Constant">35</span>% /.100G/.KEWELL/pomelo/DEV05-SAM9260/NEW_BIN_2014/org
+/dev/ram7                <span class="Constant">15863</span>      <span class="Constant">5445</span>     <span class="Constant">10418</span>  <span class="Constant">35</span>% /.100G/.KEWELL/pomelo/DEV05-SAM9260/NEW_BIN_2014/new
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]# ls new/
+apps  bin  data  dev  etc  home  info  lib  linuxrc  logs  media  mnt  NR  opt  proc  root  sbin  stat  sys  tmp  usr  var
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]# Ramdisk2fsFinish
+<span class="Statement">svn</span>: <span class="Constant">'.'</span> is not a working copy
+
+
+<span class="Statement">Warnning</span> : You are out of SVN Conctrl
+
+
+<span class="Constant">16384</span>+<span class="Constant">0</span> records in
+<span class="Constant">16384</span>+<span class="Constant">0</span> records out
+<span class="Constant">16777216</span> bytes (<span class="Constant">17</span> MB) copied, <span class="Constant">0.177315</span> s, <span class="Constant">94.6</span> MB/s
+DOWN ---------------------------------------------------------------------
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]# cp nrfs.ext2.gz <span class="Constant">2.6.22</span>-NO6_rootfs_2014 -a
+<span class="Statement">cp</span>: overwrite `<span class="Constant">2.6.22</span>-NO6_rootfs_2014'? y
+[root@localhost NEW_BIN_2014]#
+[root@localhost NEW_BIN_2014]# ll -t
+total <span class="Constant">26556</span>
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">2329476</span> Aug <span class="Constant">27</span> <span class="Constant">14</span>:<span class="Constant">59</span> <span class="Constant">2.6.22</span>-NO6_rootfs_2014
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">2329476</span> Aug <span class="Constant">27</span> <span class="Constant">14</span>:<span class="Constant">59</span> nrfs.ext2.gz
+-rw-r--r--. <span class="Constant">1</span> root root   <span class="Constant">39129</span> Aug <span class="Constant">27</span> <span class="Error">09</span>:<span class="Constant">23</span> cmd_guide_LHGV22.c.html
+-rw-r--r--. <span class="Constant">1</span> root root   <span class="Constant">15746</span> Aug <span class="Constant">27</span> <span class="Error">09</span>:<span class="Constant">22</span> cmd_guide_LHGV22.c
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">2332049</span> Aug <span class="Constant">27</span> <span class="Error">09</span>:<span class="Constant">17</span> <span class="Constant">2.6.22</span>-LHG_rootfs_2014
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">2332049</span> Aug <span class="Constant">27</span> <span class="Error">09</span>:<span class="Constant">17</span> nrfs.ext2.gz.ghlMgc
+-rw-r--r--. <span class="Constant">1</span> root root   <span class="Constant">17981</span> Aug <span class="Constant">26</span> <span class="Constant">17</span>:<span class="Constant">39</span> cmd_guide.c
+-rw-r--r--. <span class="Constant">1</span> root root   <span class="Constant">18919</span> Aug <span class="Constant">26</span> <span class="Constant">17</span>:<span class="Constant">39</span> cmd_guide.txt.html
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1248439</span> Aug <span class="Constant">26</span> <span class="Constant">17</span>:<span class="Constant">22</span> nrfs.ext2.gz_noLogin_WHY
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1486580</span> Aug <span class="Constant">26</span> <span class="Constant">16</span>:<span class="Constant">40</span> <span class="Constant">2.6.22</span>-STD-uImage_2014
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1486580</span> Aug <span class="Constant">26</span> <span class="Constant">16</span>:<span class="Constant">39</span> <span class="Constant">2.6.22</span>-LHG-uImage_2014
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1940820</span> Aug <span class="Constant">26</span> <span class="Constant">15</span>:<span class="PreProc">0</span><span class="Constant">1</span> <span class="Constant">2.6.22.1</span>-NO64_roofs
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1455118</span> Aug <span class="Constant">26</span> <span class="Constant">14</span>:<span class="Constant">51</span> <span class="Constant">3.6.0</span>-NO64_rootfs
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1938958</span> Aug <span class="Constant">26</span> <span class="Constant">14</span>:<span class="Constant">39</span> <span class="Constant">2.6.22.1</span>-LHG-rootfs
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1494636</span> Aug <span class="Constant">26</span> <span class="Constant">14</span>:<span class="Constant">35</span> <span class="Constant">2.6.22.1</span>-LHG-uImage
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1481140</span> Aug <span class="Constant">26</span> <span class="Constant">14</span>:<span class="Constant">21</span> <span class="Constant">3.6.0</span>-LHG-rootfs
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1494636</span> Jan <span class="Constant">21</span>  <span class="Constant">2014</span> <span class="Constant">2.6.22.1</span>-STD-uImage
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1862080</span> Jan <span class="Constant">21</span>  <span class="Constant">2014</span> <span class="Constant">3.6.0</span>-LHG-uImage
+-rw-r--r--. <span class="Constant">1</span> root root <span class="Constant">1862080</span> Jan <span class="Constant">21</span>  <span class="Constant">2014</span> <span class="Constant">3.6.0</span>-STD-uImage
+[root@localhost NEW_BIN_2014]#
+<span class="Comment">/*</span><span class="Comment"> --------------------- OK 2.6.22-NO6_rootfs_2014 finish ------------------------------------------ </span><span class="Comment">*/</span>
+</pre>
+</body>
+</html>
