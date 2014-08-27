@@ -1,0 +1,108 @@
+#!/bin/bash
+
+DO=' echo '
+LG='.bash_history'
+PT='/var/log'
+
+FS_NAME="nrfs.ext2"
+ROOT_FS_SIZE=30720
+ROOT_FS_SIZE=10240
+ROOT_FS_SIZE=16384
+NEW_OUT=/dev/ram7
+NEW_IN=/dev/ram6
+NEW_OUT=/dev/new_out
+NEW_IN=/dev/zero
+NEW_OUT=/dev/ram7
+NEW_IN=/dev/ram6
+#############################################################################################################
+function Ramdisk2fsStart()
+{
+    FS_NAME="nrfs.ext2"
+    mount | grep -E "/dev/ram6|/dev/ram7"
+    if [ 0 == $? ];then
+        echo "/dev/ram6 or /dev/ram7 is in useing"
+        return
+    fi
+
+    CMD_PREFIX=
+    if [ "root" != `whoami` ];then
+        CMD_PREFIX=sudo
+    fi
+
+    if [ 1 -eq $# ]&&[ $1 != $FS_NAME.gz ];then
+        echo "Skip the first 64 byte data"
+        $CMD_PREFIX dd bs=64 skip=1 if=$1 of=$FS_NAME.gz
+    fi
+
+    if [ ! -s $FS_NAME.gz ];then
+        echo "Are u in the correct folder?"
+        return 
+    fi
+
+    mkdir new
+    mkdir org
+    $CMD_PREFIX gunzip $FS_NAME.gz
+    $CMD_PREFIX mount -o loop $FS_NAME org
+    $CMD_PREFIX dd if=${NEW_IN} of=${NEW_OUT} bs=1k count=${ROOT_FS_SIZE}
+    $CMD_PREFIX mke2fs -vFm0 ${NEW_OUT} ${ROOT_FS_SIZE}
+    $CMD_PREFIX mount -o loop ${NEW_OUT} new
+    $CMD_PREFIX cp -Rf org/* new/
+    $CMD_PREFIX rm -rf new/lost+found/
+}
+
+function Ramdisk2fsEnd()
+{
+    FS_NAME="nrfs.ext2"
+    CMD_PREFIX=
+    if [ "root" != `whoami` ];then
+        CMD_PREFIX=sudo
+    fi
+    
+    if [ ! -d new ] || [ ! -d org ];then
+        echo "Are u in the correct folder?"
+        return
+    fi
+    
+    #svn up
+    svn info
+    if [ 1 -eq $? ];then
+        echo -e "\n\nWarnning : You are out of SVN Conctrl\n\n"
+    else
+        if [ -f new/etc/fs.fcfg ];then
+            echo SVN=$(svnversion .) | $CMD_PREFIX tee new/etc/fs.fcfg
+
+        else
+            echo -e "\n\nWarnning : FileSystem is unknow svn version\n\n"
+        fi
+    fi
+
+    $CMD_PREFIX umount new
+    $CMD_PREFIX dd if=${NEW_OUT} bs=1k count=${ROOT_FS_SIZE} of=$FS_NAME
+    $CMD_PREFIX gzip -9f $FS_NAME
+    $CMD_PREFIX umount org
+
+    if [ 1 -eq $# ];then
+
+        if [ $1 == "STD" ];then
+
+            echo "will use stand    mkimage tools"
+            $CMD_PREFIX mkimage_sTD -A arm -O linux -T ramdisk -C gzip -d $FS_NAME.gz $FS_NAME.gz.stdMgc
+
+        elif [ $1 == "LHG" ];then
+
+            echo "will use NewMagic mkimage tools"
+            $CMD_PREFIX mkimage_LHG -A arm -O linux -T ramdisk -C gzip -d $FS_NAME.gz  $FS_NAME.gz.ghlMgc
+
+        fi                                                                                                                  
+    fi
+
+    rm -rf new org
+    echo "DOWN ---------------------------------------------------------------------"
+
+    if [ $# -gt 0 ];then
+        echo "No need add addtional header, also skip copy operation"
+        return 0
+    fi
+}
+
+alias Ramdisk2fsFinish='Ramdisk2fsEnd'
