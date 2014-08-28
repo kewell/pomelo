@@ -187,6 +187,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
         {
             pcSend = (char *)malloc(EACH_MAX_LEN);
             memset(pcSend, 0, EACH_MAX_LEN);
+            unsigned char useLargeFlag = 0;
 
             if (g_ucIsSZA)
             {
@@ -198,7 +199,9 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
 
                 if (abs((int)fRequestSub >= 10000))
                 {
-                    fRequestSub=9999.0;
+                    //fRequestSub=9999.0;
+                    fRequestSub = fRequestSub / 1000;
+                    useLargeFlag = 1;
                 }
 
                 if(isFirst)
@@ -220,7 +223,14 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
                 {
                     if (abs((int)fRequestSub) > 0)
                     {
-                        sprintf(pcSend, "%s%.1f[%s%-4d]", (fTmpRate >= 0.0) ? "+" : "", fTmpRate, (fAllBuy > fAllSell) ? "+" : "-", abs((int)fRequestSub));
+                        if (1 == useLargeFlag)
+                        {
+                            sprintf(pcSend, "%s%.1f[%s%-3dK]", (fTmpRate >= 0.0) ? "+" : "", fTmpRate, (fAllBuy > fAllSell) ? "+" : "-", abs((int)fRequestSub));
+                        }
+                        else
+                        {
+                            sprintf(pcSend, "%s%.1f[%s%-4d]", (fTmpRate >= 0.0) ? "+" : "", fTmpRate, (fAllBuy > fAllSell) ? "+" : "-", abs((int)fRequestSub));
+                        }
                     }
                     else
                     {

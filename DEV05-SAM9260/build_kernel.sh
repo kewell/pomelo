@@ -45,8 +45,8 @@ if [ ! -s .config ];then
     cp ../${TARGET}_4SAM9260.config .config -a
 fi
 
-if [ -s ../${TARGET}_4SAM9260.patch ];then
-    patch -p1 < ../${TARGET}_4SAM9260.patch
+if [ -s ../${TARGET}_4SAM9260.patch.gz ];then
+    zcat ../${TARGET}_4SAM9260.patch.gz | patch -p1
 fi
 
 make ARCH=arm CROSS_COMPILE=${CROSS_PATH}/arm-linux-
