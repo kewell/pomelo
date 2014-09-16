@@ -22,28 +22,33 @@ S: 20  21     22    23     24   25    26    27   28    29
 2014-05-22,10:30:00,00"
 */
 //#define __DEBUG__
+#ifdef __DEBUG__
+#define debug_printf(x...) printf(x)
+#else
+#define debug_printf(x...)
+#endif
 
 #define HEADS_LEN           16
 #define NAMES_LEN           3
 #define ALL_DATA_LEN        30 
 #define OUT_PUT "/tmp/.data2.list"
-#define EACH_MAX_LEN        20
+#define EACH_MAX_LEN        1024
 int g_dozeSec = 10;
 int iRunCnt = 1;
-#define LOOP_TIME           240
+#define LOOP_TIME           360
 #define FILE_OUTP           "/dev/pts/1"
 #define USEFUL_ID           0 
-#define DEBUG_FLAG          "--outa"
-#define DEBUG_ALL           "--d"
+#define RUN_ONCE            "--outa"
+#define RUN_NO_STOP         "--d"
+#define ASCII_0_VAL         0x30
 
-unsigned char g_ucDebug = 0;
 unsigned char g_ucLineCnt = 0;
 unsigned char g_ucMaxCnt = 10;
-float g_fLastDeal = 0;
+float g_afTradeSum[20] = {0.0};
 unsigned char g_ucIsSZA = 1;
-unsigned char g_ucDebugAll = 0;
+unsigned char g_ucRunOnce = 0;
+unsigned char g_ucRunNoStop = 0;
 
-#define ASCII_0_VAL         0x30
 void updateTimeDoze()
 {
     FILE *pstTmpFile;
@@ -75,12 +80,9 @@ void updateTimeDoze()
 }
 
 
-void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
+void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst, unsigned char index)
 {
-#ifdef __DEBUG__
-    printf("%s", pcData);
-#endif
-
+    debug_printf("%s", pcData);
     char *pcName, *pcTmp, *pcNext;
     char *aPcVal[ALL_DATA_LEN];
     float val[ALL_DATA_LEN];
@@ -88,6 +90,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
     char *pcSend;
     int i = 0, len = 0;
 
+    /* ---------------------------------------initialization, initialize --------------------------------*/
     pcName = malloc(NAMES_LEN);
 
     for (i = 0; i < ALL_DATA_LEN; i++)
@@ -101,7 +104,9 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
         strncpy(pcName, pcData + HEADS_LEN, NAMES_LEN);
     else
         return;
+    /* ---------------------------------------initialization, initialize --------------------------------*/
 
+    /* ---------------------------------------Got one line each time ------------------------------------*/
     i = 0;
     while (i < ALL_DATA_LEN && (pcTmp = strchr(pcData, ',') + 1) != NULL)
     {
@@ -123,14 +128,9 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
             return;
         }
 
-#ifdef __DEBUG__
-        printf("val[%d]=%s   ||| ", i, aPcVal[i]);
-#endif
-        //if (5 > i || (i >= 8 && 1 == i % 2))
-        {
-            //val[i] = __strtof_internal(aPcVal[i], NULL, 0);
-            val[i] = strtof(aPcVal[i], NULL);
-        }
+        debug_printf("val[%d]=%s   ||| ", i, aPcVal[i]);
+        //val[i] = __strtof_internal(aPcVal[i], NULL, 0);
+        val[i] = strtof(aPcVal[i], NULL);
 
         if (g_ucIsSZA && 8 == i)
         {
@@ -140,27 +140,22 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
                 strncpy(aPcVal[i], pcTmp, len - 7);
             else
                 return;
-
-            //val[i] = __strtof_internal(aPcVal[i], NULL, 0);
-            val[i] = strtof(aPcVal[i], NULL);
         }
 
         pcData = pcTmp;
         i++;
     }
-#ifdef __DEBUG__
-    printf("\n");
+    debug_printf("\n");
+    debug_printf("%s =%f, =%f, =%f ,=%f, =%f\n\n", pcName, val[2], val[1],  (val[2] - val[1]), (val[2] - val[1]) * 100, (val[2] - val[1]) * 100 / val[1]);
+    /* ---------------------------------------Got one line each time ------------------------------------*/
 
-    printf("%s =%f, =%f, =%f ,=%f, =%f\n\n", pcName, val[2], val[1],  (val[2] - val[1]), (val[2] - val[1]) * 100, (val[2] - val[1]) * 100 / val[1]);
-#endif
-
-    //0-open 1-yester 2-n 3-h 4-l 8-S
+    //0-open 1-yester 2-n 3-h 4-l 7-AllTradeSum 8-AllTradeMoney
     float fTmpRate = (val[2] - val[1]) * 100 / val[1];
     float fAllBuy = (val[9] + val[11] + val[13] + val[15] + val[17]);
     float fAllSell = (val[19] + val[21] + val[23] + val[25] + val[27]);
     float fAllMoney = val[8] / 10000000;
 
-    if(1 == g_ucDebug)
+    if(1 == g_ucRunOnce)
     {
         printf("%s %5.2f,%5.2f,%5.2f %-5.5s %-5.5s %-5.5s__%.0f/%.0f/%.0f/%.0f/%.0f__%.0f/%.0f/%.0f/%.0f/%.0f__%-2.0f___%.1f[KW]\n", 
                 pcName, 
@@ -179,7 +174,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
 
     g_ucLineCnt++;
 
-    if(g_ucDebugAll) 
+    if(g_ucRunNoStop) 
     {
         pts = open(FILE_OUTP, O_RDWR);
 
@@ -191,7 +186,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
 
             if (g_ucIsSZA)
             {
-                sprintf(pcSend, "\n%2.0f%s%.1f", val[8] - (isFirst) ? val[8] : g_fLastDeal, (fTmpRate >= 0.0) ? "+" : "", fTmpRate);
+                sprintf(pcSend, "\n%s%.1f", (fTmpRate >= 0.0) ? "+" : "", fTmpRate);
             }
             else
             {
@@ -216,7 +211,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
                     }
                     else
                     {
-                        sprintf(pcSend, " %s       ", pcName);
+                        sprintf(pcSend, " %s            ", pcName);
                     }
                 }
                 else
@@ -229,7 +224,22 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
                         }
                         else
                         {
-                            sprintf(pcSend, "%s%.1f[%s%-4d]", (fTmpRate >= 0.0) ? "+" : "", fTmpRate, (fAllBuy > fAllSell) ? "+" : "-", abs((int)fRequestSub));
+                            if (val[7] == g_afTradeSum[index])
+                            {
+
+                            sprintf(pcSend, "%s%.1f[     %s%-4d]", 
+                                    ((fTmpRate >= 0.0) ? "+" : ""), 
+                                    fTmpRate, 
+                                    (fAllBuy > fAllSell) ? "+" : "-", 
+                                    abs((int)fRequestSub));
+                            }
+                            else
+                            sprintf(pcSend, "%s%.1f[%-4.0f %s%-4d]", 
+                                    ((fTmpRate >= 0.0) ? "+" : ""), 
+                                    fTmpRate, 
+                                    (val[7] - g_afTradeSum[index]) / 100,
+                                    (fAllBuy > fAllSell) ? "+" : "-", 
+                                    abs((int)fRequestSub));
                         }
                     }
                     else
@@ -245,7 +255,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
             close(pts);
         }
     }
-    else if(!g_ucDebug && (g_ucIsSZA || fTmpRate > fAlarmRate || fTmpRate < (0 - fAlarmRate)))
+    else if(!g_ucRunOnce && (g_ucIsSZA || fTmpRate > fAlarmRate || fTmpRate < (0 - fAlarmRate)))
     {
         pts = open(FILE_OUTP, O_RDWR);
 
@@ -253,19 +263,10 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
         {
             pcSend = (char *)malloc(EACH_MAX_LEN);
             memset(pcSend, 0, EACH_MAX_LEN);
-#if 0
+
             if (g_ucIsSZA)
             {
-                sprintf(pcSend, "\n%.0f:%.1f|", val[8] - g_fLastDeal, fTmpRate);
-            }
-            else
-            {
-                sprintf(pcSend, "%s:%.1f|", pcName, fTmpRate);
-            }
-#endif
-            if (g_ucIsSZA)
-            {
-                sprintf(pcSend, "\n%2.0f:%s%.1f|", val[8] - g_fLastDeal, (fTmpRate >= 0.0) ? "+" : "", fTmpRate);
+                sprintf(pcSend, "\n%2.0f:%s%.1f|", val[7] - g_afTradeSum[index], (fTmpRate >= 0.0) ? "+" : "", fTmpRate);
             }
             else
             {
@@ -278,10 +279,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst)
         }
     }
 
-    if (g_ucIsSZA)
-    {
-        g_fLastDeal = val[8];
-    }
+    g_afTradeSum[index] = val[7];
 
     if (g_ucMaxCnt == g_ucLineCnt)
     {
@@ -301,8 +299,9 @@ int main (int argc, char **argv)
     char *eachData = NULL;
     size_t len = 0;
     float fAlarmRate = 12.0;
-    unsigned char isFirst = 1;
+    unsigned char isFirst = 1, index = 0;
 
+    updateTimeDoze();
     //if (2 != argc || USEFUL_ID != getuid() || USEFUL_ID != geteuid() || 0 != strcmp(FILE_OUTP, ttyname(0)))
     if (2 != argc || 0 != strcmp(FILE_OUTP, ttyname(0)))
     {
@@ -310,7 +309,6 @@ int main (int argc, char **argv)
         goto CleanUp;
     }
 
-    updateTimeDoze();
     if (2 == argc)
     {
         if (1 == strlen(argv[1]))
@@ -323,13 +321,13 @@ int main (int argc, char **argv)
         {
             iRunCnt= LOOP_TIME;
         }
-        else if (0 == strcmp(argv[1], DEBUG_FLAG))
+        else if (0 == strcmp(argv[1], RUN_ONCE))
         {
-            g_ucDebug = 1;
+            g_ucRunOnce = 1;
         }
-        else if (0 == strcmp(argv[1], DEBUG_ALL))
+        else if (0 == strcmp(argv[1], RUN_NO_STOP))
         {
-            g_ucDebugAll = 1;
+            g_ucRunNoStop = 1;
             iRunCnt= LOOP_TIME;
         }
         else
@@ -348,16 +346,18 @@ int main (int argc, char **argv)
 
         if (NULL != out)
         {
+            index = 0;
             while (getline(&eachData, &len, out) != -1)
             {
                 if (g_ucIsSZA || strlen(eachData) > 180)
                 {
                     if (NULL != eachData)
                     {
-                        analysia_each_stk(eachData, fAlarmRate, isFirst);
+                        analysia_each_stk(eachData, fAlarmRate, isFirst, index);
                         g_ucIsSZA = 0;
                     }
                 }
+                index++;
             }    
         }
 
