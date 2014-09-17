@@ -45,6 +45,7 @@ int iRunCnt = 1;
 unsigned char g_ucLineCnt = 0;
 unsigned char g_ucMaxCnt = 10;
 float g_afTradeSum[20] = {0.0};
+int g_aTradeMoney[20] = {0.0};
 unsigned char g_ucIsSZA = 1;
 unsigned char g_ucRunOnce = 0;
 unsigned char g_ucRunNoStop = 0;
@@ -131,7 +132,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst, u
         debug_printf("val[%d]=%s   ||| ", i, aPcVal[i]);
         //val[i] = __strtof_internal(aPcVal[i], NULL, 0);
         val[i] = strtof(aPcVal[i], NULL);
-
+/*
         if (g_ucIsSZA && 8 == i)
         {
             memset(aPcVal[i], 0, EACH_MAX_LEN);
@@ -141,6 +142,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst, u
             else
                 return;
         }
+*/
 
         pcData = pcTmp;
         i++;
@@ -154,6 +156,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst, u
     float fAllBuy = (val[9] + val[11] + val[13] + val[15] + val[17]);
     float fAllSell = (val[19] + val[21] + val[23] + val[25] + val[27]);
     float fAllMoney = val[8] / 10000000;
+    float fRequestSub = (fAllBuy - fAllSell) / 100;
 
     if(1 == g_ucRunOnce)
     {
@@ -190,8 +193,6 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst, u
             }
             else
             {
-                float fRequestSub = (fAllBuy - fAllSell) / 100;
-
                 if (abs((int)fRequestSub >= 10000))
                 {
                     //fRequestSub=9999.0;
@@ -224,22 +225,19 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst, u
                         }
                         else
                         {
-                            if (val[7] == g_afTradeSum[index])
+                            if (val[7] - g_afTradeSum[index] < 10 || abs(abs((int)fRequestSub) - g_aTradeMoney[index]) < 10)
                             {
-
-                            sprintf(pcSend, "%s%.1f[     %s%-4d]", 
-                                    ((fTmpRate >= 0.0) ? "+" : ""), 
-                                    fTmpRate, 
-                                    (fAllBuy > fAllSell) ? "+" : "-", 
-                                    abs((int)fRequestSub));
+                                sprintf(pcSend, "%16s", "");
                             }
                             else
-                            sprintf(pcSend, "%s%.1f[%-4.0f %s%-4d]", 
-                                    ((fTmpRate >= 0.0) ? "+" : ""), 
-                                    fTmpRate, 
-                                    (val[7] - g_afTradeSum[index]) / 100,
-                                    (fAllBuy > fAllSell) ? "+" : "-", 
-                                    abs((int)fRequestSub));
+                            {
+                                sprintf(pcSend, "%s%.1f[%-4.0f %s%-4d]", 
+                                        ((fTmpRate >= 0.0) ? "+" : ""), 
+                                        fTmpRate, 
+                                        (val[7] - g_afTradeSum[index]) / 100,
+                                        (fAllBuy > fAllSell) ? "+" : "-", 
+                                        abs((int)fRequestSub));
+                            }
                         }
                     }
                     else
@@ -280,6 +278,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst, u
     }
 
     g_afTradeSum[index] = val[7];
+    g_aTradeMoney[index] = abs((int)fRequestSub);
 
     if (g_ucMaxCnt == g_ucLineCnt)
     {
