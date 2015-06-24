@@ -33,14 +33,15 @@ S: 20  21     22    23     24   25    26    27   28    29
 #define debug_printf(x...)
 #endif
 
-#define HEADS_LEN           16
-#define NAMES_LEN           3
+#define HEADS_LEN           15
+#define NAMES_LEN           4
 #define ALL_DATA_LEN        30 
 #define OUT_PUT "/tmp/.data2.list"
-#define EACH_MAX_LEN        1024
+#define EACH_MAX_LEN        2048
 int g_dozeSec = 10;
 int iRunCnt = 1;
-#define LOOP_TIME           360
+int g_showTmpRateFlg = 0;
+#define LOOP_TIME           600
 #define FILE_OUTP           "/dev/pts/1"
 #define USEFUL_ID           0 
 #define RUN_ONCE            "--outa"
@@ -49,9 +50,10 @@ int iRunCnt = 1;
 
 unsigned char g_ucLineCnt = 0;
 unsigned char g_ucMaxCnt = 10;
-float g_afTradeSum[20] = {0.0};
-float g_afLastPrice[20] = {0.0};
-int g_aTradeMoney[20] = {0.0};
+float g_afTradeSum[100] = {0.0};
+float g_afLastPrice[100] = {0.0};
+float g_afTmpRate[100] = {0.0};
+int g_aTradeMoney[100] = {0.0};
 unsigned char g_ucIsSZA = 1;
 unsigned char g_ucRunOnce = 0;
 unsigned char g_ucRunNoStop = 0;
@@ -193,7 +195,7 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst, u
             memset(pcSend, 0, EACH_MAX_LEN);
             unsigned char useLargeFlag = 0;
 
-            if (g_ucIsSZA)
+            if (0 || g_ucIsSZA)
             {
                 sprintf(pcSend, "\n%s%.1f", (fTmpRate >= 0.0) ? "+" : "", fTmpRate);
             }
@@ -206,93 +208,79 @@ void analysia_each_stk (char *pcData, float fAlarmRate, unsigned char isFirst, u
                     useLargeFlag = 1;
                 }
 
-                if(isFirst)
+                if (isFirst)
                 {
-                    if (0 == strcmp(pcStockName, "001"))
+                    if (0 == strcmp(pcStockName, "0001") || 0 == strcmp(pcStockName, "9001") || 0 == strcmp(pcStockName, "9005") || 0 == strcmp(pcStockName, "9006"))
                     {
                         sprintf(pcSend, "%s", "    ");
                     }
-                    else if (0 == strcmp(pcStockName, "005") || 0 == strcmp(pcStockName, "006"))
+                    else
                     {
                         sprintf(pcSend, " %s", pcStockName);
                     }
+                }
+                else if (1 == g_showTmpRateFlg)
+                {
+                    if (0 == strcmp(pcStockName, "0001") || 0 == strcmp(pcStockName, "9001") || 0 == strcmp(pcStockName, "9005") || 0 == strcmp(pcStockName, "9006"))
+                    {
+                        sprintf(pcSend, "%s%.1f", ((fTmpRate >= 0.0) ? "+" : ""), fTmpRate);
+                    }
+                    else if (fTmpRate > g_afTmpRate[index])
+                    {
+                        sprintf(pcSend, " \033[1;34m%s%.1f\033[0;39m", ((fTmpRate >= 0.0) ? "+" : ""), fTmpRate);
+                    }
+                    else if (fTmpRate < g_afTmpRate[index])
+                    {
+                        sprintf(pcSend, " \033[1;31m%s%.1f\033[0;39m", ((fTmpRate >= 0.0) ? "+" : ""), fTmpRate);
+                    }
                     else
                     {
-                        sprintf(pcSend, " %s            ", pcStockName);
+                        sprintf(pcSend, " %s%.1f", ((fTmpRate >= 0.0) ? "+" : ""), fTmpRate);
                     }
+
+                    g_afTmpRate[index] = fTmpRate;
                 }
                 else
                 {
-                    if (abs((int)fRequestSub) > 0)
+                    if (1 || abs((int)fRequestSub) > 0)
                     {
-                        if (1 == useLargeFlag)
+                        if (0 && 1 == useLargeFlag)
                         {
                             sprintf(pcSend, "%s%.1f[%s%-3dK]", (fTmpRate >= 0.0) ? "+" : "", fTmpRate, (fAllBuy > fAllSell) ? "+" : "-", abs((int)fRequestSub));
                         }
                         else
                         {
-                            if (val[7] - g_afTradeSum[index] < 30 && abs(abs((int)fRequestSub) - g_aTradeMoney[index]) < 30)
+                            if (0 == strcmp(pcStockName, "0001") || 0 == strcmp(pcStockName, "9001") || 0 == strcmp(pcStockName, "9005") || 0 == strcmp(pcStockName, "9006"))
+                            {
+                                //sprintf(pcSend, "    ");
+                                sprintf(pcSend, "%s%.1f", (fTmpRate >= 0.0) ? "+" : "", fTmpRate);
+                            }
+                            else if (0 && val[7] - g_afTradeSum[index] < 30 && abs(abs((int)fRequestSub) - g_aTradeMoney[index]) < 30)
                             {
                                 sprintf(pcSend, "%16s", "");
                             }
                             else
                             {
-                                /* YELLOW : \033[1;34m     RED: \033[0;31m       END : \033[0;39m */
-/*
-字背景颜色范围: 40--49     颜色: 30--39
-40: 黑                           30: 黑
-41: 红                           31: 红
-42: 绿                           32: 绿
-43: 黄                           33: 黄
-44: 蓝                           34: 蓝
-45: 紫                           35: 紫
-46: 深绿                       36: 深绿
-47: 白色                       37: 白色
-ANSI控制码:
-\033[0m   关闭所有属性   \033[1m   设置高亮度   \03[4m   下划线   \033[5m   闪烁   \033[7m   反显   \033[8m   消隐   \033[30m   --   \033[37m   设置前景色   \033[40m   --   \033[47m   设置背景色   \033[nA   光标上移n行   \03[nB   光标下移n行   \033[nC   光标右移n行   
-\033[nD   光标左移n行   \033[y;xH设置光标位置   \033[2J   清屏   \033[K   清除从光标到行尾的内容   \033[s   保存光标位置   
-\033[u   恢复光标位置   \033[?25l   隐藏光标   \33[?25h   显示光标
-                                 */
                                 /* Big trade sum in this duration, will use colorful putput */
-                                if (1 || val[7] - g_afTradeSum[index] > 1000 || val[7] > 10 * g_afTradeSum[index])
+                                if (val[7] - g_afTradeSum[index] > 1000 || val[7] > 10 * g_afTradeSum[index])
                                 {
                                     /* If current price is up use green color, other wise use red color */
                                     if (val[2] < g_afLastPrice[index])
                                     {
-                                        sprintf(pcSend, "%s%.1f[\033[1;31m%-4.0f\033[0;39m %s%-4d]", 
-                                                ((fTmpRate >= 0.0) ? "+" : ""), 
-                                                fTmpRate, 
-                                                (val[7] - g_afTradeSum[index]) / 100,
-                                                (fAllBuy > fAllSell) ? "+" : "-", 
-                                                abs((int)fRequestSub));
+                                        sprintf(pcSend, " \033[1;31m%-4.0f\033[0;39m", (val[7] - g_afTradeSum[index]) / 100);
                                     }
                                     else if (val[2] > g_afLastPrice[index])
                                     {
-                                        sprintf(pcSend, "%s%.1f[\033[1;34m%-4.0f\033[0;39m %s%-4d]", 
-                                                ((fTmpRate >= 0.0) ? "+" : ""), 
-                                                fTmpRate, 
-                                                (val[7] - g_afTradeSum[index]) / 100,
-                                                (fAllBuy > fAllSell) ? "+" : "-", 
-                                                abs((int)fRequestSub));
+                                        sprintf(pcSend, " \033[1;34m%-4.0f\033[0;39m", (val[7] - g_afTradeSum[index]) / 100);
                                     }
                                     else
                                     {
-                                        sprintf(pcSend, "%s%.1f[%-4.0f %s%-4d]", 
-                                                ((fTmpRate >= 0.0) ? "+" : ""), 
-                                                fTmpRate, 
-                                                (val[7] - g_afTradeSum[index]) / 100,
-                                                (fAllBuy > fAllSell) ? "+" : "-", 
-                                                abs((int)fRequestSub));
+                                        sprintf(pcSend, " %-4.0f", (val[7] - g_afTradeSum[index]) / 100);
                                     }
                                 }
-                                else if (0)
+                                else
                                 {
-                                        sprintf(pcSend, "%s%.1f[%-4.0f %s%-4d]", 
-                                                ((fTmpRate >= 0.0) ? "+" : ""), 
-                                                fTmpRate, 
-                                                (val[7] - g_afTradeSum[index]) / 100,
-                                                (fAllBuy > fAllSell) ? "+" : "-", 
-                                                abs((int)fRequestSub));
+                                    sprintf(pcSend, " %-4.0f", (val[7] - g_afTradeSum[index]) / 100);
                                 }
                             }
                         }
@@ -359,8 +347,7 @@ int main (int argc, char **argv)
     unsigned char isFirst = 1, index = 0;
 
     updateTimeDoze();
-    //if (2 != argc || USEFUL_ID != getuid() || USEFUL_ID != geteuid() || 0 != strcmp(FILE_OUTP, ttyname(0)))
-    if (2 != argc || 0 != strcmp(FILE_OUTP, ttyname(0)))
+    if (0)//(2 != argc || 0 != strcmp(FILE_OUTP, ttyname(0)))
     {
         printf ("---------------KEWELL--------------- : %s %s() +%d\n", __FILE__, __func__, __LINE__);
         goto CleanUp;
@@ -398,6 +385,26 @@ int main (int argc, char **argv)
     {
         iRunCnt--;
 
+        if (iRunCnt > 0)
+        {
+            if (0 == isFirst && 0 == g_showTmpRateFlg)
+            {
+                sleep(g_dozeSec);
+            }
+
+            if (1 && 1 == isFirst)
+            {
+                int pts = open(FILE_OUTP, O_RDWR);
+
+                if(0 < pts)
+                {
+                write(pts, "\n---------------------------------------------------------------------------------------------------------------------------\n", 120);
+                    close(pts);
+                }
+            }
+            g_ucIsSZA = 1;
+        }
+
         system("wget -q -O /tmp/.data2.list -i /var/www/icons/.README.list");
         out = fopen(OUT_PUT, "r");
 
@@ -418,27 +425,36 @@ int main (int argc, char **argv)
             }    
         }
 
+        if (1 && 1 == g_showTmpRateFlg)
+        {
+            int pts = open(FILE_OUTP, O_RDWR);
+
+            if(0 < pts)
+            {
+                write(pts, "\n---------------------------------------------------------------------------------------------------------------------------\n", 120);
+                close(pts);
+            }
+        }
+
         if (out)
         {
             fclose(out);
             //system("rm -rf /tmp/.data2.list");
         }
 
-        if (iRunCnt > 0)
-        {
-            if(0 == isFirst)
-            {
-                sleep(g_dozeSec);
-            }
-            g_ucIsSZA = 1;
-        }
-
         if (0 == iRunCnt % 20)
         {
             isFirst = 1;
+            g_showTmpRateFlg = 0;
+        }
+        else if (0 == (iRunCnt + 1) % 20)
+        {
+            g_showTmpRateFlg = 1;
+            isFirst = 0;
         }
         else
         {
+            g_showTmpRateFlg = 0;
             isFirst = 0;
         }
 
