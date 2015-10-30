@@ -38,15 +38,18 @@ S: 20  21     22    23     24   25    26    27   28    29
 #define ALL_DATA_LEN        30 
 #define OUT_PUT "/tmp/.data2.list"
 #define EACH_MAX_LEN        2048
-int g_dozeSec = 10;
 int iRunCnt = 1;
 int g_showTmpRateFlg = 0;
-#define LOOP_TIME           600
+#define LOOP_TIME           1000
 #define FILE_OUTP           "/dev/pts/1"
 #define USEFUL_ID           0 
 #define RUN_ONCE            "--outa"
 #define RUN_NO_STOP         "--d"
 #define ASCII_0_VAL         0x30
+#define SHOW_GAP_CNTS       142
+
+int g_ucArgDozeSec = 10;
+unsigned char g_ucArgGapCnt = 50;
 
 unsigned char g_ucLineCnt = 0;
 unsigned char g_ucMaxCnt = 10;
@@ -83,9 +86,9 @@ void updateTimeDoze()
             else
                 aReadData[1] = 0;
         }
-        g_dozeSec = (aReadData[0] * ((0 == aReadData[1]) ? ((1 < readCnt)?10:1) : 10) + aReadData[1]);
+        g_ucArgDozeSec = (aReadData[0] * ((0 == aReadData[1]) ? ((1 < readCnt)?10:1) : 10) + aReadData[1]);
     }
-    printf("DozeSecTime is %d Sec\n", g_dozeSec);
+    printf("DozeSecTime is %d Sec\n", g_ucArgDozeSec);
 }
 
 
@@ -346,14 +349,14 @@ int main (int argc, char **argv)
     float fAlarmRate = 12.0;
     unsigned char isFirst = 1, index = 0;
 
-    updateTimeDoze();
+    //updateTimeDoze();
     if (0)//(2 != argc || 0 != strcmp(FILE_OUTP, ttyname(0)))
     {
         printf ("---------------KEWELL--------------- : %s %s() +%d\n", __FILE__, __func__, __LINE__);
         goto CleanUp;
     }
 
-    if (2 == argc)
+    if (2 <= argc)
     {
         if (1 == strlen(argv[1]))
         {
@@ -379,7 +382,18 @@ int main (int argc, char **argv)
             printf ("---------------KEWELL--------------- : %s %s() +%d\n", __FILE__, __func__, __LINE__);
             goto CleanUp;
         }
+
+        if (3 <= argc)
+        {
+            g_ucArgDozeSec = strtof(argv[2], NULL);
+        }
+
+        if (4 <= argc)
+        {
+            g_ucArgGapCnt = strtof(argv[3], NULL);
+        }
     }
+    printf("DozeSecTime is %d Sec GapCnt=%d\n", g_ucArgDozeSec, g_ucArgGapCnt);
 
     while (iRunCnt > 0)
     {
@@ -389,7 +403,7 @@ int main (int argc, char **argv)
         {
             if (0 == isFirst && 0 == g_showTmpRateFlg)
             {
-                sleep(g_dozeSec);
+                sleep(g_ucArgDozeSec);
             }
 
             if (1 && 1 == isFirst)
@@ -398,7 +412,7 @@ int main (int argc, char **argv)
 
                 if(0 < pts)
                 {
-                write(pts, "\n---------------------------------------------------------------------------------------------------------------------------\n", 120);
+                write(pts, "\n-------------------------------------------------------------------------------------------------------------------------------------------------\n", SHOW_GAP_CNTS);
                     close(pts);
                 }
             }
@@ -425,13 +439,13 @@ int main (int argc, char **argv)
             }    
         }
 
-        if (1 && 1 == g_showTmpRateFlg)
+        if (0 && 1 == g_showTmpRateFlg)
         {
             int pts = open(FILE_OUTP, O_RDWR);
 
             if(0 < pts)
             {
-                write(pts, "\n---------------------------------------------------------------------------------------------------------------------------\n", 120);
+                write(pts, "\n-------------------------------------------------------------------------------------------------------------------------------------------------\n", SHOW_GAP_CNTS);
                 close(pts);
             }
         }
@@ -442,12 +456,12 @@ int main (int argc, char **argv)
             //system("rm -rf /tmp/.data2.list");
         }
 
-        if (0 == iRunCnt % 20)
+        if (0 == iRunCnt % g_ucArgGapCnt)
         {
             isFirst = 1;
             g_showTmpRateFlg = 0;
         }
-        else if (0 == (iRunCnt + 1) % 20)
+        else if (0 == (iRunCnt + 1) % g_ucArgGapCnt)
         {
             g_showTmpRateFlg = 1;
             isFirst = 0;
