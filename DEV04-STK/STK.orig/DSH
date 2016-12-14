@@ -1,0 +1,58 @@
+#!/bin/sh
+
+#################### MY OS TIME SLOW THAN WWW TIME
+START_1_T=926
+START_2_T=1259
+STOP_1_T=1132
+STOP_2_T=1502
+
+OUT_FILE=".stk.data"
+OUT_FILE_TMP="/dev/.stk.data.tmp"
+URL_FILE=".README.list1"
+SLP_FILE=".dozeTime"
+SLEEP_SEC=15
+
+FISRT=6
+LAST=`cat ${URL_FILE}|awk -F[=,] '{printf NF}'`
+for y in `seq ${FISRT} ${LAST}`
+do 
+    CODE=`awk -F[=,] '{print $"'$y'"}' < ${URL_FILE}`
+done
+
+while true;do
+
+    HH_MM_NOW=`date +%H%M`
+    SLEP_TMP=`cat ${SLP_FILE}`
+
+    if [ ${SLEP_TMP} -gt 4 ] && [ ${SLEP_TMP} -lt 61 ];then
+        SLEEP_SEC=${SLEP_TMP}
+    fi
+
+    if [ ${HH_MM_NOW} -ge ${START_1_T} ] && [ ${HH_MM_NOW} -le ${STOP_1_T} ];then
+        DOWN_LOAG_FALG=1
+    elif [ ${HH_MM_NOW} -ge ${START_2_T} ] && [ ${HH_MM_NOW} -le ${STOP_2_T} ];then
+        DOWN_LOAG_FALG=1
+    elif [ ${HH_MM_NOW} -gt ${STOP_2_T} ];then
+        echo "$0 OUT OF TIME"
+        #sh collect.sh COLLECTCOLLECTCOLLECT ALLALLALL
+        #wall -n "COLLECT is Done ... ...... ......... ............ ..............."
+        exit
+    else
+        DOWN_LOAG_FALG=0
+    fi
+
+    if [ 1 -eq ${DOWN_LOAG_FALG} ] || [ ${URL_FILE} -nt /root/.STK/sh000001 ];then
+        wget -q --tries=2 --timeout=2 --wait=2 -O ${OUT_FILE_TMP} -i ${URL_FILE}
+        if [ 0 -eq $? ];then
+            'mv' ${OUT_FILE_TMP} ${OUT_FILE}
+        fi
+    fi
+
+    if [ ${URL_FILE} -nt /root/.STK/sh000001 ];then
+        sh /root/.STK/AUTO_ANALAY_HIS.sh DOWNLOAD
+        touch /root/.STK/sh000001
+    fi
+    sleep ${SLEEP_SEC}
+
+done
+

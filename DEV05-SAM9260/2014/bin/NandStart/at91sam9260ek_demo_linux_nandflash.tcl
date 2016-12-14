@@ -1,1 +1,0 @@
-at91sam9260ek_demo_linux_nandflash_EraseTiny.tcl

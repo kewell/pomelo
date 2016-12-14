@@ -19,11 +19,12 @@
 #define HEADS_LEN           11//15
 #define NAMES_LEN           8//4
 #define ALL_DATA_LEN        31
-#define OUT_PUT             "/root/.STK/.stk.data"
+//#define OUT_PUT             "/root/.STK/.stk.data"
+#define OUT_PUT             "./.stk.data"
 #define BAK_FILE_MSG        "指数  卖5  卖4  卖3  卖2  卖1|  买1  买2  买3  买4  买5| 量    价 涨幅"
 
 #define LOOP_TIME           1000
-#define BASE_FOLDER         "/.100G/.KEWELL/.STK/"
+#define BASE_FOLDER         "/.100G/.KEWELL/stkDailyDetail"
 #define FILE_OUTP           "/dev/pts/2"
 #define ASCII_0_VAL         0x30
 
