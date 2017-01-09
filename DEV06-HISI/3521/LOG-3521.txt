@@ -1,0 +1,346 @@
+/*********************************************************************************
+ *      Copyright:  (C) 2017 KEWELL
+ *
+ *       Filename:  LOG-3521.txt
+ *    Description:  This file 
+ *                 
+ *        Version:  1.0.0(01/09/2017~)
+ *         Author:  KEWELL <EMBLINUXEDU@163.COM>
+ *      ChangeLog:  1, Release initial version on "01/09/2017 09:25:47 AM"
+ *                 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ ********************************************************************************/
+U-Boot 2017.01.HISI.1.0.A.0__3521.MNVR (Jan 07 2017 - 14:29:50)
+
+NAND:  Special Nand id table Version 1.35
+Nand ID: 0xAD 0xF1 0x00 0x1D 0xAD 0xF1 0x00 0x1D
+Nand(Hardware): Block:128KB Page:2KB Chip:128MB*1 OOB:64B ECC:1bit 
+128 MiB
+
+*** Warning - bad CRC or NAND, using default environment
+
+In:    serial
+Out:   serial
+Err:   serial
+Hit any key to stop autoboot:  0 
+hisilicon # 
+hisilicon # ver
+
+U-Boot 2017.01.HISI.1.0.A.0__3521.MNVR (Jan 07 2017 - 14:29:50)
+hisilicon # 
+hisilicon # pri
+bootargs=mem=240M console=ttyAMA0,115200 root=/dev/mtdblock5 rootfstype=yaffs2 mtdparts=hinand:768K(boot),256K(ENV),1M(UNUSED),12M(kernel),2M(logo),112M(rootfs)
+bootcmd=nand read 0x82000000 0x200000 0x300000;bootm 0x82000000
+bootdelay=1
+baudrate=115200
+ethaddr=00:00:47:3c:49:68
+ipaddr=192.168.200.110
+serverip=192.168.200.138
+netmask=255.255.255.0
+bgcolor=0
+platform=.3521
+stdin=serial
+stdout=serial
+stderr=serial
+verify=n
+ver=U-Boot 2017.01.HISI.1.0.A.0__3521.MNVR (Jan 07 2017 - 14:29:50)
+
+Environment size: 492/262140 bytes
+hisilicon # 
+hisilicon # update uboot
+cur nand index = 0
+MAC:   00-00-47-3C-49-68
+TFTP from server 192.168.200.138; our IP address is 192.168.200.110
+Download Filename 'u-boot.bin.3521'.
+Download to address: 0x82000000
+Downloading: #################################################
+done
+Bytes transferred = 164088 (280f8 hex)
+
+NAND erase: device 0 offset 0x0, size 0x200000
+Erasing at 0x1e0000 -- 100% complete.
+OK
+
+NAND write: device 0 offset 0x0, size 0x100000
+pure data length is 1048576, len_incl_bad is 1048576
+ 1048576 bytes written: OK
+
+NAND read: device 0 offset 0x0, size 0x100000
+ 1048576 bytes read: OK
+Total of 1048576 bytes were the same
+hisilicon # 
+hisilicon # 
+hisilicon # update kernel
+cur nand index = 0
+MAC:   00-00-47-3C-49-68
+TFTP from server 192.168.200.138; our IP address is 192.168.200.110
+Download Filename 'uImage.3521'.
+Download to address: 0x82000000
+Downloading: #################################################
+done
+Bytes transferred = 1137912 (115cf8 hex)
+
+NAND erase: device 0 offset 0x200000, size 0x500000
+Erasing at 0x6e0000 -- 100% complete.
+OK
+
+NAND write: device 0 offset 0x200000, size 0x500000
+pure data length is 5242880, len_incl_bad is 5242880
+ 5242880 bytes written: OK
+start verify data...
+
+NAND read: device 0 offset 0x200000, size 0x500000
+ 5242880 bytes read: OK
+Total of 5242880 bytes were the same
+hisilicon # 
+hisilicon # 
+hisilicon # update fs
+cur nand index = 0
+miiphy_register: non unique device name '0:0'
+MAC:   00-00-47-3C-49-68
+TFTP from server 192.168.200.138; our IP address is 192.168.200.110
+Download Filename 'rootfs.yaffs2.3521'.
+Download to address: 0x82000000
+Downloading: #################################################
+done
+Bytes transferred = 3514368 (35a000 hex)
+
+NAND erase: device 0 offset 0x1000000, size 0x7000000
+Skipping bad block at  0x02580000                                          
+Erasing at 0x7fe0000 -- 100% complete.
+OK
+size = 35a000 off = 1000000 addr = 0
+pure data length is 3407872, len_incl_bad is 3407872
+NAND write finished 1
+hisilicon # 
+hisilicon # 
+hisilicon # reset
+resetting ...
+                         
+
+
+U-Boot 3521.2017.HISI_3521.MNVR (Jan 07 2017 - 14:41:26)
+
+NAND:  Special Nand id table Version 1.35
+Nand ID: 0xAD 0xF1 0x00 0x1D 0xAD 0xF1 0x00 0x1D
+Nand(Hardware): Block:128KB Page:2KB Chip:128MB*1 OOB:64B ECC:1bit 
+128 MiB
+
+*** Warning - bad CRC or NAND, using default environment
+
+In:    serial
+Out:   serial
+Err:   serial
+Hit any key to stop autoboot:  0 
+
+NAND read: device 0 offset 0x200000, size 0x300000
+ 3145728 bytes read: OK
+## Booting kernel from Legacy Image at 82000000 ...
+   Image Name:   Linux-3.0.8
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    1137848 Bytes = 1.1 MiB
+   Load Address: 80008000
+   Entry Point:  80008000
+   Loading Kernel Image ... OK
+OK
+
+Starting kernel ...
+
+Uncompressing Linux... done, booting the kernel.
+[    0.000000] Linux version 3.0.8 (root@localhost.localdomain) (gcc version 4.4.1 (Hisilicon_v100(gcc4.4-290+uclibc_0.9.30.2+eabi+linuxpthread)) ) #1.0.A.0 Mon Jan 9 09:07:58 CST 2017
+[    0.000000] CPU: ARMv7 Processor [413fc090] revision 0 (ARMv7), cr=10c53c7f
+[    0.000000] CPU: VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[    0.000000] Machine: godarm
+[    0.000000] Memory policy: ECC disabled, Data cache writeback
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 60960
+[    0.000000] Kernel command line: mem=240M console=ttyAMA0,115200 root=/dev/mtdblock5 rootfstype=yaffs2 mtdparts=hinand:768K(boot),256K(ENV),1M(UNUSED),12M(kernel),2M(logo),112M(rootfs)
+[    0.000000] PID hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.000000] Dentry cache hash table entries: 32768 (order: 5, 131072 bytes)
+[    0.000000] Inode-cache hash table entries: 16384 (order: 4, 65536 bytes)
+[    0.000000] Memory: 240MB = 240MB total
+[    0.000000] Memory: 240448k/240448k available, 5312k reserved, 0K highmem
+[    0.000000] Virtual kernel memory layout:
+[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+[    0.000000]     fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+[    0.000000]     DMA     : 0xffc00000 - 0xffe00000   (   2 MB)
+[    0.000000]     vmalloc : 0xcf800000 - 0xfe000000   ( 744 MB)
+[    0.000000]     lowmem  : 0xc0000000 - 0xcf000000   ( 240 MB)
+[    0.000000]     modules : 0xbf000000 - 0xc0000000   (  16 MB)
+[    0.000000]       .init : 0xc0008000 - 0xc001e000   (  88 kB)
+[    0.000000]       .text : 0xc001e000 - 0xc02a5000   (2588 kB)
+[    0.000000]       .data : 0xc02a6000 - 0xc02b9880   (  79 kB)
+[    0.000000]        .bss : 0xc02b98a4 - 0xc0312238   ( 355 kB)
+[    0.000000] SLUB: Genslabs=13, HWalign=32, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+[    0.000000] NR_IRQS:128 nr_irqs:128 128
+[    0.000000] sched_clock: 32 bits at 155MHz, resolution 6ns, wraps every 27709ms
+[    0.000031] Calibrating delay loop... 1849.75 BogoMIPS (lpj=9248768)
+[    0.060036] pid_max: default: 32768 minimum: 301
+[    0.060130] Mount-cache hash table entries: 512
+[    0.060357] CPU: Testing write buffer coherency: ok
+[    0.061643] NET: Registered protocol family 16
+[    0.062465] Serial: AMBA PL011 UART driver
+[    0.062533] uart:0: ttyAMA0 at MMIO 0x20080000 (irq = 40) is a PL011 rev2
+[    0.271489] console [ttyAMA0] enabled
+[    0.275386] uart:1: ttyAMA1 at MMIO 0x20090000 (irq = 41) is a PL011 rev2
+[    0.291188] bio: create slab <bio-0> at 0
+[    0.296486] usbcore: registered new interface driver usbfs
+[    0.302382] usbcore: registered new interface driver hub
+[    0.307885] usbcore: registered new device driver usb
+[    0.313608] Switching to clocksource timer1
+[    0.319585] NET: Registered protocol family 2
+[    0.324027] IP route cache hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.331071] TCP established hash table entries: 8192 (order: 4, 65536 bytes)
+[    0.338227] TCP bind hash table entries: 8192 (order: 3, 32768 bytes)
+[    0.344732] TCP: Hash tables configured (established 8192 bind 8192)
+[    0.351085] TCP reno registered
+[    0.354224] UDP hash table entries: 256 (order: 0, 4096 bytes)
+[    0.360066] UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+[    0.366460] NET: Registered protocol family 1
+[    0.371347] L2cache cache controller enabled
+[    0.384739] fuse init (API version 7.16)
+[    0.389205] msgmni has been set to 469
+[    0.393424] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 254)
+[    0.400827] io scheduler noop registered
+[    0.404742] io scheduler deadline registered (default)
+[    0.409906] io scheduler cfq registered
+[    0.418049] brd: module loaded
+[    0.423316] loop: module loaded
+[    0.426809] Special nand id table Version 1.35
+[    0.431262] Hisilicon Nand Flash Controller V301 Device Driver, Version 1.10
+[    0.439042] Nand ID: 0xAD 0xF1 0x00 0x1D 0xAD 0xF1 0x00 0x1D
+[    0.445018] Nand(Hardware): Block:128KB Page:2KB Chip:128MB OOB:64B ECC:1bit 
+[    0.452167] NAND device: Manufacturer ID: 0xad, Chip ID: 0xf1 (Hynix NAND 128MiB 3,3V 8-bit)
+[    0.460614] 6 cmdlinepart partitions found on MTD device hinand
+[    0.466526] Creating 6 MTD partitions on "hinand":
+[    0.471316] 0x000000000000-0x0000000c0000 : "boot"
+[    0.477765] 0x0000000c0000-0x000000100000 : "ENV"
+[    0.483374] 0x000000100000-0x000000200000 : "UNUSED"
+[    0.490350] 0x000000200000-0x000000e00000 : "kernel"
+[    0.513174] 0x000000e00000-0x000001000000 : "logo"
+[    0.521367] 0x000001000000-0x000008000000 : "rootfs"
+[    0.690679] STMMAC driver:
+[    0.690683]  platform registration... 
+[    0.696942]  done!
+[    0.699118] Set system config register 0x200300ec with value 0x003f003f
+[    0.705733]  done!
+[    0.707763]  DWMAC1000 - user ID: 0x10, Synopsys ID: 0x36
+[    0.713158]  Enhanced descriptor structure
+[    0.717248] MACADDR in get is 0:0:0:0:0:0
+[    0.721551]  eth0 - (dev. name: stmmaceth - id: 0, IRQ #119
+[    0.721556]  IO base addr: 0xcf8c0000)
+[    0.734737] STMMAC MII Bus: probed
+[    0.738134] eth0: PHY ID 001cc852 at 0 IRQ -6 (1:00) active
+[    0.743713] eth0: PHY ID 001cc852 at 1 IRQ 0 (1:01)
+[    0.748583] eth0: PHY ID 001cc852 at 2 IRQ 0 (1:02)
+[    0.753456] eth0: PHY ID 001cc852 at 3 IRQ 0 (1:03)
+[    0.758326] eth0: PHY ID 001cc852 at 4 IRQ 0 (1:04)
+[    0.763198] eth0: PHY ID 001cc852 at 5 IRQ 0 (1:05)
+[    0.768068] eth0: PHY ID 001cc852 at 6 IRQ 0 (1:06)
+[    0.773239] stmmac_reset: RESET COMPLETE!
+[    0.777238] 
+[    0.777240] **************************************************
+[    0.784544] *  TNK driver built on Jan  9 2017 at 08:48:38
+[    0.790022] *  TNK driver mode is BYPASS
+[    0.793934] **************************************************
+[    0.799757] stmmac: Rx Checksum Offload Engine supported
+[    0.806740] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    0.813506] hiusb-ehci hiusb-ehci.0: HIUSB EHCI
+[    0.818042] hiusb-ehci hiusb-ehci.0: new USB bus registered, assigned bus number 1
+[    0.825726] hiusb-ehci hiusb-ehci.0: irq 63, io mem 0x100b0000
+[    0.850020] hiusb-ehci hiusb-ehci.0: USB 0.0 started, EHCI 1.00
+[    0.856322] hub 1-0:1.0: USB hub found
+[    0.860082] hub 1-0:1.0: 2 ports detected
+[    0.864336] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    0.870640] hiusb-ohci hiusb-ohci.0: HIUSB OHCI
+[    0.875174] hiusb-ohci hiusb-ohci.0: new USB bus registered, assigned bus number 2
+[    0.882758] hiusb-ohci hiusb-ohci.0: irq 64, io mem 0x100a0000
+[    0.944368] hub 2-0:1.0: USB hub found
+[    0.948116] hub 2-0:1.0: 2 ports detected
+[    0.952549] usbcore: registered new interface driver usbserial
+[    0.958460] USB Serial support registered for generic
+[    0.963651] usbcore: registered new interface driver usbserial_generic
+[    0.970179] usbserial: USB Serial Driver core
+[    0.974754] mousedev: PS/2 mouse device common for all mice
+[    0.980358] TCP cubic registered
+[    0.983579] NET: Registered protocol family 17
+[    0.988570] yaffs: dev is 32505861 name is "mtdblock5" rw
+[    0.993975] yaffs: passed flags ""
+[    1.003742] VFS: Mounted root (yaffs2 filesystem) on device 31:5.
+[    1.009865] Freeing init memory: 88K
+[    1.190066] usb 1-2: new high speed USB device number 2 using hiusb-ehci
+[    1.356352] hub 1-2:1.0: USB hub found
+[    1.361487] hub 1-2:1.0: 4 ports detected
+[    1.514171] MACADDR in set is 0:0:47:3c:49:68
+Auto login as root ...
+Jan  1 08:00:01 login[434]: root login on 'ttyS0'
+HELLO 2017
+# [    3.510245] PHY: 1:00 - Link is Up - 100/Full
+
+# 
+# uname  -a
+Linux (none) 3.0.8 #1.0.A.0 Mon Jan 9 09:07:58 CST 2017 armv7l GNU/Linux 
+#
+# cat /proc/cmdline 
+mem=240M console=ttyAMA0,115200 root=/dev/mtdblock5 rootfstype=yaffs2 mtdparts=hinand:768K(boot),256K(ENV),1M(UNUSED),12M(kernel),2M(logo),112M(rootfs)
+# 
+# ifconfig 
+eth0      Link encap:Ethernet  HWaddr 00:00:47:3C:49:68  
+          inet addr:192.168.200.200  Bcast:192.168.200.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:2384 errors:0 dropped:6 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:165616 (161.7 KiB)  TX bytes:0 (0.0 B)
+          Interrupt:119 
+
+# 
+# ping 192.168.200.138
+64 bytes p min/avg/max = 0.225/2.453/6.904 ms
+# 
+# df -h
+Filesystem                Size      Used Available Use% Mounted on
+/dev/root               112.0M      4.5M    107.5M   4% /
+tmpfs                   117.4M         0    117.4M   0% /dev
+# 
+# ps
+  PID USER       VSZ STAT COMMAND
+    1 root      1720 S    init
+    2 root         0 SW   [kthreadd]
+    3 root         0 SW   [ksoftirqd/0]
+    4 root         0 SW   [kworker/0:0]
+    5 root         0 SW   [kworker/u:0]
+    6 root         0 SW   [rcu_kthread]
+    7 root         0 SW<  [khelper]
+    8 root         0 SW   [kworker/u:1]
+   82 root         0 SW   [sync_supers]
+   84 root         0 SW   [bdi-default]
+   85 root         0 SW<  [kintegrityd]
+   87 root         0 SW<  [kblockd]
+   97 root         0 SW   [khubd]
+  118 root         0 SW   [kswapd0]
+  169 root         0 SW   [fsnotify_mark]
+  236 root         0 SW   [mtdblock0]
+  241 root         0 SW   [mtdblock1]
+  246 root         0 SW   [mtdblock2]
+  251 root         0 SW   [mtdblock3]
+  256 root         0 SW   [mtdblock4]
+  261 root         0 SW   [mtdblock5]
+  264 root         0 SW   [romblock0]
+  267 root         0 SW   [romblock1]
+  270 root         0 SW   [romblock2]
+  273 root         0 SW   [romblock3]
+  276 root         0 SW   [romblock4]
+  279 root         0 SW   [romblock5]
+  323 root         0 SW   [kworker/0:1]
+  332 root         0 SW   [yaffs-bg-1]
+  433 root      1704 S    /usr/sbin/telnetd
+  438 root      1732 S    -sh
+  440 root         0 SW   [flush-31:5]
+  446 root      1708 R    ps
+# 
+# echo Default PASSWD is
+Default PASSWD is
+#

@@ -1,0 +1,1049 @@
+/* GPIO Push Button driver by ivan wang */
+#include <linux/module.h>
+#include <linux/sched.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/interrupt.h>
+#include <linux/spinlock.h>
+#include <linux/proc_fs.h>
+#include <asm/uaccess.h>
+#include <linux/miscdevice.h>
+#include <asm/uaccess.h>
+//#include <asm/hardware.h>
+#include <asm/bitops.h>
+#include <asm/io.h>
+#include <linux/delay.h>
+
+#include <mach/platform.h>
+#include "hgpio.h"
+
+#define  IOWRITE(reg,value)       iowrite8(value, IO_ADDRESS(reg))
+#define init_MUTEX(x) sema_init(x,1)
+
+GPIO_INFO g_stGpioInfo;
+
+static unsigned char 	g_WtdMsgFlag	= 2;
+
+static struct timer_list wtd_timer; 
+static int 	TimerIntrpt		= 0;
+unsigned int BoardID = 0x900c;
+
+//#define IOWRITE8(address,value) iowrite8(value,IO_ADDRESS(address))
+#define REG_BASE_SCTL 0x20050000
+
+static int gpio_open(struct inode *inode, struct file *file)
+{
+    return 0;
+}
+
+static int gpio_release(struct inode *inode, struct file *file)
+{
+    return 0;
+}
+
+static int ddrc_set_angle(int group, int angle)
+{
+    unsigned int value = 0x00000370;
+    switch (angle)
+    {
+        case 0/*36*/:
+            break;
+        case 1/*54*/:
+            break;
+        case 2/*72*/:
+            break;
+        case 4/*108*/:
+            break;
+        case 5/*126*/:
+            break;
+        case 6/*144*/:
+            break;
+        case 3/*90*/:
+        default:
+            break;
+    }
+    WRITE_DDRC_REG(group, 0x220, value);
+    WRITE_DDRC_REG(group, 0x224, value);
+    WRITE_DDRC_REG(group, 0x228, value);
+    WRITE_DDRC_REG(group, 0x22C, value);
+
+    WRITE_DDRC_REG(group, 0x244, 0);
+    WRITE_DDRC_REG(group, 0x244, 1);
+
+    return 0;
+}
+
+static long gpio_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+    char device_addr;
+    unsigned char ucAlarmPin, ucAlarmStatus = 0;
+    unsigned char chardata;
+    short reg_addr;
+    short reg_val = -1;
+    unsigned int u32Val, u32AlarmData = 0;
+    int ret = 0;
+    GPIO_GROUP_BIT_INFO group_bit_info;
+
+    down(&g_stGpioInfo.gpio_sem);
+    
+    switch(cmd)
+    {
+        case GPIO_READ_REG:
+            {
+                ret = ioread32(IO_ADDRESS(arg));
+                printk("read GPIO_READ_REG  %x value = %x\n", (unsigned int)arg, ret);
+                break;
+            }
+
+        case GPIO_WRITE_REG:
+            {
+                int a[2];
+                copy_from_user(a, (void __user *)arg, sizeof(a));
+                iowrite32(a[1],IO_ADDRESS(a[0]));
+                printk("GPIO_WRITE_REG  %x value = %x\n", a[0], a[1]);
+                break;
+            }
+        
+        case GPIO_SET_DIR:
+            {
+                printk("group number or bitnum beyond extent!\n");
+                up(&g_stGpioInfo.gpio_sem);
+                return -1;
+
+                ret = copy_from_user(&group_bit_info,(GPIO_GROUP_BIT_INFO*)arg, sizeof(GPIO_GROUP_BIT_INFO));
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                if((group_bit_info.groupnumber>7)||(group_bit_info.bitnumber>7))
+                {
+                    printk("group number or bitnum beyond extent!\n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                SET_GPIO_DIRECT(group_bit_info.groupnumber, group_bit_info.bitnumber, group_bit_info.value);
+                break;
+            }
+
+        case GPIO_GET_DIR:
+            {
+                printk("copy_from_user fail\n");
+                up(&g_stGpioInfo.gpio_sem);
+                return -1;
+                
+                ret = copy_from_user(&group_bit_info,(GPIO_GROUP_BIT_INFO*)arg, sizeof(GPIO_GROUP_BIT_INFO));
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                if((group_bit_info.groupnumber>7)||(group_bit_info.bitnumber>7))
+                {
+                    printk("group number or bitnum beyond extent!\n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                group_bit_info.value = GET_GPIO_DIRECT(group_bit_info.groupnumber, group_bit_info.bitnumber);
+                ret = copy_to_user((void __user *)arg, &group_bit_info, sizeof(GPIO_GROUP_BIT_INFO));
+                if(ret)
+                {
+                    printk("copy_to_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                break;
+            }
+
+        case GPIO_READ_BIT:
+            {
+                printk("copy_from_user fail \n");
+                up(&g_stGpioInfo.gpio_sem);
+                return -1;
+                
+                /*
+                ret = copy_from_user(&group_bit_info,(GPIO_GROUP_BIT_INFO*)arg, sizeof(GPIO_GROUP_BIT_INFO));
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                if((group_bit_info.groupnumber>7)||(group_bit_info.bitnumber>7))
+                {
+                    printk("group number or bitnum beyond extent!\n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                group_bit_info.value = READ_GPIO_DATA(group_bit_info.groupnumber, group_bit_info.bitnumber);
+                ret = copy_to_user((void __user *)arg, &group_bit_info, sizeof(GPIO_GROUP_BIT_INFO));
+                if(ret)
+                {
+                    printk("copy_to_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                */
+                break;
+            }
+
+        case GPIO_WRITE_BIT:
+            {
+                printk("copy_from_user fail \n");
+                up(&g_stGpioInfo.gpio_sem);
+                return -1;
+                
+                ret = copy_from_user(&group_bit_info,(GPIO_GROUP_BIT_INFO*)arg, sizeof(GPIO_GROUP_BIT_INFO));
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                if((group_bit_info.groupnumber>7)||(group_bit_info.bitnumber>7))
+                {
+                    printk("group number or bitnum beyond extent!\n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                WRITE_GPIO_DATA(group_bit_info.groupnumber, group_bit_info.bitnumber, group_bit_info.value);
+                break;
+            }
+
+        case GPIO_I2C_READ:
+            {
+                u32Val = arg;
+                device_addr = (u32Val&0xff000000)>>24;
+                reg_addr = (u32Val&0xff0000)>>16;
+
+                //printk("device_addr  0x%02x, reg_addr  0x%02x \n", device_addr, reg_addr);
+
+                reg_val = gpio_i2c_read(device_addr, reg_addr);
+                //printk("GPIO_I2C_READ reg_val  0x%02x  \n", reg_val);
+                ret = (u32Val&0xffff0000)|reg_val;			
+                break;
+            }
+
+        case GPIO_I2C_READ16:
+            {
+                u32Val = arg;
+                device_addr = (u32Val&0xffff0000)>>24;
+                reg_addr = (u32Val&0xffff)>>16;
+
+                printk("device_addr  0x%02x, reg_addr  0x%02x \n", device_addr, reg_addr);
+
+                ///reg_val = gpio_i2c_read16(device_addr, reg_addr);
+                printk("GPIO_I2C_READ reg_val  0x%02x  \n", reg_val);
+                ret = reg_val;			
+                break;
+            }
+
+        case GPIO_I2C_WRITE16:
+            {
+                int *param = (int *)arg;
+                u32Val = param[0];
+                device_addr = (u32Val&0xff000000)>>24;
+
+                u32Val = param[1];
+                reg_addr = (u32Val&0xffff0000)>>16;
+
+                reg_val = u32Val&0xffff;
+                //printk("GPIO_I2C_WRITE device_addr  0x%02x, reg_addr 0x%02x  reg_val 0x%02x \n", device_addr, reg_addr, reg_val);
+                //gpio_i2c_write16(device_addr, reg_addr, reg_val);
+                break;		
+            }
+
+        case GPIO_I2C_READ_I2C_2:
+            {
+                u32Val = arg;
+                device_addr = (u32Val&0xff000000)>>24;
+                reg_addr = (u32Val&0xff0000)>>16;
+
+                //printk("device_addr  0x%02x, reg_addr  0x%02x \n", device_addr, reg_addr);
+
+                reg_val = gpio_i2c_read_i2c_2(device_addr, reg_addr);
+                //printk("GPIO_I2C_READ_I2C_2 device_addr = 0x%x, reg_addr = 0x%x, reg_val  0x%02x  \n", device_addr, reg_addr, reg_val);
+                ret = (u32Val&0xffff0000)|reg_val;			
+                break;
+            }
+
+        case GPIO_I2C_WRITE:
+            {
+                u32Val = arg;
+                device_addr = (u32Val&0xff000000)>>24;
+                reg_addr = (u32Val&0xff0000)>>16;
+
+                reg_val = u32Val&0xffff;
+                //printk("GPIO_I2C_WRITE device_addr  0x%02x, reg_addr 0x%02x  reg_val 0x%02x \n", device_addr, reg_addr, reg_val);
+                gpio_i2c_write(device_addr, reg_addr, reg_val);
+                break;		
+            }
+        
+        case GPIO_I2C_WRITE_I2C_2:
+            {
+                u32Val = arg;
+                device_addr = (u32Val&0xff000000)>>24;
+                reg_addr = (u32Val&0xff0000)>>16;
+
+                reg_val = u32Val&0xffff;
+                //printk("GPIO_I2C_WRITE_I2C_2 device_addr  0x%02x, reg_addr 0x%02x  reg_val 0x%02x \n", device_addr, reg_addr, reg_val);
+                gpio_i2c_write_i2c_2(device_addr, reg_addr, reg_val);
+                break;		
+            }
+        
+        case GPIOGET_ALARM_OUT:
+            {
+                ret = copy_from_user(&chardata,(unsigned char *)arg, 1);
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                
+                ucAlarmPin = chardata & 0x7f;
+                if(ucAlarmPin >= MAX_ALARM_OUT_PIN)
+                {
+                    up(&g_stGpioInfo.gpio_sem);
+                    printk("gpio alarm pin err \n");
+                    return -1;
+                }
+
+                ucAlarmStatus = (chardata>>7) & 0x01;
+                printk("Set ucAlarmPin %d , ucAlarmStatus %d \n", ucAlarmPin, ucAlarmStatus);
+                
+                WRITE_GPIO_DATA(GPIO_INDEX_ALARM_OUT, ucAlarmPin, ucAlarmStatus);
+                
+                break;
+            }
+
+        case GPIOGET_ALARM_IN:
+            {
+                up(&g_stGpioInfo.gpio_sem);
+                down(&g_stGpioInfo.alarmin_sem);
+                u32AlarmData = 0;
+                
+                u32AlarmData |= 
+                    ioread8((void*)(g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_ALARM_IN0] + GPIO_DATA));
+                u32AlarmData |= 
+                    (ioread8((void*)(g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_ALARM_IN1] + GPIO_DATA)) << 8);
+                
+                u32Val = u32AlarmData & 0xffff;
+                up(&g_stGpioInfo.alarmin_sem);
+                down(&g_stGpioInfo.gpio_sem);
+                
+                ret = copy_to_user((unsigned int*)arg, &u32Val, 4);
+                if(ret)
+                {
+                    printk("copy_to_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                break;
+            }
+
+        case GPIOGET_LEDSTATUS:  //arg[0:1]标识LED的状态 
+            {
+                ret = copy_from_user(&chardata, (unsigned char*)arg, 1);
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+
+                switch (chardata & 0x7f)
+                {
+                    case SYS_LED_0:
+                        WRITE_GPIO_DATA(GPIO_INDEX_LED, SYS_LED_0, (chardata>>7)&0x01);
+                        break;
+                    case SYS_LED_1:
+                        WRITE_GPIO_DATA(GPIO_INDEX_LED, SYS_LED_1, (chardata>>7)&0x01);
+                        break;
+                    case PANEL_LED_NET_CASE:
+                        WRITE_GPIO_DATA(GPIO_INDEX_PANEL, PANEL_LED_NET, (chardata>>7)&0x01);
+                        printk("Set NET %s\n", (0 == ((chardata>>7)&0x01)) ? "OFF" : "ON");
+                        break;
+                    case PANEL_LED_STATUS_CASE:
+                        WRITE_GPIO_DATA(GPIO_INDEX_PANEL, PANEL_LED_ALARM, (chardata>>7)&0x01);
+                        break;
+                    case PANEL_LED_ALARM_CASE:
+                        WRITE_GPIO_DATA(GPIO_INDEX_PANEL, PANEL_LED_STATUS, (chardata>>7)&0x01);
+                        printk("Set ALARM %s\n", (0 == ((chardata>>7)&0x01)) ? "OFF" : "ON");
+                        break;
+                    default:
+                        printk("gpio LED pin err \n");
+                        ret =  -1;
+                }
+                break;
+            }
+
+        case GPIOGET_BUZZER:
+            {
+                ret = copy_from_user(&chardata, (unsigned char*)arg, 1);
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+
+                if (1 == chardata)
+                {
+                    WRITE_GPIO_DATA(GPIO_INDEX_BEEP, 1, 1); // ON
+                }
+                else
+                {
+                    WRITE_GPIO_DATA(GPIO_INDEX_BEEP, 1, 0);
+                }
+                break;
+            }
+
+        case GPIOGET_IPSTATUS:
+            {
+                chardata = READ_GPIO_DATA(GPIO_INDEX_PWD, 2) >> 2;
+                if(chardata)
+                    chardata = 0x01;
+                else
+                    chardata = 0x00;
+                ret = copy_to_user((unsigned char *)arg, &chardata, 1);
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                break;
+            }
+
+        case GPIOSET_DETECTVGA: // TODO
+            {
+                chardata = READ_GPIO_DATA(3, 7) >> 7;
+                if(chardata)
+                    chardata = 0x01;
+                else
+                    chardata = 0x00;
+                ret = copy_to_user((unsigned char *)arg, &chardata, 1);
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                break;
+            }
+        
+        case GPIOGET_WATCHDOG: // TODO
+            {
+                ret = copy_from_user(&chardata, (unsigned char*)arg, 1);
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                g_WtdMsgFlag = chardata ? 1 : 2;	//g_WtdMsgFlag 1 : enable 2 : disable
+                if (g_WtdMsgFlag == 1)
+                    printk("[GPIO] GPIOGET_WATCHDOG Enable chardata = %x!!!\n", chardata);
+                else
+                    printk("[GPIO] GPIOGET_WATCHDOG Disable chardata = %x!!!\n", chardata);
+
+                TimerIntrpt  = 0;
+                break;
+            }
+
+        case GPIOGET_SERIAL485:
+            {
+                ret = copy_from_user(&chardata, (unsigned char*)arg, 1);
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                
+                u32Val = (char)READ_GPIO_DATA(GPIO_INDEX_RS485, 6) >> 6;
+
+                if (u32Val != chardata)
+                {
+                    if (1 == chardata)
+                    {
+                        printk("set 485 send enable, from %d to %d\n", u32Val, chardata);
+                        WRITE_GPIO_DATA(GPIO_INDEX_RS485, 6, chardata); // Send active
+                    }
+                    else
+                    {
+                        printk("set 485 recv enable, from %d to %d\n", u32Val, chardata);
+                        WRITE_GPIO_DATA(GPIO_INDEX_RS485, 6, chardata);  // Send inactive
+                    }
+                }
+                
+                break;
+            }
+
+        case GPIOGET_SERIAL422:
+            {
+                ret = copy_from_user(&chardata, (unsigned char*)arg, 1);
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+
+                u32Val = (char)READ_GPIO_DATA(GPIO_INDEX_RS422, 7) >> 7;
+
+                if (u32Val != chardata)
+                {
+                    if (1 == chardata)
+                    {
+                        printk("set 422 send enable,  from %d to %d\n", u32Val, chardata);
+                        WRITE_GPIO_DATA(GPIO_INDEX_RS422, 7, chardata); // Send active
+                    }
+                    else
+                    {
+                        printk("set 422 send disable, from %d to %d\n", u32Val, chardata);
+                        WRITE_GPIO_DATA(GPIO_INDEX_RS422, 7, chardata);  // Send inactive
+                    }
+                }
+                
+                break;
+            }
+        
+        case GPIOGET_WATCHDOGEX:
+            TimerIntrpt  = 0;
+            break;
+
+        case GPIOGET_DM_MODE:
+            {
+#if 1
+                /*二显固定为CVBS*/
+                chardata = 0x00;
+#else
+                chardata = READ_GPIO_DATA(7, 3) >> 3;
+#endif
+                if(chardata)
+                    chardata = 0x01;
+                else
+                    chardata = 0x00;
+                ret = copy_to_user((unsigned char *)arg, &chardata, 1);
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                break;
+            }
+        
+        case GPIOSET_RESETHDMI:
+            {
+                printk("no GPIOSET_RESETHDMI\n");
+                break;
+            }
+        
+        case DDRC_SET_MODE: 
+            {
+                ret = copy_from_user(&u32Val,(unsigned int*)arg, sizeof(unsigned int));
+                if(ret)
+                {
+                    printk("copy_from_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+                ret = ddrc_set_angle((int)((u32Val>>16)&0xFF), (int)(u32Val&0xFF));
+                if(ret)
+                {
+                    printk("copy_to_user fail \n");
+                    up(&g_stGpioInfo.gpio_sem);
+                    return -1;
+                }
+            }
+        
+        default:
+            {
+                up(&g_stGpioInfo.gpio_sem);
+                return -1;
+            }
+    }
+    
+    up(&g_stGpioInfo.gpio_sem);
+    return ret;
+}
+
+static void  wtd_timer_pfn(unsigned long expires)
+{
+    /* 关闭Dog时始终自动喂狗，开启Dog时只有发送清狗指令才会喂狗 */
+    if( (TimerIntrpt < WTD_FD) || (g_WtdMsgFlag == 2) )
+    {	
+        wtd_timer.expires = jiffies + INT_TIMER;
+        add_timer(&wtd_timer);
+    }
+
+    TimerIntrpt ++ ;
+    //	printk("TimerIntrpt = %d,g_WtdMsgFlag = %d\n", TimerIntrpt,g_WtdMsgFlag);
+    /* lock watchdog registers */
+    hiwdt_writel(HIWDT_UNLOCK_VAL, HIWDT_LOCK); 
+    hiwdt_writel(DOG_RESET_TH, HIWDT_LOAD);
+    /* clear watchdog */ 
+    hiwdt_writel(0x00, HIWDT_INTCLR); 
+    /* lock watchdog registers */ 
+    hiwdt_writel(0, HIWDT_LOCK); 
+}
+
+static struct file_operations gpio_fops = {
+    .owner = THIS_MODULE,
+    .unlocked_ioctl = gpio_ioctl,
+    .open = gpio_open,
+    .release = gpio_release,
+};
+
+static struct miscdevice gpio_miscdev = {
+    .minor = MISC_DYNAMIC_MINOR,
+    .name = "hi_gpio",
+    .fops = &gpio_fops,
+};
+
+int gpioi2c_register(void);
+
+static int __init gpioi2c_init(void)
+{
+    char flag;
+    int ret, i;  
+    int reg;
+
+    ret = misc_register(&gpio_miscdev);
+    if (ret < 0) 
+    {
+        printk(KERN_ERR "tlclk: misc_register returns %d.\n", ret);
+        return ret;
+    }
+    
+    g_stGpioInfo.gpio_ker_vir_addr[0]=(unsigned long)ioremap_nocache(GPIO0_BASE, 0x10000 * GPIO_GROUP_MAX);
+    g_stGpioInfo.ddrc_ker_vir_addr[0]=(unsigned long)ioremap_nocache(DDRC0_BASE, 0x10000 * DDRC_GROUP_MAX);
+
+    if(!g_stGpioInfo.gpio_ker_vir_addr[0])
+    {
+        misc_deregister(&gpio_miscdev);
+        printk("ioremap gpio group0 failed!\n");
+        return -1;
+    }
+    
+    for(i = 1; i < GPIO_GROUP_MAX; i++)
+    {
+        g_stGpioInfo.gpio_ker_vir_addr[i] = g_stGpioInfo.gpio_ker_vir_addr[0] + 0x10000*i;
+    }
+
+    for(i = 1; i < DDRC_GROUP_MAX; i++)
+    {
+        g_stGpioInfo.ddrc_ker_vir_addr[i] = g_stGpioInfo.ddrc_ker_vir_addr[0] + 0x10000*i;
+    }
+
+    /*
+       3531_NVR resource list
+       ----------------------------------------------------------------
+       GPIO8_0～GPIO8_7---报警输入1～8。          
+       GPIO1_0～GPIO1_7---报警输入9～16。
+       GPIO6_0～GPIO6_7---报警输出1～8。
+       GPIO9_0～GPIO9_4---面板键盘扫描(备用)。
+       
+       GPIO11_0---Hi3531状态指示灯1。
+       GPIO11_1---Hi3531状态指示灯2。
+
+       GPIO12_0---加密芯片RESET。
+       GPIO12_1---加密芯片I/O。             // ???
+       GPIO12_2---系统复位控制。            // ???
+       GPIO12_6---RS-485发送控制。
+
+       GPIO15_4---IR输入(备用)。
+
+       GPIO16_7---RS-422发送控制。
+       GPIO17_0---系统开关机控制。          // ???
+       GPIO17_1---蜂鸣器。
+       GPIO17_2---系统密码复位 password reset            
+
+       GPIO17_3---USB0 overcurrent指示。
+       GPIO17_4---USB0 电源enable。
+       GPIO17_5---USB1 overcurrent指示。
+       GPIO17_6---USB1 电源enable。
+
+       GPIO18_3---Hi3531内核电压控制。    SVB控制 SATA_LED_N0
+       GPIO18_4---Hi3531内核电压控制。    SVB控制 SATA_LED_N1
+       */
+
+    /* -------------------------------- UART1-Config -------------------------------- */
+    /*
+       UART1_RXD 管脚的具体复用情况。
+       0：GPIO12_7；
+       1：UART1_RXD。	
+       */
+    iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + UART1_RXD));
+    
+    /*
+       UART1_TXD 管脚的具体复用情况。
+       0：GPIO13_0；
+       1：UART1_TXD
+       */
+    iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + UART1_TXD));
+  
+    /* -------------------------------- UART2-Config -------------------------------- */
+    /*
+       VIU0_VS 管脚的具体复用情况。
+       00：VIU0_VS；
+       01：GPIO0_1；
+       10：UART2_TXD；
+       */
+    iowrite8(0x02, IO_ADDRESS(IOCONFIG_BASE + VIU0_VS));
+    
+    /*
+       VIU1_VS 管脚的具体复用情况。
+       00：VIU1_VS；
+       01：GPIO2_4；
+       10：UART2_RXD；
+       */
+    iowrite8(0x02, IO_ADDRESS(IOCONFIG_BASE + VIU1_VS));
+
+    /* -------------------------------- UART3-Config -------------------------------- */
+    /*
+       VIU2_VS 管脚的具体复用情况。
+       00：VIU2_VS；
+       01：GPIO4_7；
+       10：UART3_TXD；
+       */
+    iowrite8(0x02, IO_ADDRESS(IOCONFIG_BASE + VIU2_VS));
+
+    /*
+       VOU1120_VS 管脚的具体复用情况。
+       000：VIU3_VS；
+       001：GPIO7_4；
+       010：UART3_RXD；
+       011：VOU1120_VS；
+       100：SDIO_CARD_POWER_EN；
+       */
+    iowrite8(0x02, IO_ADDRESS(IOCONFIG_BASE + VOU1120_VS));
+
+    /* -------------------------------- AlarmIn 1-8 -Config as Input -------------------------------- */
+    /* 
+      VOU1120_DATA13 管脚的具体复用情况。
+        000：VIU3_DAT13；
+        001：GPIO8_0；
+        010：VOU6_DATA5；
+        011：VOU1120_DATA13；
+        100：SDIO_CCMD；
+     */
+    for (reg = VOU1120_DATA13; reg <= VOU1120_DATA6; reg += 4)
+    {
+        iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + reg));
+    }
+    
+    iowrite8(0, g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_ALARM_IN0] + GPIO_DIR);
+    
+    /* -------------------------------- AlarmIn 9-16 Config as Input -------------------------------- */
+    /* 
+      VIU0_DAT10 管脚的具体复用情况。
+        00：VIU0_DAT10；
+        01：GPIO1_0；
+        10：VOU0_DATA2；
+     */
+    for (reg = VIU0_DAT10; reg <= VIU0_DAT3; reg += 4)
+    {
+        iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + reg));
+    }
+
+    iowrite8(0, g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_ALARM_IN1] + GPIO_DIR);
+
+    /* -------------------------------- AlarmOut 1-8 Config as Output -------------------------------- */
+    /* 
+      VIU2_DAT8 管脚的具体复用情况。
+        00：VIU2_DAT8；
+        01：GPIO6_0；
+        10：VOU4_DATA0；
+    */
+    for (reg = VIU2_DAT8; reg <= VIU2_DAT1; reg += 4)
+    {
+        iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + reg));
+    }
+
+    flag = ioread8(g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_ALARM_OUT] + GPIO_DIR);
+    iowrite8(flag|0xff, g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_ALARM_OUT] + GPIO_DIR);
+       
+    /* -------------------------------- Panel-Config as Output -------------------------------- */
+    /*
+      VOU1120_DATA5 管脚的具体复用情况。
+        00：VIU3_DAT5；
+        01：GPIO9_0；
+        10：VOU7_DATA5；
+        11：VOU1120_DATA5。
+     */
+    for (reg = VOU1120_DATA5; reg <= VOU1120_DATA1; reg += 4)
+    {
+        iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + reg));
+    }
+
+    flag = ioread8(g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_PANEL] + GPIO_DIR);
+    flag |= 0x1F; //D00011111
+    iowrite8(flag, g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_PANEL] + GPIO_DIR);
+
+    /* -------------------------------- LED_1/2 as Output-------------------------------- */
+    /*
+        SIO3_RFS 管脚的具体复用情况。
+        0：GPIO11_0；
+        1：SIO3_RFS。
+
+        SIO3_DIN 管脚的具体复用情况。
+        0：GPIO11_1；
+        1：SIO3_DIN。
+     */
+    iowrite8(0x0, IO_ADDRESS(IOCONFIG_BASE + SIO3_RFS));
+    iowrite8(0x0, IO_ADDRESS(IOCONFIG_BASE + SIO3_DIN));
+
+    flag = ioread8(g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_LED] + GPIO_DIR);
+    flag |= 0x3;
+    iowrite8(flag, g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_LED] + GPIO_DIR);
+       
+    /* -------------------------------- EncryptReset-Config as Output-------------------------------- */
+    /* -------------------------------- Encrypt I/O-Config as Output-------------------------------- */
+    /* -------------------------------- Rs485Ctl-Config as Output-------------------------------- */
+    /*
+        SPI_SCLK 管脚的具体复用情况。
+        0：GPIO12_0；
+        1：SPI_SCLK。
+
+        SPI_SDO 管脚的具体复用情况。
+        0：GPIO12_1；
+        1：SPI_SDO。
+
+        UART1_RTSN 管脚的具体复用情况。
+        0：GPIO12_6；
+        1：UART1_RTSN。
+       */             
+    iowrite8(0x0, IO_ADDRESS(IOCONFIG_BASE + SPI_SCLK));
+    iowrite8(0x0, IO_ADDRESS(IOCONFIG_BASE + SPI_SDO));
+    iowrite8(0x0, IO_ADDRESS(IOCONFIG_BASE + UART1_RTSN));
+
+    flag = ioread8(g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_ENCRYT] + GPIO_DIR);
+    flag |= 0x43; // b 0100,0011
+    iowrite8(flag, g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_ENCRYT] + GPIO_DIR);    
+
+    /* -------------------------------- SysReset-Config as Input-------------------------------- */
+    /*
+       SPI_SDI 管脚的具体复用情况。
+       0：GPIO12_2
+       1：SPI_SDI。
+       */             
+     
+    iowrite8(0x0, IO_ADDRESS(IOCONFIG_BASE + SPI_SDI));
+    
+    /*
+    flag = ioread8(g_stGpioInfo.gpio_ker_vir_addr[12] + GPIO_DIR);
+    flag &= 0xFB;// D11111011
+    iowrite8(flag, g_stGpioInfo.gpio_ker_vir_addr[12] + GPIO_DIR);
+    */
+
+    /* -------------------------------- IR_IN-Config as FUNC-------------------------------- */
+    /*
+        IR_IN 管脚的具体复用情况。
+        0：IR_IN；
+        1：GPIO15_4。
+       */
+    iowrite8(0x0, IO_ADDRESS(IOCONFIG_BASE + IR_IN));
+
+    /* -------------------------------- Rs422Ctl-Config as Output-------------------------------- */
+    /*
+       SFC_DIO 管脚的具体复用情况。
+       0：SFC_DIO；
+       1：GPIO16_7。
+       */
+    iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + SFC_DIO));
+    
+    flag = ioread8(g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_RS422] + GPIO_DIR);
+    flag |= 0x80;
+    iowrite8(flag, g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_RS422] + GPIO_DIR);
+
+    /* -------------------------------- PowerCtl-Config as Input -------------------------------- */
+    /*
+       SFC_WP_IO2 管脚的具体复用情况。
+       0：SFC_WP_IO2；
+       1：GPIO17_0
+       */ 
+    iowrite8(0x1, IO_ADDRESS(IOCONFIG_BASE + SFC_WP_IO2));
+    
+    /*
+    flag = ioread8(g_stGpioInfo.gpio_ker_vir_addr[17] + GPIO_DIR);
+    flag = (flag&0xFE);
+    iowrite8(flag, g_stGpioInfo.gpio_ker_vir_addr[17] + GPIO_DIR);
+    */
+
+    /* -------------------------------- Beep-Config as Output -------------------------------- */
+    /*
+        SFC_DOI 管脚的具体复用情况。
+        0：SFC_DOI；
+        1：GPIO17_1。
+    */
+    iowrite8(0x1, IO_ADDRESS(IOCONFIG_BASE + SFC_DOI));
+
+    flag = ioread8(g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_BEEP] + GPIO_DIR);
+    flag = (flag|0x2);
+    iowrite8(flag, g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_BEEP] + GPIO_DIR);
+
+    /* -------------------------------- ResetPWD-Config as Input -------------------------------- */
+    /*
+        SFC_HOLD_IO3 管脚的具体复用情况。
+        0：SFC_HOLD_IO3；
+        1：GPIO17_2。
+    */
+    iowrite8(0x1, IO_ADDRESS(IOCONFIG_BASE + SFC_HOLD_IO3));
+
+    flag = ioread8(g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_PWD] + GPIO_DIR);
+    flag = (flag&0xfb); // fb = b11111011
+    iowrite8(flag, g_stGpioInfo.gpio_ker_vir_addr[GPIO_INDEX_PWD] + GPIO_DIR);
+
+    /* -------------------------------- USB0/1-Config as FUNC -------------------------------- */
+    /*
+        USB0_OVRCUR 管脚的具体复用情况。
+        0：GPIO17_3；
+        1：USB0_OVRCUR。
+
+        USB0_PWREN 管脚的具体复用情况。
+        0：GPIO17_4；
+        1：USB0_PWREN。
+        
+        USB1_OVRCUR 管脚的具体复用情况。
+        0：GPIO17_5；
+        1：USB1_OVRCUR。
+
+        USB1_PWREN 管脚的具体复用情况。
+        0：GPIO17_6；
+        1：USB1_PWREN。
+    */
+    iowrite8(0x1, IO_ADDRESS(IOCONFIG_BASE + USB0_OVRCUR));
+    iowrite8(0x1, IO_ADDRESS(IOCONFIG_BASE + USB0_PWREN));
+    iowrite8(0x1, IO_ADDRESS(IOCONFIG_BASE + USB1_OVRCUR));
+    iowrite8(0x1, IO_ADDRESS(IOCONFIG_BASE + USB1_PWREN));
+    
+    /* -------------------------------- VoltageCtl-Config as OutPut -------------------------------- */
+    /*
+        GPIO18_3 管脚的具体复用情况。
+        0：GPIO18_3；
+        1：SATA_LED_N0。
+
+        GPIO18_4 管脚的具体复用情况。
+        0：GPIO18_4；
+        1：SATA_LED_N1
+     */
+    iowrite8(0x0, IO_ADDRESS(IOCONFIG_BASE + GPIO18_3));
+    iowrite8(0x0, IO_ADDRESS(IOCONFIG_BASE + GPIO18_4));
+    
+    /*
+    flag = ioread8(g_stGpioInfo.gpio_ker_vir_addr[18] + GPIO_DIR);
+    flag |= 0x18; //D11000
+    iowrite8(flag, g_stGpioInfo.gpio_ker_vir_addr[18] + GPIO_DIR);
+    */
+
+    /* -------------------------------- I2c-Config as GPIO -------------------------------- */
+    /*
+     0：GPIO12_4；
+     1：I2C_SDA。
+
+     0：GPIO12_5；
+     1：I2C_SCL。
+     */
+    iowrite8(0x00, IO_ADDRESS(IOCONFIG_BASE + I2C_SDA));
+    iowrite8(0x00, IO_ADDRESS(IOCONFIG_BASE + I2C_SCL));
+
+    //for (i = 0 ; i < 1; i++)
+    {
+        WRITE_GPIO_DATA(GPIO_INDEX_LED, 0, 0); // LED_0_ON
+        WRITE_GPIO_DATA(GPIO_INDEX_LED, 1, 1); // LED_1_OFF
+        WRITE_GPIO_DATA(GPIO_INDEX_PANEL, PANEL_LED_NET, 1); // ON
+        WRITE_GPIO_DATA(GPIO_INDEX_PANEL, PANEL_LED_STATUS, 1); // ON
+    }
+
+    /* -------------------------------- SIO4-Config as Func -------------------------------- */
+    /*
+       0：GPIO11_3；
+       1：SIO4_XFS。
+
+       0：GPIO11_2；
+       1：SIO4_XCLK
+
+       0：GPIO11_6；
+       1：SIO4_DOUT。
+
+       0：GPIO11_7；
+       1：SIO4_DIN。
+       */
+    /*
+       iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + SIO4_XFS));
+       iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + SIO4_XCLK));
+       iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + SIO4_DOUT));
+       iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + SIO4_DIN));
+       */
+
+    if (0)for (i = SIO4_XCLK; i <= SIO4_DIN; i = i + 0x04)
+    {
+        if(0x00 == ioread8(IO_ADDRESS(IOCONFIG_BASE + i)))
+        {
+            printk("ERROR Set %#x as No Gpio mode\n", i);
+            iowrite8(0x01, IO_ADDRESS(IOCONFIG_BASE + i));
+        }
+    }
+
+    init_MUTEX(&g_stGpioInfo.gpio_sem);
+    init_MUTEX(&g_stGpioInfo.alarmin_sem);
+    
+#if 1 // WatchDog init process
+    hiwdt_writel(HIWDT_UNLOCK_VAL, HIWDT_LOCK);
+    hiwdt_writel(0x00, HIWDT_CTRL);
+    hiwdt_writel(0x00, HIWDT_INTCLR);
+    hiwdt_writel(DOG_RESET_TH, HIWDT_LOAD); 
+    hiwdt_writel(0x03, HIWDT_CTRL);
+
+    /* lock watchdog registers */
+    hiwdt_writel(0, HIWDT_LOCK);
+
+    /* enable watchdog clock */
+    writel(readl(IO_ADDRESS(REG_BASE_SCTL)) | 0x00800000, IO_ADDRESS(REG_BASE_SCTL));
+
+    /*printk("sys usb reset 0x%lx  \n", (long)readl(IO_ADDRESS(0x20050050)));
+      writel(readl(IO_ADDRESS(0x20050050)) & (~(0xC0000000)), IO_ADDRESS(0x20050050));
+      printk("sys usb reset 0x%lx  \n", (long)readl(IO_ADDRESS(0x20050050)));
+      writel(readl(IO_ADDRESS(0x20050050)) | 0xC0000000, IO_ADDRESS(0x20050050));
+      printk("sys usb reset 0x%lx  \n", (long)readl(IO_ADDRESS(0x20050050)));
+    */
+    printk("sys usb info 0x%lx  \n", (long)readl(IO_ADDRESS(0x20050060)));
+
+    init_timer(&wtd_timer);				//Start timer to clear watchdog
+    wtd_timer.expires	= jiffies + (HZ)/2 ;
+    wtd_timer.function	= wtd_timer_pfn;
+    add_timer(&wtd_timer);
+
+    gpioi2c_register();
+#endif
+    
+    printk("Gpioi2c driver init\n");
+    g_stGpioInfo.gpio_status = 0xff;
+    return 0;
+}
+
+static void __exit gpioi2c_exit(void)
+{
+    del_timer(&wtd_timer);
+    iounmap((void*)g_stGpioInfo.gpio_ker_vir_addr[0]);
+    iounmap((void*)g_stGpioInfo.ddrc_ker_vir_addr[0]);
+    misc_deregister (&gpio_miscdev);
+    g_stGpioInfo.gpio_status = 0x00;
+    printk("Gpioi2c driver exit\n");
+}
+
+module_init(gpioi2c_init);
+module_exit(gpioi2c_exit);
+
+module_param(BoardID, uint, S_IRUGO);
+MODULE_PARM_DESC(BoardID,"0x401c,0x900b,0x900c");
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Hi3531 Developer");
+MODULE_DESCRIPTION("GPIO driver for Hi3520 new board with HDMI (Small)");
+

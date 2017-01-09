@@ -1,0 +1,31 @@
+/*     extdrv/include/gpio_i2c.h for Linux .
+ *
+ * 
+ * This file declares functions for user.
+ *
+ * History:
+ *     03-Apr-2006 create this file
+ *      
+ */
+
+#include <mach/platform.h>
+
+#ifndef _GPIO_I2C_H_2
+#define _GPIO_I2C_H_2
+
+#define GPIO_3_DIR  IO_ADDRESS(GPIO3_BASE + 0x400)
+
+#define SCL_2                 (1 << 7)    /* GPIO 3_7 */
+#define SDA_2                 (1 << 6)    /* GPIO 3_6 */
+#define GPIO_I2C_2_SDA_REG    IO_ADDRESS(GPIO3_BASE + 0x100)
+#define GPIO_I2C_2_SCL_REG    IO_ADDRESS(GPIO3_BASE + 0x200)
+
+#define GPIO_I2C_2_SCLSDA_REG IO_ADDRESS(GPIO3_BASE + 0x300)
+
+#define HW_REG_2(reg)         *((volatile unsigned int *)(reg))
+#define DELAY_2(us)           time_delay_us_2(us)
+
+unsigned char gpio_i2c_read_i2c_2(unsigned char devaddress, unsigned char address);
+void gpio_i2c_write_i2c_2(unsigned char devaddress, unsigned char address, unsigned char value);
+#endif
+

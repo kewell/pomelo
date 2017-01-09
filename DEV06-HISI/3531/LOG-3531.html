@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>/.100G/.KEWELL/pomelo/DEV06-HISI/3531/LOG-3531.c.html</title>
+<meta name="Generator" content="Vim/7.2" />
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<style type="text/css">
+<!--
+.Type { color: #00ff00; }
+.Error { color: #ffffff; background-color: #ff6060; font-weight: bold; }
+.Statement { color: #ffff00; }
+.PreProc { color: #ff40ff; }
+.Constant { color: #ffff00; }
+pre { font-family: monospace; color: #ffffff; background-color: #000000; }
+body { font-family: monospace; color: #ffffff; background-color: #000000; }
+.Comment { color: #00ffff; }
+-->
+</style>
+</head>
+<body>
+<pre>
+<span class="Comment">/*</span><span class="Comment">********************************************************************************</span>
+<span class="Comment"> *      Copyright:  (C) 2017 KEWELL</span>
+<span class="Comment"> *</span>
+<span class="Comment"> *       Filename:  LOG-3531.TXT</span>
+<span class="Comment"> *    Description:  This file </span>
+<span class="Comment"> *                 </span>
+<span class="Comment"> *        Version:  1.0.0(01/09/2017~)</span>
+<span class="Comment"> *         Author:  KEWELL &lt;EMBLINUXEDU@163.COM&gt;</span>
+<span class="Comment"> *      ChangeLog:  1, Release initial version on &quot;01/09/2017 08:39:32 AM&quot;</span>
+<span class="Comment"> *                 </span>
+<span class="Comment"> * This program is free software; you can redistribute it and/or modify</span>
+<span class="Comment"> * it under the terms of the GNU General Public License version 2 as</span>
+<span class="Comment"> * published by the Free Software Foundation.</span>
+<span class="Comment"> *</span>
+<span class="Comment"> *******************************************************************************</span><span class="Comment">*/</span>
+ot <span class="Constant">3531.2017</span>.HISI_3531.NVR <span class="Constant">3531.</span>NVR (Jan <span class="PreProc">0</span><span class="Constant">7</span> <span class="Constant">2017</span> - <span class="Constant">15</span>:<span class="Constant">30</span>:<span class="Constant">28</span>)
+
+<span class="Statement">NAND</span>:  Special Nand id table Version <span class="Constant">1.35</span>
+Nand ID: <span class="Constant">0xAD</span> <span class="Constant">0xF1</span> <span class="Constant">0x00</span> <span class="Constant">0x1D</span> <span class="Constant">0xAD</span> <span class="Constant">0xF1</span> <span class="Constant">0x00</span> <span class="Constant">0x1D</span>
+Nand(Hardware): Block:128KB Page:2KB Chip:128MB*<span class="Constant">1</span> OOB:64B ECC:1bit
+<span class="Constant">128</span> MiB
+*** Warning - bad CRC or NAND, using <span class="Statement">default</span> environment
+
+<span class="Statement">In</span>:    serial
+<span class="Statement">Out</span>:   serial
+<span class="Statement">Err</span>:   serial
+Hit any key to stop autoboot:  <span class="Constant">0</span>
+hisilicon #
+hisilicon # ver
+
+U-Boot <span class="Constant">3531.2017</span>.HISI_3531.NVR <span class="Constant">3531.</span>NVR (Jan <span class="PreProc">0</span><span class="Constant">7</span> <span class="Constant">2017</span> - <span class="Constant">15</span>:<span class="Constant">30</span>:<span class="Constant">28</span>)
+hisilicon #
+hisilicon # pri
+bootargs=mem=64M console=ttyAMA0,<span class="Constant">115200</span> root=/dev/mtdblock5 rootfstype=yaffs2 mtdparts=hinand:768K(boot),256K(ENV),1M(UNUSED),12M(kernel),2M(logo),112M(rootfs)
+bootcmd=nand read <span class="Constant">0x82000000</span> <span class="Constant">0x200000</span> <span class="Constant">0x200000</span>;bootm <span class="Constant">0x82000000</span>
+bootdelay=<span class="Constant">1</span>
+baudrate=<span class="Constant">115200</span>
+ethaddr=<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="Constant">47</span>:3d:4a:<span class="Constant">69</span>
+ipaddr=<span class="Constant">192.168.200.111</span>
+serverip=<span class="Constant">192.168.200.138</span>
+netmask=<span class="Constant">255.255.255.0</span>
+platform=<span class="Constant">.3531</span>
+<span class="Constant">stdin</span>=serial
+<span class="Constant">stdout</span>=serial
+<span class="Constant">stderr</span>=serial
+verify=n
+ver=U-Boot <span class="Constant">3531.2017</span>.HISI_3531.NVR <span class="Constant">3531.</span>NVR (Jan <span class="PreProc">0</span><span class="Constant">7</span> <span class="Constant">2017</span> - <span class="Constant">15</span>:<span class="Constant">30</span>:<span class="Constant">28</span>)
+
+Environment size: <span class="Constant">482</span>/<span class="Constant">262140</span> bytes
+hisilicon #
+hisilicon # update uboot
+cur nand index = <span class="Constant">0</span>
+No such device: <span class="Constant">0</span>:<span class="Constant">2</span>
+No such device: <span class="Constant">0</span>:<span class="Constant">2</span>
+<span class="Statement">MAC</span>:   <span class="PreProc">0</span><span class="Constant">0</span>-<span class="PreProc">0</span><span class="Constant">0</span>-<span class="Constant">47</span>-3D-4A-<span class="Constant">69</span>
+TFTP from server <span class="Constant">192.168.200.138</span>; our IP address is <span class="Constant">192.168.200.111</span>
+Download Filename 'u-boot.bin<span class="Constant">.3531</span>'.
+Download to address: <span class="Constant">0x82000000</span>
+<span class="Statement">Downloading</span>: #################################################
+done
+Bytes transferred = <span class="Constant">164596</span> (<span class="Constant">282f</span>4 hex)
+
+NAND erase: device <span class="Constant">0</span> offset <span class="Constant">0x0</span>, size <span class="Constant">0x200000</span>
+Erasing at <span class="Constant">0x1e0000</span> -- <span class="Constant">100</span>% complete.
+OK
+
+NAND write: device <span class="Constant">0</span> offset <span class="Constant">0x0</span>, size <span class="Constant">0x100000</span>
+pure data length is <span class="Constant">1048576</span>, len_incl_bad is <span class="Constant">1048576</span>
+ <span class="Constant">1048576</span> bytes written: OK
+
+NAND read: device <span class="Constant">0</span> offset <span class="Constant">0x0</span>, size <span class="Constant">0x100000</span>
+ <span class="Constant">1048576</span> bytes read: OK
+Total of <span class="Constant">1048576</span> bytes were the same
+hisilicon #
+hisilicon #
+hisilicon # update kernel
+cur nand index = <span class="Constant">0</span>
+<span class="Statement">miiphy_register</span>: non unique device name '<span class="Constant">0</span>:<span class="Constant">1</span>'
+No such device: <span class="Constant">0</span>:<span class="Constant">2</span>
+No such device: <span class="Constant">0</span>:<span class="Constant">2</span>
+<span class="Statement">MAC</span>:   <span class="PreProc">0</span><span class="Constant">0</span>-<span class="PreProc">0</span><span class="Constant">0</span>-<span class="Constant">47</span>-3D-4A-<span class="Constant">69</span>
+TFTP from server <span class="Constant">192.168.200.138</span>; our IP address is <span class="Constant">192.168.200.111</span>
+Download Filename 'uImage<span class="Constant">.3531</span>'.
+Download to address: <span class="Constant">0x82000000</span>
+<span class="Statement">Downloading</span>: #################################################
+done
+Bytes transferred = <span class="Constant">1698564</span> (19eb04 hex)
+
+NAND erase: device <span class="Constant">0</span> offset <span class="Constant">0x200000</span>, size <span class="Constant">0x500000</span>
+Erasing at <span class="Constant">0x6e0000</span> -- <span class="Constant">100</span>% complete.
+OK
+
+NAND write: device <span class="Constant">0</span> offset <span class="Constant">0x200000</span>, size <span class="Constant">0x500000</span>
+pure data length is <span class="Constant">5242880</span>, len_incl_bad is <span class="Constant">5242880</span>
+ <span class="Constant">5242880</span> bytes written: OK
+start verify data...
+
+NAND read: device <span class="Constant">0</span> offset <span class="Constant">0x200000</span>, size <span class="Constant">0x500000</span>
+ <span class="Constant">5242880</span> bytes read: OK
+Total of <span class="Constant">5242880</span> bytes were the same
+hisilicon #
+hisilicon #
+hisilicon # update fs
+cur nand index = <span class="Constant">0</span>
+<span class="Statement">miiphy_register</span>: non unique device name '<span class="Constant">0</span>:<span class="Constant">1</span>'
+No such device: <span class="Constant">0</span>:<span class="Constant">2</span>
+No such device: <span class="Constant">0</span>:<span class="Constant">2</span>
+<span class="Statement">MAC</span>:   <span class="PreProc">0</span><span class="Constant">0</span>-<span class="PreProc">0</span><span class="Constant">0</span>-<span class="Constant">47</span>-3D-4A-<span class="Constant">69</span>
+TFTP from server <span class="Constant">192.168.200.138</span>; our IP address is <span class="Constant">192.168.200.111</span>
+Download Filename 'rootfs.yaffs2<span class="Constant">.3531</span>'.
+Download to address: <span class="Constant">0x82000000</span>
+<span class="Statement">Downloading</span>: #################################################
+done
+Bytes transferred = <span class="Constant">3531264</span> (<span class="Constant">35e200</span> hex)
+
+NAND erase: device <span class="Constant">0</span> offset <span class="Constant">0x1000000</span>, size <span class="Constant">0x7000000</span>
+Erasing at <span class="Constant">0x7fe0000</span> -- <span class="Constant">100</span>% complete.
+OK
+size = <span class="Constant">35e200</span> off = <span class="Constant">1000000</span> addr = <span class="Constant">0</span>
+pure data length is <span class="Constant">3424256</span>, len_incl_bad is <span class="Constant">3538944</span>
+
+hisilicon #
+hisilicon # reset
+resetting ...
+
+
+
+U-Boot <span class="Constant">3531.2017</span>.HISI_3531.NVR <span class="Constant">3531.</span>NVR (Jan <span class="PreProc">0</span><span class="Constant">7</span> <span class="Constant">2017</span> - <span class="Constant">15</span>:<span class="Constant">30</span>:<span class="Constant">28</span>)
+
+<span class="Statement">NAND</span>:  Special Nand id table Version <span class="Constant">1.35</span>
+Nand ID: <span class="Constant">0xAD</span> <span class="Constant">0xF1</span> <span class="Constant">0x00</span> <span class="Constant">0x1D</span> <span class="Constant">0xAD</span> <span class="Constant">0xF1</span> <span class="Constant">0x00</span> <span class="Constant">0x1D</span>
+Nand(Hardware): Block:128KB Page:2KB Chip:128MB*<span class="Constant">1</span> OOB:64B ECC:1bit
+<span class="Constant">128</span> MiB
+*** Warning - bad CRC or NAND, using <span class="Statement">default</span> environment
+
+<span class="Statement">In</span>:    serial
+<span class="Statement">Out</span>:   serial
+<span class="Statement">Err</span>:   serial
+Hit any key to stop autoboot:  <span class="Constant">0</span>
+
+NAND read: device <span class="Constant">0</span> offset <span class="Constant">0x200000</span>, size <span class="Constant">0x200000</span>
+ <span class="Constant">2097152</span> bytes read: OK
+## Booting kernel from Legacy Image at <span class="Constant">82000000</span> ...
+   Image Name:   Linux-<span class="Constant">3.0.8</span>
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    <span class="Constant">1698500</span> Bytes = <span class="Constant">1.6</span> MiB
+   Load Address: <span class="Constant">80008000</span>
+   Entry Point:  <span class="Constant">80008000</span>
+   Loading Kernel Image ... OK
+OK
+
+Starting kernel ...
+
+Uncompressing Linux... done, booting the kernel.
+[    <span class="Constant">0.000000</span>] Linux version <span class="Constant">3.0.8</span> (root@localhost.localdomain) (gcc version <span class="Constant">4.4.1</span> (Hisilicon_v100(gcc4<span class="Constant">.4</span>-<span class="Constant">290</span>+uclibc_0<span class="Constant">.9.30.2</span>+eabi+linuxpthread)) ) #Hi3531_1<span class="Constant">.0</span>.A.0_SVN_2199 SMP Sat Jan <span class="Constant">7</span> <span class="Constant">17</span>:<span class="Constant">22</span>:<span class="PreProc">0</span><span class="Constant">3</span> CST <span class="Constant">2017</span>
+[    <span class="Constant">0.000000</span>] CPU: ARMv7 Processor [<span class="Constant">413f</span>c090] revision <span class="Constant">0</span> (ARMv7), cr=10c53c7f
+[    <span class="Constant">0.000000</span>] CPU: VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[    <span class="Constant">0.000000</span>] Machine: godnet
+[    <span class="Constant">0.000000</span>] Memory policy: ECC disabled, Data cache writealloc
+[    <span class="Constant">0.000000</span>] PERCPU: Embedded <span class="Constant">7</span> pages/cpu @c03f9000 s4160 r8192 d16320 u32768
+[    <span class="Constant">0.000000</span>] Built <span class="Constant">1</span> zonelists in Zone order, mobility grouping on.  Total pages: <span class="Constant">16256</span>
+[    <span class="Constant">0.000000</span>] Kernel command line: mem=64M console=ttyAMA0,<span class="Constant">115200</span> root=/dev/mtdblock5 rootfstype=yaffs2 mtdparts=hinand:768K(boot),256K(ENV),1M(UNUSED),12M(kernel),2M(logo),112M(rootfs) ECP=<span class="Constant">0</span>
+[    <span class="Constant">0.000000</span>] PID hash table entries: <span class="Constant">256</span> (order: -<span class="Constant">2</span>, <span class="Constant">1024</span> bytes)
+[    <span class="Constant">0.000000</span>] Dentry cache hash table entries: <span class="Constant">8192</span> (order: <span class="Constant">3</span>, <span class="Constant">32768</span> bytes)
+[    <span class="Constant">0.000000</span>] Inode-cache hash table entries: <span class="Constant">4096</span> (order: <span class="Constant">2</span>, <span class="Constant">16384</span> bytes)
+[    <span class="Constant">0.000000</span>] Memory: 64MB = 64MB total
+[    <span class="Constant">0.000000</span>] Memory: 61352k/61352k available, 4184k reserved, 0K highmem
+[    <span class="Constant">0.000000</span>] Virtual kernel memory layout:
+[    <span class="Constant">0.000000</span>]     vector  : <span class="Constant">0xffff0000</span> - <span class="Constant">0xffff1000</span>   (   <span class="Constant">4</span> kB)
+[    <span class="Constant">0.000000</span>]     fixmap  : <span class="Constant">0xfff00000</span> - <span class="Constant">0xfffe0000</span>   ( <span class="Constant">896</span> kB)
+[    <span class="Constant">0.000000</span>]     DMA     : <span class="Constant">0xffc00000</span> - <span class="Constant">0xffe00000</span>   (   <span class="Constant">2</span> MB)
+[    <span class="Constant">0.000000</span>]     vmalloc : <span class="Constant">0xc4800000</span> - <span class="Constant">0xfe000000</span>   ( <span class="Constant">920</span> MB)
+[    <span class="Constant">0.000000</span>]     lowmem  : <span class="Constant">0xc0000000</span> - <span class="Constant">0xc4000000</span>   (  <span class="Constant">64</span> MB)
+[    <span class="Constant">0.000000</span>]     modules : <span class="Constant">0xbf000000</span> - <span class="Constant">0xc0000000</span>   (  <span class="Constant">16</span> MB)
+[    <span class="Constant">0.000000</span>]       .init : <span class="Constant">0xc0008000</span> - <span class="Constant">0xc0028000</span>   ( <span class="Constant">128</span> kB)
+[    <span class="Constant">0.000000</span>]       .text : <span class="Constant">0xc0028000</span> - <span class="Constant">0xc0303000</span>   (<span class="Constant">2924</span> kB)
+[    <span class="Constant">0.000000</span>]       .data : <span class="Constant">0xc0304000</span> - <span class="Constant">0xc031be40</span>   (  <span class="Constant">96</span> kB)
+[    <span class="Constant">0.000000</span>]        .bss : <span class="Constant">0xc031be64</span> - <span class="Constant">0xc0375910</span>   ( <span class="Constant">359</span> kB)
+[    <span class="Constant">0.000000</span>] SLUB: Genslabs=<span class="Constant">13</span>, HWalign=<span class="Constant">32</span>, Order=<span class="Constant">0</span>-<span class="Constant">3</span>, MinObjects=<span class="Constant">0</span>, CPUs=<span class="Constant">2</span>, Nodes=<span class="Constant">1</span>
+[    <span class="Constant">0.000000</span>] Hierarchical RCU implementation.
+[    <span class="Constant">0.000000</span>] NR_IRQS:<span class="Constant">128</span> nr_irqs:<span class="Constant">128</span> <span class="Constant">128</span>
+[    <span class="Constant">0.000000</span>] sched_clock: <span class="Constant">32</span> bits at 155MHz, resolution 6ns, wraps every 27709ms
+[    <span class="Constant">0.000000</span>] Console: colour dummy device 80x30
+[    <span class="Constant">0.000097</span>] Calibrating delay loop... <span class="Constant">1849.75</span> BogoMIPS (lpj=<span class="Constant">9248768</span>)
+[    <span class="Constant">0.060043</span>] pid_max: <span class="Statement">default</span>: <span class="Constant">32768</span> minimum: <span class="Constant">301</span>
+[    <span class="Constant">0.060172</span>] Mount-cache hash table entries: <span class="Constant">512</span>
+[    <span class="Constant">0.060589</span>] CPU: Testing write buffer coherency: ok
+[    <span class="Constant">0.061383</span>] CPU1: Booted secondary processor
+[    <span class="Constant">0.120808</span>] Brought up <span class="Constant">2</span> CPUs
+[    <span class="Constant">0.120821</span>] SMP: Total of <span class="Constant">2</span> processors activated (<span class="Constant">3706.06</span> BogoMIPS).
+[    <span class="Constant">0.123073</span>] NET: Registered protocol family <span class="Constant">16</span>
+[    <span class="Constant">0.124635</span>] Serial: AMBA PL011 UART driver
+[    <span class="Constant">0.124713</span>] uart:<span class="Constant">0</span>: ttyAMA0 at MMIO <span class="Constant">0x20080000</span> (irq = <span class="Constant">40</span>) is a PL011 rev2
+[    <span class="Constant">0.364607</span>] console [ttyAMA0] enabled
+[    <span class="Constant">0.368497</span>] uart:<span class="Constant">1</span>: ttyAMA1 at MMIO <span class="Constant">0x20090000</span> (irq = <span class="Constant">41</span>) is a PL011 rev2
+[    <span class="Constant">0.375526</span>] uart:<span class="Constant">2</span>: ttyAMA2 at MMIO <span class="Constant">0x200a0000</span> (irq = <span class="Constant">42</span>) is a PL011 rev2
+[    <span class="Constant">0.382561</span>] uart:<span class="Constant">3</span>: ttyAMA3 at MMIO <span class="Constant">0x200b0000</span> (irq = <span class="Constant">43</span>) is a PL011 rev2
+[    <span class="Constant">0.402010</span>] bio: create slab &lt;bio-<span class="Constant">0</span>&gt; at <span class="Constant">0</span>
+[    <span class="Constant">0.407483</span>] usbcore: registered new interface driver usbfs
+[    <span class="Constant">0.413346</span>] usbcore: registered new interface driver hub
+[    <span class="Constant">0.418879</span>] usbcore: registered new device driver usb
+[    <span class="Constant">0.425559</span>] Switching to clocksource timer1
+[    <span class="Constant">0.444954</span>] NET: Registered protocol family <span class="Constant">2</span>
+[    <span class="Constant">0.449396</span>] IP route cache hash table entries: <span class="Constant">1024</span> (order: <span class="Constant">0</span>, <span class="Constant">4096</span> bytes)
+[    <span class="Constant">0.456482</span>] TCP established hash table entries: <span class="Constant">2048</span> (order: <span class="Constant">2</span>, <span class="Constant">16384</span> bytes)
+[    <span class="Constant">0.463584</span>] TCP bind hash table entries: <span class="Constant">2048</span> (order: <span class="Constant">2</span>, <span class="Constant">16384</span> bytes)
+[    <span class="Constant">0.470045</span>] TCP: Hash tables configured (established <span class="Constant">2048</span> bind <span class="Constant">2048</span>)
+[    <span class="Constant">0.476406</span>] TCP reno registered
+[    <span class="Constant">0.479549</span>] UDP hash table entries: <span class="Constant">128</span> (order: <span class="Constant">0</span>, <span class="Constant">4096</span> bytes)
+[    <span class="Constant">0.485412</span>] UDP-Lite hash table entries: <span class="Constant">128</span> (order: <span class="Constant">0</span>, <span class="Constant">4096</span> bytes)
+[    <span class="Constant">0.492496</span>] L2cache cache controller enabled
+[    <span class="Constant">0.506144</span>] VFS: Disk quotas dquot_6<span class="Constant">.5.2</span>
+[    <span class="Constant">0.510292</span>] Dquot-cache hash table entries: <span class="Constant">1024</span> (order <span class="Constant">0</span>, <span class="Constant">4096</span> bytes)
+[    <span class="Constant">0.516951</span>] msgmni has been set to <span class="Constant">119</span>
+[    <span class="Constant">0.521021</span>] Block layer SCSI generic (bsg) driver version <span class="Constant">0.4</span> loaded (major <span class="Constant">254</span>)
+[    <span class="Constant">0.528414</span>] io scheduler noop registered
+[    <span class="Constant">0.532369</span>] io scheduler deadline registered (<span class="Statement">default</span>)
+[    <span class="Constant">0.537550</span>] io scheduler cfq registered
+[    <span class="Constant">0.546674</span>] brd: module loaded
+[    <span class="Constant">0.552356</span>] loop: module loaded
+[    <span class="Constant">0.556004</span>] Special nand id table Version <span class="Constant">1.35</span>
+[    <span class="Constant">0.560442</span>] Hisilicon Nand Flash Controller V301 Device Driver, Version <span class="Constant">1.10</span>
+[    <span class="Constant">0.568433</span>] Nand ID: <span class="Constant">0xAD</span> <span class="Constant">0xF1</span> <span class="Constant">0x00</span> <span class="Constant">0x1D</span> <span class="Constant">0xAD</span> <span class="Constant">0xF1</span> <span class="Constant">0x00</span> <span class="Constant">0x1D</span>
+[    <span class="Constant">0.574421</span>] Nand(Hardware): Block:128KB Page:2KB Chip:128MB OOB:64B ECC:1bit
+[    <span class="Constant">0.581581</span>] NAND device: Manufacturer ID: <span class="Constant">0xad</span>, Chip ID: <span class="Constant">0xf1</span> (Hynix NAND 128MiB <span class="Constant">3</span>,3V <span class="Constant">8</span>-bit)
+[    <span class="Constant">0.590187</span>] <span class="Constant">6</span> cmdlinepart partitions found on MTD device hinand
+[    <span class="Constant">0.596109</span>] Creating <span class="Constant">6</span> MTD partitions on <span class="Constant">&quot;hinand&quot;</span>:
+[    <span class="Constant">0.600903</span>] <span class="Constant">0x000000000000</span>-<span class="Constant">0x0000000c0000</span> : <span class="Constant">&quot;boot&quot;</span>
+[    <span class="Constant">0.607525</span>] <span class="Constant">0x0000000c0000</span>-<span class="Constant">0x000000100000</span> : <span class="Constant">&quot;ENV&quot;</span>
+[    <span class="Constant">0.613335</span>] <span class="Constant">0x000000100000</span>-<span class="Constant">0x000000200000</span> : <span class="Constant">&quot;UNUSED&quot;</span>
+[    <span class="Constant">0.620420</span>] <span class="Constant">0x000000200000</span>-<span class="Constant">0x000000e00000</span> : <span class="Constant">&quot;kernel&quot;</span>
+[    <span class="Constant">0.643417</span>] <span class="Constant">0x000000e00000</span>-<span class="Constant">0x000001000000</span> : <span class="Constant">&quot;logo&quot;</span>
+[    <span class="Constant">0.651778</span>] <span class="Constant">0x000001000000</span>-<span class="Constant">0x000008000000</span> : <span class="Constant">&quot;rootfs&quot;</span>
+[    <span class="Constant">0.821615</span>] Fixed MDIO Bus: probed
+[    <span class="Constant">0.825342</span>] STMMAC driver:
+[    <span class="Constant">0.825346</span>]  platform registration...
+[    <span class="Constant">0.831626</span>]  done!
+[    <span class="Constant">0.833804</span>] Set system config <span class="Type">register</span> <span class="Constant">0x200300ec</span> with value <span class="Constant">0x003f003f</span>
+[    <span class="Constant">0.840408</span>]  done!
+[    <span class="Constant">0.842452</span>]  DWMAC1000 - user ID: <span class="Constant">0x10</span>, Synopsys ID: <span class="Constant">0x36</span>
+[    <span class="Constant">0.847842</span>]  Enhanced descriptor structure
+[    <span class="Constant">0.851940</span>] MACADDR in get is <span class="Constant">0</span>:<span class="Constant">0</span>:<span class="Constant">0</span>:<span class="Constant">0</span>:<span class="Constant">0</span>:<span class="Constant">0</span>
+[    <span class="Constant">0.856398</span>]  eth0 - (dev. name: stmmaceth - id: <span class="Constant">0</span>, IRQ #<span class="Constant">119</span>
+[    <span class="Constant">0.856403</span>]  IO base addr: <span class="Constant">0xc4940000</span>)
+[    <span class="Constant">0.869187</span>] STMMAC MII Bus: probed
+[    <span class="Constant">0.872606</span>] eth0: PHY ID 001cc915 at <span class="Constant">0</span> IRQ <span class="Constant">0</span> (<span class="Constant">1</span>:<span class="PreProc">0</span><span class="Constant">0</span>)
+[    <span class="Constant">0.877480</span>] eth0: PHY ID 001cc915 at <span class="Constant">1</span> IRQ -<span class="Constant">6</span> (<span class="Constant">1</span>:<span class="PreProc">0</span><span class="Constant">1</span>) active
+[    <span class="Constant">0.883055</span>] eth0: PHY ID 001cc915 at <span class="Constant">2</span> IRQ <span class="Constant">0</span> (<span class="Constant">1</span>:<span class="PreProc">0</span><span class="Constant">2</span>)
+[    <span class="Constant">0.887944</span>]  DWMAC1000 - user ID: <span class="Constant">0x10</span>, Synopsys ID: <span class="Constant">0x36</span>
+[    <span class="Constant">0.893341</span>]  Enhanced descriptor structure
+[    <span class="Constant">0.897431</span>] MACADDR in get is <span class="Constant">0</span>:<span class="Constant">0</span>:<span class="Constant">0</span>:<span class="Constant">0</span>:<span class="Constant">0</span>:<span class="Constant">0</span>
+[    <span class="Constant">0.901438</span>]  no valid MAC address <span class="Statement">for</span> MAC <span class="Constant">1</span>;please, use ifconfig or nwhwconfig!
+[    <span class="Constant">0.909199</span>]  eth1 - (dev. name: stmmaceth - id: <span class="Constant">0</span>, IRQ #<span class="Constant">119</span>
+[    <span class="Constant">0.909205</span>]  IO base addr: <span class="Constant">0xc4944000</span>)
+[    <span class="Constant">0.918533</span>] eth1: PHY ID 001cc915 at <span class="Constant">0</span> IRQ <span class="Constant">0</span> (<span class="Constant">1</span>:<span class="PreProc">0</span><span class="Constant">0</span>)
+[    <span class="Constant">0.923412</span>] eth1: PHY ID 001cc915 at <span class="Constant">1</span> IRQ -<span class="Constant">6</span> (<span class="Constant">1</span>:<span class="PreProc">0</span><span class="Constant">1</span>)
+[    <span class="Constant">0.928370</span>] eth1: PHY ID 001cc915 at <span class="Constant">2</span> IRQ <span class="Constant">0</span> (<span class="Constant">1</span>:<span class="PreProc">0</span><span class="Constant">2</span>) active
+[    <span class="Constant">0.934155</span>] stmmac_reset: RESET COMPLETE!
+[    <span class="Constant">0.938156</span>]
+[    <span class="Constant">0.938158</span>] **************************************************
+[    <span class="Constant">0.945465</span>] *  TNK driver built on Jan  <span class="Constant">7</span> <span class="Constant">2017</span> at <span class="Constant">17</span>:<span class="Constant">23</span>:<span class="Constant">46</span>
+[    <span class="Constant">0.950955</span>] *  TNK driver mode is BYPASS
+[    <span class="Constant">0.954869</span>] **************************************************
+[    <span class="Constant">0.960693</span>] stmmac: Rx Checksum Offload Engine supported
+[    <span class="Constant">0.967557</span>] stmmac: Rx Checksum Offload Engine supported
+[    <span class="Constant">0.974747</span>] ehci_hcd: USB <span class="Constant">2.0</span> 'Enhanced' Host Controller (EHCI) Driver
+[    <span class="Constant">0.981535</span>] hiusb-ehci hiusb-ehci<span class="Constant">.0</span>: HIUSB EHCI
+[    <span class="Constant">0.986135</span>] hiusb-ehci hiusb-ehci<span class="Constant">.0</span>: new USB bus registered, assigned bus number <span class="Constant">1</span>
+[    <span class="Constant">0.993876</span>] hiusb-ehci hiusb-ehci<span class="Constant">.0</span>: irq <span class="Constant">63</span>, io mem <span class="Constant">0x100b0000</span>
+[    <span class="Constant">1.010744</span>] hiusb-ehci hiusb-ehci<span class="Constant">.0</span>: USB <span class="Constant">0.0</span> started, EHCI <span class="Constant">1.00</span>
+[    <span class="Constant">1.017140</span>] hub <span class="Constant">1</span>-<span class="Constant">0</span>:<span class="Constant">1.0</span>: USB hub found
+[    <span class="Constant">1.020914</span>] hub <span class="Constant">1</span>-<span class="Constant">0</span>:<span class="Constant">1.0</span>: <span class="Constant">2</span> ports detected
+[    <span class="Constant">1.025234</span>] ohci_hcd: USB <span class="Constant">1.1</span> 'Open' Host Controller (OHCI) Driver
+[    <span class="Constant">1.031572</span>] hiusb-ohci hiusb-ohci<span class="Constant">.0</span>: HIUSB OHCI
+[    <span class="Constant">1.036121</span>] hiusb-ohci hiusb-ohci<span class="Constant">.0</span>: new USB bus registered, assigned bus number <span class="Constant">2</span>
+[    <span class="Constant">1.043720</span>] hiusb-ohci hiusb-ohci<span class="Constant">.0</span>: irq <span class="Constant">64</span>, io mem <span class="Constant">0x100a0000</span>
+[    <span class="Constant">1.105183</span>] hub <span class="Constant">2</span>-<span class="Constant">0</span>:<span class="Constant">1.0</span>: USB hub found
+[    <span class="Constant">1.108935</span>] hub <span class="Constant">2</span>-<span class="Constant">0</span>:<span class="Constant">1.0</span>: <span class="Constant">2</span> ports detected
+[    <span class="Constant">1.113485</span>] mousedev: PS/<span class="Constant">2</span> mouse device common <span class="Statement">for</span> all mice
+[    <span class="Constant">1.119510</span>] TCP cubic registered
+[    <span class="Constant">1.122756</span>] VFP support v0<span class="Constant">.3</span>: implementor <span class="Constant">41</span> architecture <span class="Constant">3</span> part <span class="Constant">30</span> variant <span class="Constant">9</span> rev <span class="Constant">4</span>
+[    <span class="Constant">1.130829</span>] registered taskstats version <span class="Constant">1</span>
+[    <span class="Constant">1.135304</span>] yaffs: dev is <span class="Constant">32505861</span> name is <span class="Constant">&quot;mtdblock5&quot;</span> rw
+[    <span class="Constant">1.140696</span>] yaffs: passed flags <span class="Constant">&quot;&quot;</span>
+[    <span class="Constant">2.058127</span>] VFS: Mounted root (yaffs2 filesystem) on device <span class="Constant">31</span>:<span class="Constant">5.</span>
+[    <span class="Constant">2.064297</span>] Freeing init memory: 128K
+[    <span class="Constant">5.280745</span>] GPIO driver init OK
+[    <span class="Constant">5.292616</span>] MACADDR in set is <span class="Constant">0</span>:<span class="Constant">0</span>:<span class="Constant">47</span>:3d:4a:<span class="Constant">69</span>
+Auto login as root ...
+Jan  <span class="Constant">1</span> <span class="Error">08</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">5</span> login[<span class="Constant">1036</span>]: root login on 'ttyS0'
+HELLO <span class="Constant">2017</span>
+#
+# uname  -a
+Linux (none) <span class="Constant">3.0.8</span> #Hi3531_1<span class="Constant">.0</span>.A.0_SVN_2199 SMP Sat Jan <span class="Constant">7</span> <span class="Constant">17</span>:<span class="Constant">22</span>:<span class="PreProc">0</span><span class="Constant">3</span> CST <span class="Constant">2017</span> armv7l GNU/Linux
+#
+# cat /proc/cmdline
+mem=64M console=ttyAMA0,<span class="Constant">115200</span> root=/dev/mtdblock5 rootfstype=yaffs2 mtdparts=hinand:768K(boot),256K(ENV),1M(UNUSED),12M(kernel),2M(logo),112M(rootfs) ECP=<span class="Constant">0</span>
+#
+# ifconfig
+eth0      Link encap:Ethernet  HWaddr <span class="PreProc">0</span><span class="Constant">0</span>:<span class="PreProc">0</span><span class="Constant">0</span>:<span class="Constant">47</span>:3D:4A:<span class="Constant">69</span>
+          inet addr:<span class="Constant">192.168.200.200</span>  Bcast:<span class="Constant">192.168.200.255</span>  Mask:<span class="Constant">255.255.255.0</span>
+          UP BROADCAST RUNNING MULTICAST  MTU:<span class="Constant">1500</span>  Metric:<span class="Constant">1</span>
+          RX packets:<span class="Constant">3248</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">63</span> overruns:<span class="Constant">0</span> frame:<span class="Constant">0</span>
+          TX packets:<span class="Constant">0</span> errors:<span class="Constant">0</span> dropped:<span class="Constant">0</span> overruns:<span class="Constant">0</span> carrier:<span class="Constant">0</span>
+          <span class="Statement">collisions</span>:<span class="Constant">0</span> txqueuelen:<span class="Constant">1000</span>
+          RX bytes:<span class="Constant">204894</span> (<span class="Constant">200.0</span> KiB)  TX bytes:<span class="Constant">0</span> (<span class="Constant">0.0</span> B)
+          Interrupt:<span class="Constant">119</span>
+
+#
+# ping <span class="Constant">192.168.200.138</span>
+PING <span class="Constant">192.168.200.138</span> (<span class="Constant">192.168.200.138</span>): <span class="Constant">56</span> data bytes
+<span class="Constant">64</span> bytes from <span class="Constant">192.168.200.138</span>: seq=<span class="Constant">0</span> ttl=<span class="Constant">64</span> time=<span class="Constant">8.133</span> ms
+<span class="Constant">64</span> bytes from <span class="Constant">192.168.200.138</span>: seq=<span class="Constant">1</span> ttl=<span class="Constant">64</span> time=<span class="Constant">0.201</span> ms
+<span class="Constant">64</span> bytes from <span class="Constant">192.168.200.138</span>: seq=<span class="Constant">2</span> ttl=<span class="Constant">64</span> time=<span class="Constant">0.187</span> ms
+<span class="Constant">64</span> bytes from <span class="Constant">192.168.200.138</span>: seq=<span class="Constant">3</span> ttl=<span class="Constant">64</span> time=<span class="Constant">0.187</span> ms
+
+--- <span class="Constant">192.168.200.138</span> ping statistics ---
+<span class="Constant">4</span> packets transmitted, <span class="Constant">4</span> packets received, <span class="Constant">0</span>% packet loss
+round-trip min/avg/max = <span class="Constant">0.187</span>/<span class="Constant">2.177</span>/<span class="Constant">8.133</span> ms
+#
+# df -h
+Filesystem                Size      Used Available Use% Mounted on
+/dev/root               <span class="Constant">112.0</span>M      <span class="Constant">4.4</span>M    <span class="Constant">107.6</span>M   <span class="Constant">4</span>% /
+tmpfs                    <span class="Constant">30.0</span>M         <span class="Constant">0</span>     <span class="Constant">30.0</span>M   <span class="Constant">0</span>% /dev
+#
+# ps
+  PID USER       VSZ STAT COMMAND
+    <span class="Constant">1</span> root      <span class="Constant">1716</span> S    init
+    <span class="Constant">2</span> root         <span class="Constant">0</span> SW   [kthreadd]
+    <span class="Constant">3</span> root         <span class="Constant">0</span> SW   [ksoftirqd/<span class="Constant">0</span>]
+    <span class="Constant">4</span> root         <span class="Constant">0</span> SW   [kworker/<span class="Constant">0</span>:<span class="Constant">0</span>]
+    <span class="Constant">5</span> root         <span class="Constant">0</span> SW   [kworker/u:<span class="Constant">0</span>]
+    <span class="Constant">6</span> root         <span class="Constant">0</span> SW   [migration/<span class="Constant">0</span>]
+    <span class="Constant">7</span> root         <span class="Constant">0</span> SW   [migration/<span class="Constant">1</span>]
+    <span class="Constant">8</span> root         <span class="Constant">0</span> SW   [kworker/<span class="Constant">1</span>:<span class="Constant">0</span>]
+    <span class="Constant">9</span> root         <span class="Constant">0</span> SW   [ksoftirqd/<span class="Constant">1</span>]
+   <span class="Constant">10</span> root         <span class="Constant">0</span> SW&lt;  [khelper]
+   <span class="Constant">11</span> root         <span class="Constant">0</span> SW   [kworker/u:<span class="Constant">1</span>]
+  <span class="Constant">105</span> root         <span class="Constant">0</span> SW   [sync_supers]
+  <span class="Constant">107</span> root         <span class="Constant">0</span> SW   [bdi-<span class="Statement">default</span>]
+  <span class="Constant">108</span> root         <span class="Constant">0</span> SW&lt;  [kintegrityd]
+  <span class="Constant">110</span> root         <span class="Constant">0</span> SW&lt;  [kblockd]
+  <span class="Constant">120</span> root         <span class="Constant">0</span> SW   [khubd]
+  <span class="Constant">213</span> root         <span class="Constant">0</span> SW   [kswapd0]
+  <span class="Constant">266</span> root         <span class="Constant">0</span> SW   [fsnotify_mark]
+  <span class="Constant">328</span> root         <span class="Constant">0</span> SW   [mtdblock0]
+  <span class="Constant">333</span> root         <span class="Constant">0</span> SW   [mtdblock1]
+  <span class="Constant">338</span> root         <span class="Constant">0</span> SW   [mtdblock2]
+  <span class="Constant">343</span> root         <span class="Constant">0</span> SW   [mtdblock3]
+  <span class="Constant">348</span> root         <span class="Constant">0</span> SW   [mtdblock4]
+  <span class="Constant">353</span> root         <span class="Constant">0</span> SW   [mtdblock5]
+  <span class="Constant">356</span> root         <span class="Constant">0</span> SW   [romblock0]
+  <span class="Constant">359</span> root         <span class="Constant">0</span> SW   [romblock1]
+  <span class="Constant">362</span> root         <span class="Constant">0</span> SW   [romblock2]
+  <span class="Constant">365</span> root         <span class="Constant">0</span> SW   [romblock3]
+  <span class="Constant">368</span> root         <span class="Constant">0</span> SW   [romblock4]
+  <span class="Constant">371</span> root         <span class="Constant">0</span> SW   [romblock5]
+  <span class="Constant">409</span> root         <span class="Constant">0</span> SW&lt;  [kpsmoused]
+  <span class="Constant">410</span> root         <span class="Constant">0</span> SW   [kworker/<span class="Constant">0</span>:<span class="Constant">1</span>]
+  <span class="Constant">416</span> root         <span class="Constant">0</span> SW   [yaffs-bg-<span class="Constant">1</span>]
+  <span class="Constant">425</span> root         <span class="Constant">0</span> SW   [kworker/<span class="Constant">1</span>:<span class="Constant">1</span>]
+ <span class="Constant">1028</span> root      <span class="Constant">1700</span> S    /usr/sbin/telnetd
+ <span class="Constant">1036</span> root      <span class="Constant">1728</span> S    -sh
+ <span class="Constant">1041</span> root         <span class="Constant">0</span> SW   [flush-<span class="Constant">31</span>:<span class="Constant">5</span>]
+ <span class="Constant">1048</span> root      <span class="Constant">1704</span> R    ps
+#
+# echo Default PASSWD is
+Default PASSWD is
+#
+#
+
+
+</pre>
+</body>
+</html>

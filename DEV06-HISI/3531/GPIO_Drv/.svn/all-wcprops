@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/NVR/!svn/ver/2010/3531_NVR/work/software_design/trunk/FIRMWARE/GPIO_Drv
+END
+test_tools.c
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/NVR/!svn/ver/11/3531_NVR/work/software_design/trunk/FIRMWARE/GPIO_Drv/test_tools.c
+END
+gpio_i2c.h
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/NVR/!svn/ver/11/3531_NVR/work/software_design/trunk/FIRMWARE/GPIO_Drv/gpio_i2c.h
+END
+gpio_i2c_2.h
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/NVR/!svn/ver/11/3531_NVR/work/software_design/trunk/FIRMWARE/GPIO_Drv/gpio_i2c_2.h
+END
+hgpio.c
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/NVR/!svn/ver/2024/3531_NVR/work/software_design/trunk/FIRMWARE/GPIO_Drv/hgpio.c
+END
+platform.h
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/NVR/!svn/ver/11/3531_NVR/work/software_design/trunk/FIRMWARE/GPIO_Drv/platform.h
+END
+gpio_i2c.c
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/NVR/!svn/ver/11/3531_NVR/work/software_design/trunk/FIRMWARE/GPIO_Drv/gpio_i2c.c
+END
+hgpio.h
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/NVR/!svn/ver/2009/3531_NVR/work/software_design/trunk/FIRMWARE/GPIO_Drv/hgpio.h
+END
+beep.c
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/NVR/!svn/ver/2151/3531_NVR/work/software_design/trunk/FIRMWARE/GPIO_Drv/beep.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/NVR/!svn/ver/2010/3531_NVR/work/software_design/trunk/FIRMWARE/GPIO_Drv/Makefile
+END
+gpio_i2c_2.c
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/NVR/!svn/ver/11/3531_NVR/work/software_design/trunk/FIRMWARE/GPIO_Drv/gpio_i2c_2.c
+END

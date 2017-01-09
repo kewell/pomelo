@@ -1,0 +1,37 @@
+export ARCH=arm
+#include /root/3531/env.sh
+export CROSS_COMPILE=arm-hisiv100-linux-
+
+#DEBUG = y
+DEPEND = gpio.o
+
+ifeq ($(DEBUG),y)
+	DEBFLAGS = -O -g -Wall  
+else
+	DEBFLAGS = -O3 -Wall
+endif
+
+EXTRA_CFLAGS += -I$(PWD)/include -I$(PWD)/include/mkp  $(DEBFLAGS)  
+#CFLAGS += -I$(LDDINC)
+
+ifneq ($(KERNELRELEASE),)
+obj-m	:= gpio.o
+gpioi2c-objs := $(DEPEND)
+lib-m := $(DEPEND)
+else 
+ARCH := arm
+TARGET := gpio.ko
+KERNELDIR :=/HYRD/wenjing/Hi3531_NVR_SVN/IDVR_firmware/kernel/linux-3.0.y_hi3531_1.0.A.0
+KERNELDIR :=/.100G/SVN_NVR_src_50/kernel/linux-3.0.y_hi3531_1.0.B.2
+
+PWD       := $(shell pwd)
+
+modules:
+	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+	'cp' gpio.ko -av /tmp
+endif
+
+clean:
+	rm -rf *.o *.ko *.mod.* [Mm]odule* .*.cmd .tmp_versions
+
+
