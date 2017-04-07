@@ -1,7 +1,0 @@
-
-OBJS := plcomm.o plc_stat.o plmdb.o plcurve.o pltask_test.o
-SUBDIR := module proto
-#SYMBOLOUT := dir1_script.txt
-
--include $(SUBMK_FILE)
-
