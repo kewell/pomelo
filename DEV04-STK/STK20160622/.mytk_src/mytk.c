@@ -450,8 +450,8 @@ int main (int argc, char **argv)
         {
             g_ucArgGapCnt = (unsigned char)atoi(argv[3]);
         }
+        if (3 <= argc)printf("DozeSecTime is %d Sec GapCnt=%d\n", g_ucArgDozeSec, g_ucArgGapCnt);
     }
-    printf("DozeSecTime is %d Sec GapCnt=%d\n", g_ucArgDozeSec, g_ucArgGapCnt);
 
     while (iRunCnt > 0)
     {
