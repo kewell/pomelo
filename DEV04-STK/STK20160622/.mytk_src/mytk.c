@@ -235,9 +235,34 @@ void analysia_each_stk (char *pcData, unsigned char isFirst, unsigned char index
     float fAllMoney = val[8] / 10000000;
     float fRequestSub = (fAllBuy - fAllSell) / 100;
 
+    char acHighLightStr[6] = "", acTopStr[5]="", hFlag = 0, lFlag = 0;
+    float fJudgeFactor = 0.001;
+    if (0 == strcmp(pcStockName, "0001") || 0 == strcmp(pcStockName, "9001") || 0 == strcmp(pcStockName, "9005") || 0 ==      strcmp(pcStockName, "9006"))
+    {
+        fJudgeFactor = 0.0001;
+    }
+    else if (15 >= val[2])
+    {
+        fJudgeFactor = 0.0015;
+    }
+
+    if (((val[3] - val[2])) <= (val[2] * fJudgeFactor))
+    {
+        strcpy(acHighLightStr, "\t\t\t\t\tH");
+        strcpy(acTopStr, "[\tH\t]");
+
+        hFlag = 1;
+    }
+    else if (((val[2] - val[4])) <= (val[2] * fJudgeFactor))
+    {
+        strcpy(acHighLightStr, "\t\t\t\t\tL");
+        strcpy(acTopStr, "[\tL\t]");
+        lFlag = 1;
+    }
+
     if(1 == g_ucRunOnce)
     {
-        printf("%s %5.2f,%5.2f,%5.2f %-5.5s %-5.5s %-5.5s__%.0f/%.0f/%.0f/%.0f/%.0f__%.0f/%.0f/%.0f/%.0f/%.0f__%-2.0f___%.1f[KW]\n", 
+        printf("%s %5.2f,%5.2f,%5.2f %-5.5s %-5.5s %-5.5s_%.0f/%.0f/%.0f/%.0f/%.0f_%.0f/%.0f/%.0f/%.0f/%.0f_%-2.0f_%.1f%s\n", 
                 pcStockName, 
                 fTmpRate,
                 ((val[3] - val[1]) * 100 / val[1]),
@@ -248,7 +273,7 @@ void analysia_each_stk (char *pcData, unsigned char isFirst, unsigned char index
                 val[27]/100, val[25]/100, val[23]/100, val[21]/100, val[19]/100,  
                 val[9]/100, val[11]/100, val[13]/100, val[15]/100, val[17]/100,
                 (g_ucIsSZA) ? val[8] : ((fAllBuy - fAllSell)/100),
-                fAllMoney
+                fAllMoney, acHighLightStr
               );
     }
 
@@ -345,20 +370,20 @@ void analysia_each_stk (char *pcData, unsigned char isFirst, unsigned char index
                             /* If current price is up use green color, other wise use red color */
                             if (val[2] < g_afLastPrice[index])
                             {
-                                sprintf(pcSend, " \033[0;37m%-4.0f\033[0;39m", (val[7] - g_afTradeSum[index]) / 100);
+                                sprintf(pcSend, " \033[0;37m%-4.0f%s\033[0;39m", (val[7] - g_afTradeSum[index]) / 100, acTopStr);
                             }
                             else if (val[2] > g_afLastPrice[index])
                             {
-                                sprintf(pcSend, " \033[0;33m%-4.0f\033[0;39m", (val[7] - g_afTradeSum[index]) / 100);
+                                sprintf(pcSend, " \033[0;33m%-4.0f%s\033[0;39m", (val[7] - g_afTradeSum[index]) / 100, acTopStr);
                             }
                             else
                             {
-                                sprintf(pcSend, " %-4.0f", (val[7] - g_afTradeSum[index]) / 100);
+                                sprintf(pcSend, " %-4.0f%s", (val[7] - g_afTradeSum[index]) / 100, acTopStr);
                             }
                         }
                         else
                         {
-                            sprintf(pcSend, " %-4.0f", (val[7] - g_afTradeSum[index]) / 100);
+                            sprintf(pcSend, " %-4.0f%s", (val[7] - g_afTradeSum[index]) / 100, acTopStr);
                         }
                     }
                 }
