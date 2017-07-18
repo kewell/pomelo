@@ -2,19 +2,16 @@
 SCALE=4
 PERIOD_DEFAULT_MONEY=38000
 
-for INDEX in `seq -1 8`;do
-    if [ -1 -eq $INDEX ];then
-        RATE=0.610;PERIOD_MONTH=03;PERIOD_MONTH_PLUS=0 # ZX 0.82*.75    Expect .82*.75=.61 .82*.5=.41
-        PERIOD_DEFAULT_MONEY=146000
-    elif [ 0 -eq $INDEX ];then
+for INDEX in `seq 0 8`;do
+    if [ 0 -eq $INDEX ];then
+        RATE=0.364;PERIOD_MONTH=12;PERIOD_MONTH_PLUS=0 # carbank.cn
+        PERIOD_DEFAULT_MONEY=80000
+    elif [ 1 -eq $INDEX ];then
         RATE=0.410;PERIOD_MONTH=06;PERIOD_MONTH_PLUS=0 # ZX 0.82*.75    Expect 0.38%For12Month
         PERIOD_DEFAULT_MONEY=146000
-    elif [ 1 -eq $INDEX ];then
+    elif [ 2 -eq $INDEX ];then
         RATE=0.380;PERIOD_MONTH=12;PERIOD_MONTH_PLUS=0 # ZX 0.82*.75    Expect 0.38%For12Month
         PERIOD_DEFAULT_MONEY=146000
-    elif [ 2 -eq $INDEX ];then
-        RATE=0.470;PERIOD_MONTH=12;PERIOD_MONTH_PLUS=0 # GF
-        PERIOD_DEFAULT_MONEY=38000
     elif [ 3 -eq $INDEX ];then
         RATE=0.500;PERIOD_MONTH=06;PERIOD_MONTH_PLUS=0 # GF
         PERIOD_DEFAULT_MONEY=38000
